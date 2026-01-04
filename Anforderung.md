@@ -87,6 +87,8 @@ Die Bewertung erfolgt über Sterne und optionalen Text.
 Restaurantbesitzer können Gerichte erstellen, ändern und löschen.  
 Es können Kategorien erstellt werden, z. B. Suppen, Vorspeisen, Hauptgerichte.  
 Gerichte können diesen Kategorien zugeordnet werden.
+Die Kategorien haben eine Reihenfolge, damit dann später die Kategorieren in der richtigen Reihenfolge angezeigt werden.
+Gerichte haben optional eine Priorität, damit sie in den Kategorieren richtig sortiert werden können.
 
 Gerichte besitzen:
 - Name  
