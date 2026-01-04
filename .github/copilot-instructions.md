@@ -21,6 +21,7 @@ They are optimized for **GitHub Copilot using Claude Sonnet 4.5**.
 - Do NOT place business logic in:
   - routes
   - controllers
+  - middleware
 - Controllers are limited to:
   - request validation
   - calling business logic
@@ -29,10 +30,32 @@ They are optimized for **GitHub Copilot using Claude Sonnet 4.5**.
 ### Database
 - **SQLite**
 
-### Authentication
-- Will be added later
-- **Do NOT implement authentication**
-- **Do NOT assume authenticated users**
+### Authentication (JWT-based, Simple, No OpenID Connect)
+- Authentication is **JWT-based** with a **simple custom implementation**
+- **No OpenID Connect**, **no OAuth flows**, **no external identity providers**
+- **Do NOT implement**: Authorization Code, PKCE, Discovery, JWKS, OIDC libraries, etc.
+- JWT is sent via: `Authorization: Bearer <token>`
+- Token signing/verifying uses configurable secrets/keys (no hardcoding)
+- Token expiration and related settings must be configurable via config/env
+
+#### Auth Endpoints (REST, under /api)
+- `POST /api/auth/login`  
+  - Validates credentials (simple custom logic)
+  - Returns an `accessToken` (JWT)
+- Optional (only if requested/needed by features):
+  - `POST /api/auth/refresh` → returns a new `accessToken` (if refresh tokens are used)
+  - `POST /api/auth/logout` → invalidates refresh tokens (if stored server-side)
+
+#### JWT Middleware Rules
+- Use Express middleware (e.g., `requireAuth`) to:
+  - verify the JWT
+  - extract claims (e.g., `sub`, `roles`)
+  - attach user context to the request (e.g., `req.user`)
+- Middleware must NOT contain business logic or authorization decisions
+
+#### Authorization Rules
+- Authorization decisions (roles/permissions) belong **ONLY** in Business Logic classes
+- Controllers must not enforce permission logic beyond validating request shape
 
 ### Configuration
 - **CORS must be configurable**
@@ -53,6 +76,12 @@ They are optimized for **GitHub Copilot using Claude Sonnet 4.5**.
 ### API Access
 - All REST API calls must go through **Angular service classes**
 - Components must NEVER call APIs directly
+
+### Authentication (Frontend)
+- Store the JWT (access token) using a simple approach (e.g., memory or storage) as implemented by the project
+- Attach the JWT to API calls via an Angular HTTP interceptor:
+  - `Authorization: Bearer <token>`
+- Do NOT implement OpenID Connect client logic
 
 ### Component Structure
 - One folder per component
@@ -132,26 +161,3 @@ project-root/
 │  │  └─ start-server.ps1
 │
 └─ README.md
-```
-
----
-
-## Mandatory Rules
-
-- No business logic outside the business layer
-- No direct HTTP calls in Angular components
-- No hardcoded server URLs anywhere
-- Folder structure must not be changed
-- All REST APIs must remain under `/api`
-
----
-
-## AI Behavior Rules
-
-- Always follow this file strictly
-- If a request violates these rules:
-  - explain why
-  - propose a compliant alternative
-- Do NOT invent additional architecture, folders, or patterns
-
----
