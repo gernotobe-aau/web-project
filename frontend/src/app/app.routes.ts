@@ -7,7 +7,7 @@ import { LoginComponent } from './features/public/login/login';
 import { RegisterComponent } from './features/public/register/register';
 import { ForbiddenComponent } from './features/public/forbidden/forbidden';
 import { DashboardComponent as CustomerDashboardComponent } from './features/customer/dashboard/dashboard';
-import { DashboardComponent as RestaurantDashboardComponent } from './features/restaurant/dashboard/dashboard';
+import { MenuManagementComponent } from './features/restaurant/menu-management/menu-management';
 
 export const routes: Routes = [
   // Public routes
@@ -33,8 +33,8 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['restaurantOwner'] },
     children: [
-      { path: '', component: RestaurantDashboardComponent },
-      { path: 'dashboard', component: RestaurantDashboardComponent }
+      { path: '', redirectTo: 'menu-management', pathMatch: 'full' },
+      { path: 'menu-management', component: MenuManagementComponent }
     ]
   },
 

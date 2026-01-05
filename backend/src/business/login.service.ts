@@ -80,7 +80,7 @@ export class LoginService {
       const restaurantId = restaurants.length > 0 ? restaurants[0].id : undefined;
 
       // Generate token
-      const accessToken = authService.generateToken(owner.id, 'restaurantOwner');
+      const accessToken = authService.generateToken(owner.id, 'restaurantOwner', restaurantId);
 
       return {
         accessToken,

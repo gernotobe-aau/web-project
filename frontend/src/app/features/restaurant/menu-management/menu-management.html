@@ -1,0 +1,135 @@
+<div class="menu-management-container">
+  <div class="header">
+    <h1>Menü-Verwaltung</h1>
+    <button mat-raised-button color="primary" (click)="openCreateCategoryDialog()">
+      <mat-icon>add</mat-icon>
+      Neue Kategorie
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Lade Kategorien...</p>
+  </div>
+
+  <div *ngIf="!loading && categories.length === 0" class="empty-state">
+    <mat-icon>restaurant_menu</mat-icon>
+    <h2>Noch keine Kategorien vorhanden</h2>
+    <p>Erstellen Sie Ihre erste Kategorie, um mit der Menü-Verwaltung zu beginnen.</p>
+    <button mat-raised-button color="primary" (click)="openCreateCategoryDialog()">
+      <mat-icon>add</mat-icon>
+      Erste Kategorie erstellen
+    </button>
+  </div>
+
+  <div *ngIf="!loading && categories.length > 0" class="categories-container">
+    <div cdkDropList (cdkDropListDropped)="dropCategory($event)" class="category-list">
+      <mat-expansion-panel
+        *ngFor="let category of categories"
+        (opened)="onCategoryExpanded(category)"
+        cdkDrag
+        class="category-panel"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title-content">
+            <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+            <div class="title-text">
+              <span class="category-name">{{ category.name }}</span>
+              <span class="dish-count">{{ category.dishCount }} {{ category.dishCount === 1 ? 'Gericht' : 'Gerichte' }}</span>
+            </div>
+          </mat-panel-title>
+          <mat-panel-description class="panel-actions">
+            <button
+              mat-icon-button
+              (click)="openEditCategoryDialog(category); $event.stopPropagation()"
+              matTooltip="✏️"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteCategory(category); $event.stopPropagation()"
+              matTooltip="🗑️"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="category-content">
+          <div class="category-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="openCreateDishDialog(category.id)"
+            >
+              <mat-icon>add</mat-icon>
+              Neues Gericht
+            </button>
+          </div>
+
+          <div *ngIf="category.loading" class="loading-dishes">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Lade Gerichte...</p>
+          </div>
+
+          <div
+            *ngIf="!category.loading && category.dishes && category.dishes.length === 0"
+            class="empty-dishes"
+          >
+            <p>Noch keine Gerichte in dieser Kategorie.</p>
+          </div>
+
+          <div
+            *ngIf="!category.loading && category.dishes && category.dishes.length > 0"
+            cdkDropList
+            (cdkDropListDropped)="dropDish($event, category)"
+            class="dish-list"
+          >
+            <mat-card *ngFor="let dish of category.dishes" cdkDrag class="dish-card">
+              <div class="dish-card-content">
+                <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+
+                <div *ngIf="getDishPhotoUrl(dish)" class="dish-photo">
+                  <img [src]="getDishPhotoUrl(dish)" [alt]="dish.name" />
+                </div>
+                <div *ngIf="!getDishPhotoUrl(dish)" class="dish-photo dish-photo-placeholder">
+                  <mat-icon>restaurant</mat-icon>
+                </div>
+
+                <div class="dish-info">
+                  <h3 class="dish-name">{{ dish.name }}</h3>
+                  <p *ngIf="dish.description" class="dish-description">
+                    {{ dish.description }}
+                  </p>
+                  <div class="dish-price-container">
+                    <span class="dish-price">{{ dish.price | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}</span>
+                  </div>
+                </div>
+
+                <div class="dish-actions">
+                  <button
+                    mat-icon-button
+                    (click)="openEditDishDialog(dish, category.id)"
+                    matTooltip="✏️"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteDish(dish, category.id)"
+                    matTooltip="🗑️"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </div>
+</div>

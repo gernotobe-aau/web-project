@@ -45,6 +45,9 @@ export function getDatabase(): sqlite3.Database {
   return db;
 }
 
+// Alias for convenience
+export const getDb = getDatabase;
+
 export function closeDatabase(): void {
   if (db) {
     db.close();

@@ -86,7 +86,7 @@ export class RestaurantOwnerRegistrationService {
     const restaurant = await this.restaurantRepository.create(restaurantData);
 
     // Generate JWT token
-    const accessToken = authService.generateToken(owner.id, 'restaurantOwner');
+    const accessToken = authService.generateToken(owner.id, 'restaurantOwner', restaurant.id);
 
     return {
       ownerId: owner.id,

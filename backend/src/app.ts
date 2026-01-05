@@ -30,6 +30,10 @@ app.get('/api/health', (req: Request, res: Response) => {
 // API Routes (mit /api Prefix)
 app.use('/api', apiRoutes);
 
+// Serve uploaded files statically
+const uploadsPath = path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadsPath));
+
 // Static File Serving für Angular App (nur in Production)
 const publicPath = path.join(__dirname, '../public');
 app.use(express.static(publicPath));
