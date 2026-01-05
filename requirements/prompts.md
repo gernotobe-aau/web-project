@@ -16,3 +16,13 @@ Mach ordentliche und genügend User Stories mit genügend Informationen.
 
 # Implementierung
 du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0002-authenication-and-registration.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
+
+
+# Restaurant Owner Menu Management
+Du bist senior product owner eine agilen entwickler teams der ein feature einem entwickler team bereistellen muss. Das Feature muss ohne rückfragen der entwickler implentierbar sein, daher achte auf vollsätndigkeit und konsisten. 
+In der Rolle des Restaurantbesitzer, gibt es eine Seite Menu Management. Dort sollte man Gerichte managen. Generiere ein Feautre zum verwalten der Speißekarte eines Restaurants. Berückscihtige die Daten aus dem Anforderung.md
+Alle weiteren Details werden in späteren iterationen implmentiert. Berücksichtige die /requieremtns/Anforderung.md um die infomrationnen aus den instrciton file penibel.
+Mach ordentliche und genügend User Stories mit genügend Informationen.
+
+# implementierung
+du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0003-menu-management.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
