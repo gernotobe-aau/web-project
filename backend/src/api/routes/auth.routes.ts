@@ -1,21 +1,15 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { authController } from '../controllers/auth.controller';
 
 const router = Router();
 
 // POST /api/auth/login
-router.post('/login', (req: Request, res: Response) => {
-  res.status(501).json({ 
-    error: 'Not implemented yet',
-    message: 'Login endpoint will be implemented in a future sprint'
-  });
-});
+router.post('/login', (req, res, next) => authController.login(req, res, next));
 
-// POST /api/auth/register
-router.post('/register', (req: Request, res: Response) => {
-  res.status(501).json({ 
-    error: 'Not implemented yet',
-    message: 'Register endpoint will be implemented in a future sprint'
-  });
-});
+// POST /api/auth/register/customer
+router.post('/register/customer', (req, res, next) => authController.registerCustomer(req, res, next));
+
+// POST /api/auth/register/restaurant-owner
+router.post('/register/restaurant-owner', (req, res, next) => authController.registerRestaurantOwner(req, res, next));
 
 export default router;

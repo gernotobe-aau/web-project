@@ -6,10 +6,17 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
+  const isAuth = authService.isAuthenticated();
+  console.log('[AuthGuard] Checking authentication for:', state.url, 'Result:', isAuth);
+  console.log('[AuthGuard] Current user:', authService.getCurrentUser());
+  console.log('[AuthGuard] Token:', authService.getToken()?.substring(0, 20) + '...');
+
+  if (isAuth) {
+    console.log('[AuthGuard] Access granted');
     return true;
   }
 
+  console.log('[AuthGuard] Access denied, redirecting to login');
   // Redirect to login with return URL
   router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
   return false;

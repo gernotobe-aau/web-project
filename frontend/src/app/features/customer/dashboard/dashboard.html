@@ -1,5 +1,49 @@
-<div style="padding: 20px;">
-  <h2>Customer Dashboard</h2>
-  <p>Browse restaurants, place orders, and track deliveries.</p>
-  <p><em>This feature will be implemented in future sprints.</em></p>
+<div class="dashboard-container">
+  <!-- Header/Navigation -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Restaurants</h1>
+      <div class="user-menu">
+        <span class="welcome-message" *ngIf="currentUser">
+          Hallo, {{ currentUser.firstName }}!
+        </span>
+        <button class="btn-logout" (click)="onLogout()">Abmelden</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-content">
+    <div class="content-wrapper">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-message">
+        <p>Lade Restaurants...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && restaurants.length === 0" class="empty-state">
+        <p>Keine Restaurants gefunden</p>
+      </div>
+
+      <!-- Restaurant Grid -->
+      <div *ngIf="!isLoading && restaurants.length > 0" class="restaurant-grid">
+        <div *ngFor="let restaurant of restaurants" class="restaurant-card">
+          <img [src]="restaurant.imageUrl" [alt]="restaurant.name" class="restaurant-image">
+          <div class="restaurant-info">
+            <h3>{{ restaurant.name }}</h3>
+            <div class="restaurant-meta">
+              <span class="categories">{{ restaurant.categories.join(', ') }}</span>
+              <span class="rating">⭐ {{ restaurant.rating }}</span>
+              <span class="delivery-time">🕒 {{ restaurant.deliveryTime }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Message -->
+      <div class="info-box">
+        <p>🚧 Dies ist eine Vorschau. Die vollständige Funktionalität (Filterung, Bestellung, etc.) wird in zukünftigen Sprints implementiert.</p>
+      </div>
+    </div>
+  </main>
 </div>

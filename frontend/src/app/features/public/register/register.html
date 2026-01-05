@@ -1,5 +1,262 @@
-<div style="text-align: center; padding: 50px;">
-  <h2>Register</h2>
-  <p>Registration form will be implemented in future sprints.</p>
-  <a href="/" style="color: #007bff;">← Back to Home</a>
+<div class="register-container">
+  <div class="register-card">
+    <h1>Registrierung</h1>
+    
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- User Type Selection -->
+      <div class="user-type-selection">
+        <label>
+          <input type="radio" value="customer" [checked]="userType === 'customer'" (change)="onUserTypeChange('customer')">
+          Ich bin Kunde
+        </label>
+        <label>
+          <input type="radio" value="restaurantOwner" [checked]="userType === 'restaurantOwner'" (change)="onUserTypeChange('restaurantOwner')">
+          Ich bin Restaurantbesitzer
+        </label>
+      </div>
+
+      <!-- Personal Information -->
+      <h3>Persönliche Daten</h3>
+      
+      <div class="form-row">
+        <div class="form-field">
+          <label for="firstName">Vorname *</label>
+          <input id="firstName" type="text" formControlName="firstName">
+          <span class="error-message" *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+            {{ getErrorMessage('firstName') }}
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="lastName">Nachname *</label>
+          <input id="lastName" type="text" formControlName="lastName">
+          <span class="error-message" *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+            {{ getErrorMessage('lastName') }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="birthDate">Geburtsdatum *</label>
+        <input id="birthDate" type="date" formControlName="birthDate">
+        <span class="error-message" *ngIf="registerForm.get('birthDate')?.invalid && registerForm.get('birthDate')?.touched">
+          {{ getErrorMessage('birthDate') }}
+        </span>
+      </div>
+
+      <div class="form-field">
+        <label for="email">E-Mail *</label>
+        <input id="email" type="email" formControlName="email">
+        <span class="error-message" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="password">Passwort *</label>
+          <input id="password" type="password" formControlName="password">
+          <span class="error-message" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            {{ getErrorMessage('password') }}
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="confirmPassword">Passwort bestätigen *</label>
+          <input id="confirmPassword" type="password" formControlName="confirmPassword">
+          <span class="error-message" *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched">
+            Passwörter stimmen nicht überein
+          </span>
+        </div>
+      </div>
+
+      <!-- Customer-specific fields -->
+      <div *ngIf="userType === 'customer'" formGroupName="deliveryAddress">
+        <h3>Lieferadresse</h3>
+        
+        <div class="form-row">
+          <div class="form-field flex-2">
+            <label for="deliveryStreet">Straße *</label>
+            <input id="deliveryStreet" type="text" formControlName="street">
+            <span class="error-message" *ngIf="registerForm.get('deliveryAddress.street')?.invalid && registerForm.get('deliveryAddress.street')?.touched">
+              {{ getErrorMessage('deliveryAddress.street') }}
+            </span>
+          </div>
+
+          <div class="form-field flex-1">
+            <label for="deliveryHouseNumber">Hausnummer *</label>
+            <input id="deliveryHouseNumber" type="text" formControlName="houseNumber">
+            <span class="error-message" *ngIf="registerForm.get('deliveryAddress.houseNumber')?.invalid && registerForm.get('deliveryAddress.houseNumber')?.touched">
+              {{ getErrorMessage('deliveryAddress.houseNumber') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="deliveryStaircase">Stiege</label>
+            <input id="deliveryStaircase" type="text" formControlName="staircase">
+          </div>
+
+          <div class="form-field">
+            <label for="deliveryDoor">Tür</label>
+            <input id="deliveryDoor" type="text" formControlName="door">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field flex-1">
+            <label for="deliveryPostalCode">PLZ *</label>
+            <input id="deliveryPostalCode" type="text" formControlName="postalCode" maxlength="4">
+            <span class="error-message" *ngIf="registerForm.get('deliveryAddress.postalCode')?.invalid && registerForm.get('deliveryAddress.postalCode')?.touched">
+              {{ getErrorMessage('deliveryAddress.postalCode') }}
+            </span>
+          </div>
+
+          <div class="form-field flex-2">
+            <label for="deliveryCity">Ort *</label>
+            <input id="deliveryCity" type="text" formControlName="city">
+            <span class="error-message" *ngIf="registerForm.get('deliveryAddress.city')?.invalid && registerForm.get('deliveryAddress.city')?.touched">
+              {{ getErrorMessage('deliveryAddress.city') }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Restaurant Owner-specific fields -->
+      <div *ngIf="userType === 'restaurantOwner'" formGroupName="restaurant">
+        <h3>Restaurant-Informationen</h3>
+        
+        <div class="form-field">
+          <label for="restaurantName">Restaurantname *</label>
+          <input id="restaurantName" type="text" formControlName="name">
+          <span class="error-message" *ngIf="registerForm.get('restaurant.name')?.invalid && registerForm.get('restaurant.name')?.touched">
+            {{ getErrorMessage('restaurant.name') }}
+          </span>
+        </div>
+
+        <h4>Restaurantadresse</h4>
+        <div formGroupName="address">
+          <div class="form-row">
+            <div class="form-field flex-2">
+              <label for="restaurantStreet">Straße *</label>
+              <input id="restaurantStreet" type="text" formControlName="street">
+              <span class="error-message" *ngIf="registerForm.get('restaurant.address.street')?.invalid && registerForm.get('restaurant.address.street')?.touched">
+                {{ getErrorMessage('restaurant.address.street') }}
+              </span>
+            </div>
+
+            <div class="form-field flex-1">
+              <label for="restaurantHouseNumber">Hausnummer *</label>
+              <input id="restaurantHouseNumber" type="text" formControlName="houseNumber">
+              <span class="error-message" *ngIf="registerForm.get('restaurant.address.houseNumber')?.invalid && registerForm.get('restaurant.address.houseNumber')?.touched">
+                {{ getErrorMessage('restaurant.address.houseNumber') }}
+              </span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="restaurantStaircase">Stiege</label>
+              <input id="restaurantStaircase" type="text" formControlName="staircase">
+            </div>
+
+            <div class="form-field">
+              <label for="restaurantDoor">Tür</label>
+              <input id="restaurantDoor" type="text" formControlName="door">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field flex-1">
+              <label for="restaurantPostalCode">PLZ *</label>
+              <input id="restaurantPostalCode" type="text" formControlName="postalCode" maxlength="4">
+              <span class="error-message" *ngIf="registerForm.get('restaurant.address.postalCode')?.invalid && registerForm.get('restaurant.address.postalCode')?.touched">
+                {{ getErrorMessage('restaurant.address.postalCode') }}
+              </span>
+            </div>
+
+            <div class="form-field flex-2">
+              <label for="restaurantCity">Ort *</label>
+              <input id="restaurantCity" type="text" formControlName="city">
+              <span class="error-message" *ngIf="registerForm.get('restaurant.address.city')?.invalid && registerForm.get('restaurant.address.city')?.touched">
+                {{ getErrorMessage('restaurant.address.city') }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <h4>Kategorien *</h4>
+        <div class="categories-grid">
+          <label *ngFor="let category of cuisineCategories" class="checkbox-label">
+            <input type="checkbox" [value]="category" 
+                   [checked]="registerForm.get('restaurant.categories')?.value.includes(category)"
+                   (change)="onCategoryChange($event, category)">
+            {{ category }}
+          </label>
+        </div>
+        <span class="error-message" *ngIf="registerForm.get('restaurant.categories')?.invalid && registerForm.get('restaurant.categories')?.touched">
+          Mindestens eine Kategorie erforderlich
+        </span>
+
+        <h4>Kontaktinformationen</h4>
+        <div formGroupName="contactInfo">
+          <div class="form-row">
+            <div class="form-field">
+              <label for="contactPhone">Telefon *</label>
+              <input id="contactPhone" type="tel" formControlName="phone">
+              <span class="error-message" *ngIf="registerForm.get('restaurant.contactInfo.phone')?.invalid && registerForm.get('restaurant.contactInfo.phone')?.touched">
+                {{ getErrorMessage('restaurant.contactInfo.phone') }}
+              </span>
+            </div>
+
+            <div class="form-field">
+              <label for="contactEmail">Kontakt-E-Mail (optional)</label>
+              <input id="contactEmail" type="email" formControlName="email">
+            </div>
+          </div>
+        </div>
+
+        <h4>Öffnungszeiten</h4>
+        <button type="button" class="btn-secondary" (click)="copyMondayToAll()">Montag auf alle übernehmen</button>
+        
+        <div formArrayName="openingHours" class="opening-hours-list">
+          <div *ngFor="let hourGroup of openingHoursArray.controls; let i = index" [formGroupName]="i" class="opening-hours-row">
+            <span class="day-name">{{ dayNames[i] }}</span>
+            
+            <label class="checkbox-inline">
+              <input type="checkbox" formControlName="isClosed">
+              Geschlossen
+            </label>
+            
+            <div *ngIf="!hourGroup.get('isClosed')?.value" class="time-inputs">
+              <label>
+                Von:
+                <input type="time" formControlName="openTime">
+              </label>
+              <label>
+                Bis:
+                <input type="time" formControlName="closeTime">
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Registrierung läuft...' : 'Registrieren' }}
+        </button>
+      </div>
+
+      <div class="form-footer">
+        <p>Bereits registriert? <a routerLink="/login">Zum Login</a></p>
+      </div>
+    </form>
+  </div>
 </div>

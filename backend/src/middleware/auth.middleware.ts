@@ -10,9 +10,15 @@ export class AuthService {
    * @returns JWT token
    */
   generateToken(userId: string, role: 'customer' | 'restaurantOwner'): string {
+    // Calculate expiration time (1 hour from now)
+    const now = Math.floor(Date.now() / 1000);
+    const expiresIn = 3600; // 1 hour in seconds
+    
     const payload = {
       sub: userId,
-      role: role
+      role: role,
+      exp: now + expiresIn,
+      iat: now
     };
 
     return jwt.sign(payload, config.jwtSecret);

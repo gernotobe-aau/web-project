@@ -10,40 +10,23 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      let errorMessage = 'An error occurred';
+      // Log the error for debugging
+      console.error('HTTP Error:', {
+        status: error.status,
+        message: error.message,
+        url: error.url,
+        error: error.error
+      });
 
-      if (error.error instanceof ErrorEvent) {
-        // Client-side error
-        errorMessage = `Error: ${error.error.message}`;
-      } else {
-        // Server-side error
-        switch (error.status) {
-          case 401:
-            // Unauthorized - redirect to login
-            errorMessage = 'Unauthorized. Please log in.';
-            authService.logout();
-            router.navigate(['/login']);
-            break;
-          case 422:
-            // Validation error
-            errorMessage = error.error?.error || 'Validation failed';
-            break;
-          case 404:
-            errorMessage = 'Resource not found';
-            break;
-          case 409:
-            errorMessage = 'Conflict occurred';
-            break;
-          case 500:
-            errorMessage = 'Internal server error';
-            break;
-          default:
-            errorMessage = error.error?.error || `Error Code: ${error.status}`;
-        }
+      // Handle specific status codes globally
+      if (error.status === 401 && !req.url.includes('/auth/login')) {
+        // Only redirect to login if it's not the login request itself
+        authService.logout();
+        router.navigate(['/login']);
       }
 
-      console.error('HTTP Error:', errorMessage, error);
-      return throwError(() => ({ message: errorMessage, originalError: error }));
+      // Return the original error so components can handle it
+      return throwError(() => error);
     })
   );
 };

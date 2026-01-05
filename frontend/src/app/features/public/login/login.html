@@ -1,5 +1,56 @@
-<div style="text-align: center; padding: 50px;">
-  <h2>Login</h2>
-  <p>Login form will be implemented in future sprints.</p>
-  <a href="/" style="color: #007bff;">← Back to Home</a>
+<div class="login-container">
+  <div class="login-card">
+    <h1>Anmelden</h1>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="email">E-Mail</label>
+        <input 
+          id="email" 
+          type="email" 
+          formControlName="email"
+          placeholder="ihre@email.com"
+          autocomplete="email">
+        <span class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </span>
+      </div>
+
+      <div class="form-field">
+        <label for="password">Passwort</label>
+        <div class="password-input-wrapper">
+          <input 
+            id="password" 
+            [type]="showPassword ? 'text' : 'password'" 
+            formControlName="password"
+            placeholder="Ihr Passwort"
+            autocomplete="current-password">
+          <button 
+            type="button" 
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'">
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <span class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          {{ getErrorMessage('password') }}
+        </span>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Anmeldung läuft...' : 'Anmelden' }}
+        </button>
+      </div>
+    </form>
+
+    <div class="form-footer">
+      <p>Noch kein Konto? <a routerLink="/register">Jetzt registrieren</a></p>
+    </div>
+  </div>
 </div>
