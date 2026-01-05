@@ -5,3 +5,14 @@ du bist ein senior product owner eines agilen entwickler teams. der ein feature 
 
 # implentierung 
 du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0001-bootstrap.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
+
+
+# Login und Registrierung Feature
+Du bist senior product owner eine agilen entwickler teams der ein feature einem entwickler team bereistellen muss. Das Feature muss ohne rückfragen der entwickler implentierbar sein, daher achte auf vollsätndigkeit und konsisten. Generiere Ein feature zumm login und registerrieren von User und Restaurantbesitzer. Das Feature soll nur das Login und Registrieren beinhalten.
+Wenn sich ein User einloggt soll er eine Ansicht beokmmen wo man aus unterschiedlichen Restaurants auswählen kann. Mehr oder weniger ist es das gleiche wie die Landing Page, nur das man eingeloggt ist.
+Der Restaurantbesitzer soll zur Dashboard seite gelangen. Alle weiteren Details werden in späteren iterationen implmentiert. Berücksichtige die /requieremtns/Anforderung.md um die infomrationnen aus den instrciton file penibel.
+Mach ordentliche und genügend User Stories mit genügend Informationen.
+
+
+# Implementierung
+du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0002-authenication-and-registration.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
