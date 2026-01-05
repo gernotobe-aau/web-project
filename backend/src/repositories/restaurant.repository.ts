@@ -305,6 +305,29 @@ export class RestaurantRepository {
   }
 
   /**
+   * Update restaurant name
+   */
+  async updateName(id: string, name: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const query = `
+        UPDATE restaurants 
+        SET 
+          name = ?,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `;
+
+      this.db.run(query, [name, id], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  /**
    * Update restaurant contact information
    */
   async updateContactInfo(
@@ -327,6 +350,71 @@ export class RestaurantRepository {
         } else {
           resolve();
         }
+      });
+    });
+  }
+
+  /**
+   * Update restaurant categories
+   */
+  async updateCategories(id: string, categories: string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.db.serialize(() => {
+        this.db.run('BEGIN TRANSACTION');
+
+        // Delete existing categories
+        const deleteQuery = 'DELETE FROM restaurant_categories WHERE restaurant_id = ?';
+        this.db.run(deleteQuery, [id], (err) => {
+          if (err) {
+            this.db.run('ROLLBACK');
+            reject(err);
+            return;
+          }
+
+          // Insert new categories
+          const insertQuery = 'INSERT INTO restaurant_categories (restaurant_id, category) VALUES (?, ?)';
+          let categoriesInserted = 0;
+
+          if (categories.length === 0) {
+            this.db.run('ROLLBACK');
+            reject(new Error('At least one category is required'));
+            return;
+          }
+
+          for (const category of categories) {
+            this.db.run(insertQuery, [id, category], (err) => {
+              if (err) {
+                this.db.run('ROLLBACK');
+                reject(err);
+                return;
+              }
+
+              categoriesInserted++;
+              if (categoriesInserted === categories.length) {
+                // Update timestamp
+                this.db.run(
+                  'UPDATE restaurants SET updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                  [id],
+                  (err) => {
+                    if (err) {
+                      this.db.run('ROLLBACK');
+                      reject(err);
+                    } else {
+                      this.db.run('COMMIT', (err) => {
+                        if (err) {
+                          this.db.run('ROLLBACK');
+                          reject(err);
+                        } else {
+                          resolve();
+                        }
+                      });
+                    }
+                  }
+                );
+              }
+            });
+          }
+        });
       });
     });
   }

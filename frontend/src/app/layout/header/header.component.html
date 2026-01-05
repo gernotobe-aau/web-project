@@ -29,7 +29,7 @@
               routerLink="/restaurant/menu-management" 
               class="nav-button">
         <mat-icon>restaurant</mat-icon>
-        <span>Mein Restaurant</span>
+        <span>Menü-Verwaltung</span>
       </button>
 
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
@@ -39,8 +39,12 @@
       </button>
       
       <mat-menu #userMenu="matMenu">
-        <button mat-menu-item routerLink="/profile">
+        <button mat-menu-item routerLink="/profile" *ngIf="currentUser?.role === 'customer'">
           <mat-icon>person</mat-icon>
+          <span>Profil</span>
+        </button>
+        <button mat-menu-item routerLink="/restaurant/profile" *ngIf="currentUser?.role === 'restaurantOwner'">
+          <mat-icon>store</mat-icon>
           <span>Profil</span>
         </button>
         <button mat-menu-item (click)="logout()">

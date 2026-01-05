@@ -1,0 +1,164 @@
+<div class="profile-container">
+  <h1>Restaurant-Profil</h1>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Profil wird geladen...</p>
+  </div>
+
+  <form *ngIf="!isLoading && profileForm" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Basic Information Card -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>Grundinformationen</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        
+        <!-- Restaurant Name -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Restaurantname</mat-label>
+          <input matInput formControlName="name" />
+          <mat-error *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
+            {{ getErrorMessage('name') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Address (Read-only) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse</mat-label>
+          <input matInput [value]="displayAddress" readonly />
+          <mat-hint>Die Adresse kann derzeit nicht geändert werden</mat-hint>
+        </mat-form-field>
+
+        <!-- Categories (Editable) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Kategorien</mat-label>
+          <mat-select formControlName="categories" multiple>
+            <mat-option *ngFor="let category of availableCategories" [value]="category">
+              {{ category }}
+            </mat-option>
+          </mat-select>
+          <mat-hint>Wählen Sie mindestens eine Kategorie aus</mat-hint>
+          <mat-error *ngIf="profileForm.get('categories')?.invalid && profileForm.get('categories')?.touched">
+            {{ getErrorMessage('categories') }}
+          </mat-error>
+        </mat-form-field>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Contact Information Card -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>Kontaktinformationen</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        
+        <!-- Contact Email -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Kontakt-E-Mail</mat-label>
+          <input matInput type="email" formControlName="contactEmail" />
+          <mat-error *ngIf="profileForm.get('contactEmail')?.invalid && profileForm.get('contactEmail')?.touched">
+            {{ getErrorMessage('contactEmail') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Contact Phone -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Telefonnummer (optional)</mat-label>
+          <input matInput type="tel" formControlName="contactPhone" />
+          <mat-hint>Format: +43 123 456789 oder 0123/456789</mat-hint>
+          <mat-error *ngIf="profileForm.get('contactPhone')?.invalid && profileForm.get('contactPhone')?.touched">
+            {{ getErrorMessage('contactPhone') }}
+          </mat-error>
+        </mat-form-field>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Opening Hours Card -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>Öffnungszeiten</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        
+        <div formArrayName="openingHours">
+          <div *ngFor="let day of daysOfWeek; let i = index" class="day-section" [formGroupName]="i">
+            
+            <div class="day-header">
+              <h3 class="day-label">{{ day.label }}</h3>
+              <mat-slide-toggle formControlName="isClosed">
+                Geschlossen
+              </mat-slide-toggle>
+            </div>
+
+            <div class="time-slots" *ngIf="!openingHours.at(i).get('isClosed')?.value">
+              <div formArrayName="timeSlots">
+                <div *ngFor="let slot of getTimeSlotsForDay(i).controls; let j = index" 
+                     class="time-slot" 
+                     [formGroupName]="j">
+                  
+                  <mat-form-field appearance="outline" class="time-field">
+                    <mat-label>Von</mat-label>
+                    <input matInput type="time" formControlName="start" placeholder="HH:MM" />
+                    <mat-error>{{ getTimeSlotErrorMessage(i, j, 'start') }}</mat-error>
+                  </mat-form-field>
+
+                  <span class="time-separator">bis</span>
+
+                  <mat-form-field appearance="outline" class="time-field">
+                    <mat-label>Bis</mat-label>
+                    <input matInput type="time" formControlName="end" placeholder="HH:MM" />
+                    <mat-error>{{ getTimeSlotErrorMessage(i, j, 'end') }}</mat-error>
+                  </mat-form-field>
+
+                  <button 
+                    mat-icon-button 
+                    type="button" 
+                    color="warn"
+                    (click)="removeTimeSlot(i, j)"
+                    [disabled]="getTimeSlotsForDay(i).length === 1"
+                    matTooltip="Zeitfenster entfernen">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+
+                  <div *ngIf="getTimeSlotGroupError(i, j)" class="slot-error">
+                    {{ getTimeSlotGroupError(i, j) }}
+                  </div>
+                </div>
+              </div>
+
+              <button 
+                mat-stroked-button 
+                type="button" 
+                color="primary"
+                (click)="addTimeSlot(i)"
+                class="add-slot-button">
+                <mat-icon>add</mat-icon>
+                Zeitfenster hinzufügen
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit"
+        [disabled]="isSaving || profileForm.invalid">
+        <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+        <span *ngIf="!isSaving">Änderungen speichern</span>
+        <span *ngIf="isSaving">Speichert...</span>
+      </button>
+    </div>
+
+  </form>
+</div>

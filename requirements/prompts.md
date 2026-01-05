@@ -35,3 +35,12 @@ Mach ordentliche und genügend User Stories mit genügend Informationen.
 
 # implemntierung 
 du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0004-restaurant-browsing-startseite.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
+
+# Seite Restaurant Profil
+Du bist senior product owner eine agilen entwickler teams der ein feature einem entwickler team bereistellen muss. Das Feature muss ohne rückfragen der entwickler implentierbar sein, daher achte auf vollsätndigkeit und konsisten. 
+Das Restaurant Profil sollte auf einer Seite eingetellt werden können, natürlich nur für Restaurantbesitzer.
+Alle weiteren Details werden in späteren iterationen implmentiert. Berücksichtige die /requieremtns/Anforderung.md um die infomrationnen aus den instrciton file penibel.
+Mach ordentliche und genügend User Stories mit genügend Informationen.
+
+# implemntierung 
+du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0005-restaurant-profile-management.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.

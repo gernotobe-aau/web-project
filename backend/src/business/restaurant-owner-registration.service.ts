@@ -77,7 +77,10 @@ export class RestaurantOwnerRegistrationService {
       ownerId: owner.id,
       name: input.restaurant.name,
       address: input.restaurant.address,
-      contactInfo: input.restaurant.contactInfo,
+      contactInfo: {
+        phone: input.restaurant.contactInfo.phone,
+        email: input.restaurant.contactInfo.email || input.email // Use owner's email if not provided
+      },
       categories: input.restaurant.categories,
       openingHours: input.restaurant.openingHours
     };
