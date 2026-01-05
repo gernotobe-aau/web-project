@@ -1,0 +1,34 @@
+<div class="restaurant-list-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Restaurants werden geladen...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <h3>Fehler beim Laden</h3>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && restaurants.length === 0" class="empty-container">
+    <mat-icon class="empty-icon">restaurant</mat-icon>
+    <h3>Keine Restaurants gefunden</h3>
+    <p>Es sind derzeit keine Restaurants verfügbar. Bitte versuchen Sie es später erneut oder passen Sie Ihre Filter an.</p>
+  </div>
+
+  <!-- Restaurant Grid -->
+  <div *ngIf="!loading && !error && restaurants.length > 0" class="restaurant-grid">
+    <app-restaurant-card 
+      *ngFor="let restaurant of restaurants" 
+      [restaurant]="restaurant">
+    </app-restaurant-card>
+  </div>
+
+  <!-- Result Count -->
+  <div *ngIf="!loading && !error && restaurants.length > 0" class="result-count">
+    {{ restaurants.length }} {{ restaurants.length === 1 ? 'Restaurant' : 'Restaurants' }} gefunden
+  </div>
+</div>

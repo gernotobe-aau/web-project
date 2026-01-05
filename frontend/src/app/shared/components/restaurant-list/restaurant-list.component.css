@@ -1,0 +1,116 @@
+.restaurant-list-container {
+  width: 100%;
+}
+
+.loading-container,
+.error-container,
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container p {
+  margin-top: 20px;
+  color: #666;
+  font-size: 1rem;
+}
+
+.error-container {
+  color: #f44336;
+}
+
+.error-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+}
+
+.error-container h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.5rem;
+}
+
+.error-container p {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+}
+
+.empty-container {
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+
+.empty-container h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.empty-container p {
+  margin: 0;
+  max-width: 500px;
+  font-size: 1rem;
+}
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.result-count {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .restaurant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .restaurant-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+
+  .loading-container,
+  .error-container,
+  .empty-container {
+    padding: 40px 16px;
+  }
+
+  .error-icon,
+  .empty-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-width: 600px) {
+  .restaurant-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

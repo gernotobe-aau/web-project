@@ -1,0 +1,99 @@
+.app-header {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.toolbar-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.brand:hover {
+  opacity: 0.8;
+}
+
+.brand mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.brand-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.nav-buttons,
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-button,
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-button mat-icon,
+.user-button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.user-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .brand-name {
+    display: none;
+  }
+
+  .nav-button span,
+  .user-button .user-name {
+    display: none;
+  }
+
+  .nav-button,
+  .user-button {
+    min-width: 40px;
+    padding: 0 8px;
+  }
+
+  .nav-buttons {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}

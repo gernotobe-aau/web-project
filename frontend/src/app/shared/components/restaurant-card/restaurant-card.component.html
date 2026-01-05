@@ -1,0 +1,40 @@
+<mat-card class="restaurant-card" [routerLink]="['/restaurants', restaurant.id]" [class.closed]="!restaurant.isOpen">
+  <mat-card-header>
+    <mat-card-title>{{ restaurant.name }}</mat-card-title>
+    <mat-card-subtitle>{{ getAddressString() }}</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <!-- Categories -->
+    <div class="categories">
+      <mat-chip-set>
+        <mat-chip *ngFor="let category of restaurant.categories">
+          {{ category }}
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+
+    <!-- Rating -->
+    <div class="rating" *ngIf="restaurant.averageRating">
+      <span class="stars">
+        <mat-icon *ngFor="let star of getStars()" class="star filled">star</mat-icon>
+        <mat-icon *ngFor="let star of getEmptyStars()" class="star empty">star_border</mat-icon>
+      </span>
+      <span class="rating-value">({{ restaurant.averageRating.toFixed(1) }})</span>
+    </div>
+    <div class="rating" *ngIf="!restaurant.averageRating">
+      <span class="new-label">Neu</span>
+    </div>
+
+    <!-- Delivery Time -->
+    <div class="delivery-info">
+      <mat-icon>schedule</mat-icon>
+      <span>{{ restaurant.estimatedDeliveryTime }} Min.</span>
+    </div>
+
+    <!-- Closed Badge -->
+    <div class="closed-badge" *ngIf="!restaurant.isOpen">
+      Geschlossen
+    </div>
+  </mat-card-content>
+</mat-card>

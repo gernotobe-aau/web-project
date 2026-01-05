@@ -205,6 +205,41 @@ export class RestaurantRepository {
   }
 
   /**
+   * Find all restaurants
+   */
+  async findAll(): Promise<Restaurant[]> {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          id, owner_id, name, street, house_number, staircase,
+          door, postal_code, city, contact_phone, contact_email,
+          created_at, updated_at
+        FROM restaurants 
+        ORDER BY name
+      `;
+
+      this.db.all(query, [], async (err, rows: any[]) => {
+        if (err) {
+          reject(err);
+        } else {
+          try {
+            const restaurants = await Promise.all(
+              rows.map(async (row) => {
+                const categories = await this.getCategories(row.id);
+                const openingHours = await this.getOpeningHours(row.id);
+                return this.mapToRestaurant(row, categories, openingHours);
+              })
+            );
+            resolve(restaurants);
+          } catch (error) {
+            reject(error);
+          }
+        }
+      });
+    });
+  }
+
+  /**
    * Find all restaurants by owner ID
    */
   async findByOwnerId(ownerId: string): Promise<Restaurant[]> {
@@ -235,6 +270,36 @@ export class RestaurantRepository {
             reject(error);
           }
         }
+      });
+    });
+  }
+
+  /**
+   * Get average rating for a restaurant
+   * Returns null if no ratings exist or table doesn't exist yet
+   */
+  async getAverageRating(restaurantId: string): Promise<number | null> {
+    return new Promise((resolve, reject) => {
+      // Note: restaurant_reviews table will be created in a later feature
+      // For now, return null as no reviews exist yet
+      const query = `
+        SELECT AVG(rating) as averageRating
+        FROM restaurant_reviews
+        WHERE restaurant_id = ?
+      `;
+
+      this.db.get(query, [restaurantId], (err, row: any) => {
+        // If table doesn't exist yet, return null
+        if (err) {
+          if (err.message.includes('no such table')) {
+            resolve(null);
+            return;
+          }
+          reject(err);
+          return;
+        }
+
+        resolve(row?.averageRating || null);
       });
     });
   }

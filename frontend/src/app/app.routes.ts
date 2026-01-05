@@ -6,7 +6,7 @@ import { LandingComponent } from './features/public/landing/landing';
 import { LoginComponent } from './features/public/login/login';
 import { RegisterComponent } from './features/public/register/register';
 import { ForbiddenComponent } from './features/public/forbidden/forbidden';
-import { DashboardComponent as CustomerDashboardComponent } from './features/customer/dashboard/dashboard';
+import { RestaurantDetailComponent } from './features/public/restaurant-detail/restaurant-detail.component';
 import { MenuManagementComponent } from './features/restaurant/menu-management/menu-management';
 
 export const routes: Routes = [
@@ -15,17 +15,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'forbidden', component: ForbiddenComponent },
-
-  // Customer routes (protected)
-  {
-    path: 'customer',
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['customer'] },
-    children: [
-      { path: '', component: CustomerDashboardComponent },
-      { path: 'dashboard', component: CustomerDashboardComponent }
-    ]
-  },
+  { path: 'restaurants/:id', component: RestaurantDetailComponent },
 
   // Restaurant routes (protected)
   {

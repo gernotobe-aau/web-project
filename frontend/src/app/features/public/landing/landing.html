@@ -1,9 +1,32 @@
-<div style="text-align: center; padding: 50px;">
-  <h1>🍕 Food Delivery Platform</h1>
-  <p>Welcome to the Food Delivery Platform!</p>
-  <p>This is a placeholder landing page. Features will be implemented in future sprints.</p>
-  <div style="margin-top: 30px;">
-    <a href="/login" style="margin: 10px; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Login</a>
-    <a href="/register" style="margin: 10px; padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px;">Register</a>
+<div class="landing-container">
+  <div class="content-wrapper">
+    <!-- Filter Section -->
+    <aside class="filter-aside">
+      <app-restaurant-filter 
+        [availableCategories]="availableCategories"
+        (filtersChanged)="onFiltersChanged($event)">
+      </app-restaurant-filter>
+    </aside>
+
+    <!-- Restaurant List Section -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Restaurants in Ihrer Nähe</h1>
+        <p class="subtitle">Wählen Sie aus einer Vielzahl von Restaurants und lassen Sie sich Ihr Essen bequem nach Hause liefern</p>
+      </div>
+
+      <app-restaurant-list 
+        [restaurants]="filteredRestaurants"
+        [loading]="loading"
+        [error]="error">
+      </app-restaurant-list>
+
+      <!-- Retry Button on Error -->
+      <div *ngIf="error && !loading" class="retry-container">
+        <button mat-raised-button color="primary" (click)="retryLoading()">
+          Erneut versuchen
+        </button>
+      </div>
+    </main>
   </div>
 </div>

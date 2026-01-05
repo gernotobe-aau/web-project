@@ -1,0 +1,51 @@
+<div class="filter-container">
+  <div class="filter-header">
+    <h3>Filter</h3>
+    <button mat-button 
+            *ngIf="hasActiveFilters()" 
+            (click)="resetFilters()"
+            class="reset-button">
+      <mat-icon>clear</mat-icon>
+      Filter zurücksetzen
+    </button>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="filter-section">
+    <h4>Küche</h4>
+    <mat-chip-set>
+      <mat-chip 
+        *ngFor="let category of availableCategories"
+        [highlighted]="isCategorySelected(category)"
+        (click)="toggleCategory(category)">
+        {{ category }}
+      </mat-chip>
+    </mat-chip-set>
+  </div>
+
+  <!-- Rating Filter -->
+  <div class="filter-section">
+    <h4>Bewertung</h4>
+    <mat-radio-group [(ngModel)]="selectedMinRating" (change)="onRatingChange()">
+      <mat-radio-button 
+        *ngFor="let option of ratingOptions" 
+        [value]="option.value"
+        class="rating-option">
+        {{ option.label }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <!-- Delivery Time Filter -->
+  <div class="filter-section">
+    <h4>Lieferzeit</h4>
+    <mat-radio-group [(ngModel)]="selectedMaxDeliveryTime" (change)="onDeliveryTimeChange()">
+      <mat-radio-button 
+        *ngFor="let option of deliveryTimeOptions" 
+        [value]="option.value"
+        class="delivery-option">
+        {{ option.label }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</div>
