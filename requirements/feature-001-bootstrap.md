@@ -1,22 +1,23 @@
 # Feature: Projekt Bootstrapping & Grundstruktur
 
-Initialisierung der technischen Grundstruktur für die Food-Delivery-Plattform mit Backend (Node.js + Express + SQLite) und zwei separaten Angular-Frontends (User-App und Restaurant-App). Das Feature legt die Ordnerstruktur, Konfigurationen, Build-Scripts und die grundlegende Infrastruktur an, sodass nachfolgende Features implementiert werden können.
+Initialisierung der technischen Grundstruktur für die Food-Delivery-Plattform mit Backend (Node.js + Express + SQLite) und einem Angular-Frontend mit rollenbasiertem Routing. Das Feature legt die Ordnerstruktur, Konfigurationen, Build-Scripts und die grundlegende Infrastruktur an, sodass nachfolgende Features implementiert werden können.
 
 ## Acceptance Criteria:
 - Backend-Projekt ist initialisiert mit Node.js v24, Express, TypeScript und SQLite
-- Zwei separate Angular v21 Projekte sind initialisiert (User-App und Restaurant-App)
+- Ein Angular v21 Projekt ist initialisiert mit rollenbasiertem Routing
 - Ordnerstruktur entspricht exakt den Copilot-Instructions (Repository Pattern, Business Logic Layer)
-- Environments für dev/stage/prod sind für beide Angular-Apps angelegt
+- Environments für dev/stage/prod sind angelegt
 - Backend-Konfiguration unterstützt CORS (konfigurierbar)
 - JWT-Authentication-Basis ist angelegt (Middleware, Config für Secrets)
-- PowerShell-Script unterstützt Development-Modus (alle 3 Apps gleichzeitig starten)
+- PowerShell-Script unterstützt Development-Modus (Backend + Frontend gleichzeitig starten)
 - PowerShell-Script unterstützt Deployment-Modus (Production Build + Deployment-Struktur)
 - Alle REST-Endpoints sind mit `/api` Prefix konfiguriert
-- Backend kann beide Angular-Apps als statische Files ausliefern (User-App unter `/`, Restaurant-App unter `/restaurant`)
+- Backend kann Angular-App als statische Files ausliefern (unter `/`)
+- Routing-Guards für rollenbasierte Zugriffskontrolle sind angelegt
 - Password-Hashing mit Argon2id ist konfiguriert
 - SQLite-Datenbank-Setup mit Migrations-Support ist vorhanden
-- Angular Material ist in beiden Frontends integriert
-- HTTP-Interceptor für JWT-Token ist in beiden Frontends angelegt
+- Angular Material ist integriert
+- HTTP-Interceptor für JWT-Token ist angelegt
 - README.md dokumentiert Setup, Development und Deployment
 
 ---
@@ -91,27 +92,31 @@ Als Entwickler möchte ich ein vollständig konfiguriertes Backend-Projekt haben
 
 ---
 
-## User Story: User-Frontend initialisieren
+## User Story: Frontend initialisieren
 
-Als Entwickler möchte ich die User-Angular-App vollständig konfiguriert haben, damit ich Features für Kunden implementieren kann.
+Als Entwickler möchte ich die Angular-App vollständig konfiguriert haben mit rollenbasiertem Routing, damit ich Features für beide Benutzerrollen (Kunden und Restaurantbesitzer) implementieren kann.
 
 ### Acceptance Criteria:
-- Angular v21 Projekt ist in `frontend/user/` initialisiert
+- Angular v21 Projekt ist in `frontend/` initialisiert
 - Angular Material ist installiert und konfiguriert
 - Ordnerstruktur ist angelegt:
   ```
-  frontend/user/
+  frontend/
   ├─ src/
   │  ├─ app/
   │  │  ├─ core/
   │  │  │  ├─ services/      (API Services, Auth Service)
-  │  │  │  ├─ guards/        (Auth Guards)
+  │  │  │  ├─ guards/        (Auth Guards, Role Guards)
   │  │  │  ├─ interceptors/  (HTTP Interceptors)
   │  │  │  └─ models/        (TypeScript Interfaces)
   │  │  ├─ shared/
   │  │  │  ├─ components/    (Wiederverwendbare UI-Komponenten)
   │  │  │  └─ pipes/         (Custom Pipes)
-  │  │  └─ components/       (Feature-Komponenten)
+  │  │  ├─ features/
+  │  │  │  ├─ public/        (Öffentliche Seiten: Landing, Login, Register)
+  │  │  │  ├─ customer/      (Kundenbereiche: Browse, Cart, Orders)
+  │  │  │  └─ restaurant/    (Restaurantbereiche: Menu, Orders, Analytics)
+  │  │  └─ layout/           (Layout-Komponenten: Header, Footer, Navigation)
   │  ├─ environments/
   │  │  ├─ environment.dev.ts
   │  │  ├─ environment.stage.ts
@@ -125,10 +130,10 @@ Als Entwickler möchte ich die User-Angular-App vollständig konfiguriert haben,
 - `src/environments/environment.*.ts` enthalten jeweils:
   - `production: boolean`
   - `apiBaseUrl: string` (dev: 'http://localhost:3000/api', stage: TBD, prod: '/api')
-  - `appName: 'User App'`
+  - `appName: 'Food Delivery Platform'`
 - `angular.json` ist konfiguriert mit:
   - Build-Konfigurationen für dev, stage, prod
-  - OutputPath: `../../deploy/backend/public/user` für Production
+  - OutputPath: `../deploy/backend/public` für Production
   - File Replacements für Environments
 - `src/app/core/interceptors/auth.interceptor.ts` ist angelegt:
   - Fügt JWT-Token aus Storage zu allen API-Requests hinzu (`Authorization: Bearer <token>`)
@@ -141,67 +146,32 @@ Als Entwickler möchte ich die User-Angular-App vollständig konfiguriert haben,
   - `login(email: string, password: string): Observable<LoginResponse>`
   - `logout(): void`
   - `getToken(): string | null`
+  - `getUserRole(): 'customer' | 'restaurantOwner' | null`
   - `isAuthenticated(): boolean`
   - Token-Storage (localStorage oder sessionStorage)
-- `src/app/core/guards/auth.guard.ts` ist angelegt (Grundgerüst)
-- `src/app/app.routes.ts` ist angelegt (leeres Routes-Array)
+  - Parsing der JWT-Claims für Rolle
+- `src/app/core/guards/auth.guard.ts` ist angelegt:
+  - Prüft ob Benutzer authentifiziert ist
+  - Leitet zu Login weiter falls nicht authentifiziert
+- `src/app/core/guards/role.guard.ts` ist angelegt:
+  - Prüft ob Benutzer die erforderliche Rolle hat
+  - Parameter: `allowedRoles: string[]`
+  - Leitet zu 403-Seite bei fehlender Berechtigung
+- `src/app/app.routes.ts` ist angelegt mit Grundstruktur:
+  ```typescript
+  // Öffentliche Routes (ohne Guard)
+  { path: '', component: LandingPageComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  
+  // Kunden-Routes (mit Auth + Role Guard)
+  { path: 'customer', canActivate: [AuthGuard, RoleGuard], data: { roles: ['customer'] }, children: [...] },
+  
+  // Restaurant-Routes (mit Auth + Role Guard)
+  { path: 'restaurant', canActivate: [AuthGuard, RoleGuard], data: { roles: ['restaurantOwner'] }, children: [...] }
+  ```
 - NPM-Scripts in `package.json`:
   - `start`: Startet Dev-Server auf Port 4200
-  - `build`: Production Build
-  - `build:dev`: Development Build
-  - `build:stage`: Stage Build
-  - `test`: Unit Tests
-  - `lint`: Linting
-
----
-
-## User Story: Restaurant-Frontend initialisieren
-
-Als Entwickler möchte ich die Restaurant-Angular-App vollständig konfiguriert haben, damit ich Features für Restaurantbesitzer implementieren kann.
-
-### Acceptance Criteria:
-- Angular v21 Projekt ist in `frontend/restaurant/` initialisiert
-- Angular Material ist installiert und konfiguriert
-- Ordnerstruktur ist identisch zu User-App:
-  ```
-  frontend/restaurant/
-  ├─ src/
-  │  ├─ app/
-  │  │  ├─ core/
-  │  │  │  ├─ services/
-  │  │  │  ├─ guards/
-  │  │  │  ├─ interceptors/
-  │  │  │  └─ models/
-  │  │  ├─ shared/
-  │  │  │  ├─ components/
-  │  │  │  └─ pipes/
-  │  │  └─ components/
-  │  ├─ environments/
-  │  │  ├─ environment.dev.ts
-  │  │  ├─ environment.stage.ts
-  │  │  └─ environment.prod.ts
-  │  ├─ assets/
-  │  └─ styles.css
-  ├─ angular.json
-  ├─ package.json
-  └─ tsconfig.json
-  ```
-- `src/environments/environment.*.ts` enthalten jeweils:
-  - `production: boolean`
-  - `apiBaseUrl: string` (dev: 'http://localhost:3000/api', stage: TBD, prod: '/api')
-  - `appName: 'Restaurant App'`
-- `angular.json` ist konfiguriert mit:
-  - Build-Konfigurationen für dev, stage, prod
-  - OutputPath: `../../deploy/backend/public/restaurant` für Production
-  - File Replacements für Environments
-  - BaseHref: `/restaurant/` für alle Builds
-- `src/app/core/interceptors/auth.interceptor.ts` ist angelegt (identisch zu User-App)
-- `src/app/core/interceptors/error.interceptor.ts` ist angelegt (identisch zu User-App)
-- `src/app/core/services/auth.service.ts` ist angelegt (Grundgerüst, identisch zu User-App)
-- `src/app/core/guards/auth.guard.ts` ist angelegt (Grundgerüst)
-- `src/app/app.routes.ts` ist angelegt (leeres Routes-Array)
-- NPM-Scripts in `package.json`:
-  - `start`: Startet Dev-Server auf Port 4201
   - `build`: Production Build
   - `build:dev`: Development Build
   - `build:stage`: Stage Build
@@ -219,14 +189,12 @@ Als Entwickler möchte ich ein PowerShell-Script haben, das Development- und Pro
 - Script unterstützt `-Help` Parameter mit vollständiger Dokumentation
 - **Development-Modus** (`-Mode Development`):
   - Startet Backend auf Port 3000 (npm run dev)
-  - Startet User-Frontend auf Port 4200 (npm start)
-  - Startet Restaurant-Frontend auf Port 4201 (npm start)
-  - Alle drei Prozesse laufen parallel in separaten Konsolen/Tabs
+  - Startet Frontend auf Port 4200 (npm start)
+  - Beide Prozesse laufen parallel in separaten Konsolen/Tabs
   - Script wartet auf Benutzer-Abbruch (Ctrl+C)
 - **Deployment-Modus** (`-Mode Deployment`):
   - Erstellt/leert `deploy/` Ordner
-  - Baut User-Frontend (npm run build) → Output nach `deploy/backend/public/user/`
-  - Baut Restaurant-Frontend (npm run build) → Output nach `deploy/backend/public/restaurant/`
+  - Baut Frontend (npm run build) → Output nach `deploy/backend/public/`
   - Baut Backend (npm run build) → Output nach `deploy/backend/server/`
   - Kopiert `package.json` nach `deploy/backend/server/`
   - Kopiert `.env.example` nach `deploy/backend/server/`
@@ -300,32 +268,29 @@ Als Entwickler möchte ich die JWT-Authentication-Infrastruktur vorbereitet habe
 
 ## User Story: Static File Serving für Production konfigurieren
 
-Als Entwickler möchte ich, dass der Backend-Server beide Angular-Apps in Production ausliefern kann, damit nur ein Server deployed werden muss.
+Als Entwickler möchte ich, dass der Backend-Server die Angular-App in Production ausliefern kann, damit nur ein Server deployed werden muss.
 
 ### Acceptance Criteria:
 - `src/app.ts` enthält Static File Serving-Logik:
   ```typescript
-  // User-App (root)
-  app.use(express.static(path.join(__dirname, '../public/user')));
-  
-  // Restaurant-App (unter /restaurant)
-  app.use('/restaurant', express.static(path.join(__dirname, '../public/restaurant')));
-  
-  // API-Routes (vor Fallbacks!)
+  // API-Routes (VOR Static Files registrieren!)
   app.use('/api', apiRoutes);
   
-  // SPA-Fallbacks (nach API-Routes!)
-  app.get('/restaurant/*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/restaurant/index.html'));
-  });
+  // Angular-App Static Files
+  app.use(express.static(path.join(__dirname, '../public')));
   
+  // SPA-Fallback (nach API-Routes und Static Files!)
+  // Alle nicht-API Routes werden zu Angular weitergeleitet
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/user/index.html'));
+    res.sendFile(path.join(__dirname, '../public/index.html'));
   });
   ```
-- Reihenfolge ist kritisch: API-Routes MÜSSEN vor SPA-Fallbacks registriert werden
+- Reihenfolge ist kritisch:
+  1. Zuerst API-Routes (`/api/*`)
+  2. Dann Static Files (CSS, JS, Assets)
+  3. Zuletzt SPA-Fallback (alle anderen Routes → `index.html`)
 - `/api/*` wird NIE zu Angular weitergeleitet
-- Alle anderen Routes werden zu entsprechender Angular-App weitergeleitet
+- Angular-Router übernimmt Client-seitiges Routing (inkl. Rollen-Guards)
 
 ---
 
@@ -338,9 +303,8 @@ Als Entwickler möchte ich eine vollständige README haben, damit ich das Projek
   1. **Projektübersicht**: Kurze Beschreibung der Food-Delivery-Plattform
   2. **Technologie-Stack**:
      - Backend: Node.js v24, Express, SQLite, TypeScript
-     - Frontend User: Angular v21, Angular Material
-     - Frontend Restaurant: Angular v21, Angular Material
-     - Authentication: JWT (Custom Implementation)
+     - Frontend: Angular v21, Angular Material
+     - Authentication: JWT (Custom Implementation mit rollenbasiertem Routing)
   3. **Ordnerstruktur**: Übersicht mit Erklärung jedes Hauptordners
   4. **Voraussetzungen**:
      - Node.js v24
@@ -352,12 +316,8 @@ Als Entwickler möchte ich eine vollständige README haben, damit ich das Projek
      cd backend
      npm install
      
-     # User Frontend
-     cd frontend/user
-     npm install
-     
-     # Restaurant Frontend
-     cd frontend/restaurant
+     # Frontend
+     cd frontend
      npm install
      ```
   6. **Konfiguration**:
@@ -367,9 +327,9 @@ Als Entwickler möchte ich eine vollständige README haben, damit ich das Projek
      ```powershell
      .\scripts\build-and-run.ps1 -Mode Development
      ```
-     - User-App: http://localhost:4200
-     - Restaurant-App: http://localhost:4201
+     - Frontend: http://localhost:4200
      - Backend API: http://localhost:3000/api
+     - Nach Login wird basierend auf Rolle zu `/customer` oder `/restaurant` weitergeleitet
   8. **Deployment**:
      ```powershell
      .\scripts\build-and-run.ps1 -Mode Deployment
@@ -387,7 +347,12 @@ Als Entwickler möchte ich eine vollständige README haben, damit ich das Projek
       - JWT via `Authorization: Bearer <token>`
       - Validation Errors: HTTP 422
       - Authentication Errors: HTTP 401
-  11. **Weitere Dokumentation**: Verweis auf `/requirements/` Ordner
+  11. **Routing-Konzept**:
+      - Öffentliche Routes: `/`, `/login`, `/register`
+      - Kunden-Routes: `/customer/*` (Role Guard: customer)
+      - Restaurant-Routes: `/restaurant/*` (Role Guard: restaurantOwner)
+      - Nach Login automatische Weiterleitung basierend auf Rolle
+  12. **Weitere Dokumentation**: Verweis auf `/requirements/` Ordner
 
 ---
 
@@ -417,7 +382,7 @@ Als Entwickler möchte ich eine vollständige README haben, damit ich das Projek
 }
 ```
 
-### Dependencies (Frontend - beide Apps):
+### Dependencies (Frontend):
 ```json
 {
   "dependencies": {
@@ -450,7 +415,7 @@ JWT_SECRET=CHANGE_THIS_IN_PRODUCTION_TO_SECURE_RANDOM_STRING
 JWT_EXPIRATION=1h
 
 # CORS
-CORS_ORIGIN=http://localhost:4200,http://localhost:4201
+CORS_ORIGIN=http://localhost:4200
 
 # Database
 DB_PATH=./database.sqlite
@@ -470,7 +435,7 @@ CUISINE_CATEGORIES=Italienisch,Asiatisch,Deutsch,Türkisch,Pizza,Burger,Vegetari
 - Neue Änderungen = neue Migration
 
 ### CORS-Setup (Development):
-- Backend erlaubt Requests von `http://localhost:4200` und `http://localhost:4201`
+- Backend erlaubt Requests von `http://localhost:4200`
 - In Production ist CORS nicht erforderlich (alles von selber Domain)
 
 ### JWT-Token-Struktur:
@@ -491,13 +456,11 @@ deploy/
    │  ├─ app.js
    │  ├─ package.json
    │  └─ ...
-   ├─ public/
-   │  ├─ user/            (User Angular App)
-   │  │  ├─ index.html
-   │  │  └─ ...
-   │  └─ restaurant/      (Restaurant Angular App)
-   │     ├─ index.html
-   │     └─ ...
+   ├─ public/              (Angular App)
+   │  ├─ index.html
+   │  ├─ main.*.js
+   │  ├─ styles.*.css
+   │  └─ assets/
    ├─ start-server.ps1
    └─ README.md
 ```
@@ -509,26 +472,27 @@ deploy/
 4. **JWT-Secret niemals committen!** Immer aus Environment-Variable laden.
 5. **Reihenfolge in app.ts beachten:** API-Routes vor SPA-Fallbacks!
 6. **Environment-URLs korrekt setzen:** Dev zeigt auf localhost:3000, Prod auf `/api`
-7. **BaseHref für Restaurant-App:** Immer `/restaurant/` verwenden
+6. **Rollenbasiertes Routing:** Guards prüfen Rolle aus JWT-Token
 8. **HTTP-Statuscodes beachten:** 422 für Validation, 401 für Auth, 404 für Not Found
 
 ---
 
 ## Definition of Done:
-- [ ] Alle drei Projekte (Backend, User-Frontend, Restaurant-Frontend) sind initialisiert
+- [ ] Beide Projekte (Backend, Frontend) sind initialisiert
 - [ ] Alle Dependencies sind installiert und funktionieren
 - [ ] PowerShell-Script startet erfolgreich im Development-Modus
 - [ ] PowerShell-Script erstellt erfolgreich Deployment-Struktur
 - [ ] Backend startet und läuft auf Port 3000
-- [ ] User-Frontend startet und läuft auf Port 4200
-- [ ] Restaurant-Frontend startet und läuft auf Port 4201
+- [ ] Frontend startet und läuft auf Port 4200
 - [ ] Backend liefert "API is running" bei `GET /api/health`
 - [ ] JWT-Middleware validiert Tokens korrekt (Unit-Test)
 - [ ] Password-Hashing funktioniert mit Argon2id (Unit-Test)
 - [ ] Datenbank wird initialisiert und Migrationen laufen
 - [ ] CORS ist konfiguriert und funktioniert
 - [ ] HTTP-Interceptors sind in Angular registriert
+- [ ] Role-Guards leiten basierend auf JWT-Rolle korrekt weiter
 - [ ] Static File Serving funktioniert in Production-Build
+- [ ] Angular-Routing funktioniert mit Client-Side-Routing
 - [ ] README.md ist vollständig und Anweisungen funktionieren
 - [ ] Code-Review durch zweiten Entwickler erfolgt
 - [ ] Keine Secrets im Git-Repository committed
