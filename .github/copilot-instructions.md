@@ -2,7 +2,8 @@
 
 These instructions are **mandatory** for all AI-generated code in this repository.
 They are optimized for **GitHub Copilot using Claude Sonnet 4.5**.
-
+Wenn du nach user stories und featues gefragt wirst generiere diese ausnahmslos in md files in den ordner `/requirements` basierend auf dem template in der datei `/requirements/feature-template.md`
+Ignoriere die Datei `/requirements/prompts.md` komplett.
 ---
 
 ## Backend

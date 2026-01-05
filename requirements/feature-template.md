@@ -1,0 +1,23 @@
+# Feature: my feature
+Feature text
+## Acceptance Criteria:
+ - criteria 1
+ - criteria 2
+ - ....
+
+## User Story: my story 1
+As a xyz ... so that ...
+### Acceptance Criteria:
+ - criteria 1
+ - criteria 2
+ - ....
+
+## User Story: my story 2
+As a xyz ... so that ...
+### Acceptance Criteria:
+ - criteria 1
+ - criteria 2
+ - ....
+
+ ## User Stroy: ...
+ ...
