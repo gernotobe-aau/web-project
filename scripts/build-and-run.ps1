@@ -39,9 +39,9 @@ $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
 
 Write-Host ""
-Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║   Food Delivery Platform - Build      ║" -ForegroundColor Cyan
-Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "   Food Delivery Platform - Build      " -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Mode: $Mode" -ForegroundColor Yellow
 Write-Host "Project Root: $projectRoot" -ForegroundColor Gray
@@ -54,62 +54,62 @@ function Test-Command($command) {
 }
 
 # Validate prerequisites
-Write-Host "→ Checking prerequisites..." -ForegroundColor Cyan
+Write-Host "-> Checking prerequisites..." -ForegroundColor Cyan
 
 if (-not (Test-Command "node")) {
-    Write-Host "✗ Node.js is not installed" -ForegroundColor Red
+    Write-Host "X Node.js is not installed" -ForegroundColor Red
     exit 1
 }
 
 if (-not (Test-Command "npm")) {
-    Write-Host "✗ npm is not installed" -ForegroundColor Red
+    Write-Host "X npm is not installed" -ForegroundColor Red
     exit 1
 }
 
-Write-Host "✓ Node.js and npm are installed" -ForegroundColor Green
+Write-Host "[OK] Node.js and npm are installed" -ForegroundColor Green
 
 # Development Mode
 if ($Mode -eq "Development") {
     Write-Host ""
-    Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "=======================================" -ForegroundColor Cyan
     Write-Host "  Starting Development Mode" -ForegroundColor Cyan
-    Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "=======================================" -ForegroundColor Cyan
     Write-Host ""
     
     # Check if .env exists in backend
     $envPath = Join-Path $projectRoot "backend\.env"
     if (-not (Test-Path $envPath)) {
-        Write-Host "⚠ No .env file found in backend/" -ForegroundColor Yellow
+        Write-Host "! No .env file found in backend/" -ForegroundColor Yellow
         Write-Host "  Creating .env from .env.example..." -ForegroundColor Yellow
         Copy-Item (Join-Path $projectRoot "backend\.env.example") $envPath
-        Write-Host "✓ Created .env file" -ForegroundColor Green
+        Write-Host "[OK] Created .env file" -ForegroundColor Green
         Write-Host "  Please review and update the .env file if needed!" -ForegroundColor Yellow
         Write-Host ""
     }
     
     # Install dependencies if needed
-    Write-Host "→ Checking backend dependencies..." -ForegroundColor Cyan
+    Write-Host "-> Checking backend dependencies..." -ForegroundColor Cyan
     $backendNodeModules = Join-Path $projectRoot "backend\node_modules"
     if (-not (Test-Path $backendNodeModules)) {
         Write-Host "  Installing backend dependencies..." -ForegroundColor Yellow
         Push-Location (Join-Path $projectRoot "backend")
         npm install
         Pop-Location
-        Write-Host "✓ Backend dependencies installed" -ForegroundColor Green
+        Write-Host "[OK] Backend dependencies installed" -ForegroundColor Green
     } else {
-        Write-Host "✓ Backend dependencies OK" -ForegroundColor Green
+        Write-Host "[OK] Backend dependencies OK" -ForegroundColor Green
     }
     
-    Write-Host "→ Checking frontend dependencies..." -ForegroundColor Cyan
+    Write-Host "-> Checking frontend dependencies..." -ForegroundColor Cyan
     $frontendNodeModules = Join-Path $projectRoot "frontend\node_modules"
     if (-not (Test-Path $frontendNodeModules)) {
         Write-Host "  Installing frontend dependencies..." -ForegroundColor Yellow
         Push-Location (Join-Path $projectRoot "frontend")
         npm install
         Pop-Location
-        Write-Host "✓ Frontend dependencies installed" -ForegroundColor Green
+        Write-Host "[OK] Frontend dependencies installed" -ForegroundColor Green
     } else {
-        Write-Host "✓ Frontend dependencies OK" -ForegroundColor Green
+        Write-Host "[OK] Frontend dependencies OK" -ForegroundColor Green
     }
     
     Write-Host ""
@@ -128,7 +128,7 @@ if ($Mode -eq "Development") {
     $frontendPath = Join-Path $projectRoot "frontend"
     Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$frontendPath'; npm start"
     
-    Write-Host "✓ Services started in separate windows" -ForegroundColor Green
+    Write-Host "[OK] Services started in separate windows" -ForegroundColor Green
     Write-Host ""
     Write-Host "Close the terminal windows to stop the services" -ForegroundColor Yellow
 }
@@ -136,9 +136,9 @@ if ($Mode -eq "Development") {
 # Deployment Mode
 elseif ($Mode -eq "Deployment") {
     Write-Host ""
-    Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "=======================================" -ForegroundColor Cyan
     Write-Host "  Starting Deployment Build" -ForegroundColor Cyan
-    Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "=======================================" -ForegroundColor Cyan
     Write-Host ""
     
     $deployPath = Join-Path $projectRoot "deploy"
@@ -147,23 +147,23 @@ elseif ($Mode -eq "Deployment") {
     $publicPath = Join-Path $backendDeployPath "public"
     
     # Clean and create deploy directory
-    Write-Host "→ Preparing deployment directory..." -ForegroundColor Cyan
+    Write-Host "-> Preparing deployment directory..." -ForegroundColor Cyan
     if (Test-Path $deployPath) {
         Remove-Item $deployPath -Recurse -Force
     }
     New-Item -ItemType Directory -Path $serverPath -Force | Out-Null
     New-Item -ItemType Directory -Path $publicPath -Force | Out-Null
-    Write-Host "✓ Deployment directory prepared" -ForegroundColor Green
+    Write-Host "[OK] Deployment directory prepared" -ForegroundColor Green
     
     # Build frontend
     Write-Host ""
-    Write-Host "→ Building frontend (production)..." -ForegroundColor Cyan
+    Write-Host "-> Building frontend (production)..." -ForegroundColor Cyan
     Push-Location (Join-Path $projectRoot "frontend")
     try {
         npm run build -- --configuration=production
-        Write-Host "✓ Frontend built successfully" -ForegroundColor Green
+        Write-Host "[OK] Frontend built successfully" -ForegroundColor Green
     } catch {
-        Write-Host "✗ Frontend build failed" -ForegroundColor Red
+        Write-Host "X Frontend build failed" -ForegroundColor Red
         Pop-Location
         exit 1
     }
@@ -171,29 +171,31 @@ elseif ($Mode -eq "Deployment") {
     
     # Build backend
     Write-Host ""
-    Write-Host "→ Building backend (production)..." -ForegroundColor Cyan
+    Write-Host "-> Building backend (production)..." -ForegroundColor Cyan
     Push-Location (Join-Path $projectRoot "backend")
     try {
         npm run build
-        Write-Host "✓ Backend built successfully" -ForegroundColor Green
+        Write-Host "[OK] Backend built successfully" -ForegroundColor Green
     } catch {
-        Write-Host "✗ Backend build failed" -ForegroundColor Red
+        Write-Host "X Backend build failed" -ForegroundColor Red
         Pop-Location
         exit 1
     }
+    Pop-Location
     
     # Copy backend files
     Write-Host ""
-    Write-Host "→ Copying backend files..." -ForegroundColor Cyan
+    Write-Host "-> Copying backend files..." -ForegroundColor Cyan
+    Push-Location (Join-Path $projectRoot "backend")
     Copy-Item -Path "dist\*" -Destination $serverPath -Recurse
     Copy-Item -Path "package.json" -Destination $serverPath
     Copy-Item -Path ".env.example" -Destination $serverPath
-    Write-Host "✓ Backend files copied" -ForegroundColor Green
+    Write-Host "[OK] Backend files copied" -ForegroundColor Green
     Pop-Location
     
     # Create start script
     Write-Host ""
-    Write-Host "→ Creating start script..." -ForegroundColor Cyan
+    Write-Host "-> Creating start script..." -ForegroundColor Cyan
     $startScript = @"
 <#
 .SYNOPSIS
@@ -208,15 +210,15 @@ elseif ($Mode -eq "Deployment") {
 `$serverPath = Split-Path -Parent `$PSScriptRoot
 
 Write-Host ""
-Write-Host "╔════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║   Food Delivery Platform - Server     ║" -ForegroundColor Cyan
-Write-Host "╚════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "   Food Delivery Platform - Server     " -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Check .env file
 `$envPath = Join-Path `$serverPath "server\.env"
 if (-not (Test-Path `$envPath)) {
-    Write-Host "⚠ No .env file found!" -ForegroundColor Red
+    Write-Host "! No .env file found!" -ForegroundColor Red
     Write-Host "  Please create .env file in server/ directory" -ForegroundColor Yellow
     Write-Host "  You can use .env.example as a template" -ForegroundColor Yellow
     exit 1
@@ -226,31 +228,31 @@ if (-not (Test-Path `$envPath)) {
 Push-Location (Join-Path `$serverPath "server")
 `$nodeModules = Join-Path (Get-Location) "node_modules"
 if (-not (Test-Path `$nodeModules)) {
-    Write-Host "→ Installing production dependencies..." -ForegroundColor Cyan
+    Write-Host "-> Installing production dependencies..." -ForegroundColor Cyan
     npm install --production
-    Write-Host "✓ Dependencies installed" -ForegroundColor Green
+    Write-Host "[OK] Dependencies installed" -ForegroundColor Green
     Write-Host ""
 }
 
 # Start server
-Write-Host "→ Starting server..." -ForegroundColor Cyan
+Write-Host "-> Starting server..." -ForegroundColor Cyan
 Write-Host ""
 node app.js
 "@
     
     $startScriptPath = Join-Path $backendDeployPath "start-server.ps1"
     $startScript | Out-File -FilePath $startScriptPath -Encoding UTF8
-    Write-Host "✓ Start script created" -ForegroundColor Green
+    Write-Host "[OK] Start script created" -ForegroundColor Green
     
     # Create deployment README
     Write-Host ""
-    Write-Host "→ Creating deployment documentation..." -ForegroundColor Cyan
+    Write-Host "-> Creating deployment documentation..." -ForegroundColor Cyan
     $deployReadme = @"
 # Food Delivery Platform - Deployment
 
 ## Deployment Structure
 
-\`\`\`
+``````
 deploy/backend/
 ├─ server/           (Backend application)
 │  ├─ app.js
@@ -261,22 +263,22 @@ deploy/backend/
 │  └─ ...
 ├─ start-server.ps1  (Start script)
 └─ README.md         (This file)
-\`\`\`
+``````
 
 ## Deployment Steps
 
 ### 1. Configure Environment
 
-Copy `.env.example` to `.env` in the `server/` directory and configure:
+Copy ``.env.example`` to ``.env`` in the ``server/`` directory and configure:
 
-\`\`\`bash
+``````bash
 cd server
 cp .env.example .env
-\`\`\`
+``````
 
-Edit `.env` and set:
-- \`JWT_SECRET\` to a secure random string
-- \`PORT\` (default: 3000)
+Edit ``.env`` and set:
+- ``JWT_SECRET`` to a secure random string
+- ``PORT`` (default: 3000)
 - Other configuration as needed
 
 ### 2. Install Dependencies
@@ -287,18 +289,18 @@ The start script will automatically install production dependencies if needed.
 
 Run the start script:
 
-\`\`\`powershell
+``````powershell
 .\start-server.ps1
-\`\`\`
+``````
 
 The server will:
-- Serve the API at \`http://localhost:3000/api\`
-- Serve the frontend at \`http://localhost:3000\`
+- Serve the API at ``http://localhost:3000/api``
+- Serve the frontend at ``http://localhost:3000``
 
 ### 4. Access Application
 
 Open your browser and navigate to:
-- \`http://localhost:3000\` (or your configured domain)
+- ``http://localhost:3000`` (or your configured domain)
 
 ## Production Considerations
 
@@ -328,13 +330,13 @@ For more information, see the main project README.md
     
     $deployReadmePath = Join-Path $backendDeployPath "README.md"
     $deployReadme | Out-File -FilePath $deployReadmePath -Encoding UTF8
-    Write-Host "✓ Deployment documentation created" -ForegroundColor Green
+    Write-Host "[OK] Deployment documentation created" -ForegroundColor Green
     
     # Summary
     Write-Host ""
-    Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "=======================================" -ForegroundColor Cyan
     Write-Host "  Deployment Build Complete!" -ForegroundColor Green
-    Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "=======================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Deployment location: $deployPath" -ForegroundColor Yellow
     Write-Host ""
