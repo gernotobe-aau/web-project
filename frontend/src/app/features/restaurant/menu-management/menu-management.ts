@@ -73,25 +73,39 @@ export class MenuManagementComponent implements OnInit {
     });
   }
 
+
   onCategoryExpanded(category: CategoryWithDishes): void {
-    if (category.dishes === undefined && !category.loading) {
-      category.loading = true;
-      this.menuService.getDishes(category.id).subscribe({
-        next: (dishes) => {
-          category.dishes = dishes;
-          category.loading = false;
+    const foundCategory = this.categories.find(c => c.id === category.id);
+    if (!foundCategory || foundCategory.dishes !== undefined || foundCategory.loading) return;
+
+    foundCategory.loading = true;
+    this.categories = [...this.categories];
+    this.cdr.detectChanges();
+    
+    this.menuService.getDishes(category.id).subscribe({
+      next: (dishes) => {
+        const cat = this.categories.find(c => c.id === category.id);
+        if (cat) {
+          cat.dishes = dishes;
+          cat.loading = false;
+          this.categories = [...this.categories];
           this.cdr.detectChanges();
-        },
-        error: (err) => {
-          category.loading = false;
+        }
+      },
+      error: (err) => {
+        const cat = this.categories.find(c => c.id === category.id);
+        if (cat) {
+          cat.loading = false;
+          this.categories = [...this.categories];
           this.cdr.detectChanges();
-          this.snackBar.open('Fehler beim Laden der Gerichte', 'Schließen', {
-            duration: 3000,
-          });
-        },
-      });
-    }
+        }
+        this.snackBar.open('Fehler beim Laden der Gerichte', 'Schließen', {
+          duration: 3000,
+        });
+      },
+    });
   }
+
 
   openCreateCategoryDialog(): void {
     const dialogRef = this.dialog.open(CategoryDialogComponent, {
@@ -249,5 +263,14 @@ export class MenuManagementComponent implements OnInit {
     // Backend serves files at /uploads/* - construct full URL
     const baseUrl = environment.apiBaseUrl.replace('/api', '');
     return `${baseUrl}${dish.photo_url}`;
+  }
+
+  // TrackBy functions for better performance and reliable rendering
+  trackByCategory(index: number, category: CategoryWithDishes): number {
+    return category.id;
+  }
+
+  trackByDish(index: number, dish: Dish): number {
+    return dish.id;
   }
 }
