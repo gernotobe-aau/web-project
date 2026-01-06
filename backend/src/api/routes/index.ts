@@ -6,9 +6,14 @@ import restaurantProfileRoutes from './restaurant-profile.routes';
 
 const router = Router();
 
+
+// Public restaurant browsing (must come before any /restaurants/profile or protected route)
+router.use('/', restaurantRoutes);
+
+// Auth-protected restaurant profile management
+router.use('/restaurants', restaurantProfileRoutes);
+
 router.use('/auth', authRoutes);
 router.use('/menu', menuRoutes);
-router.use('/restaurants', restaurantProfileRoutes);
-router.use('/', restaurantRoutes);
 
 export default router;

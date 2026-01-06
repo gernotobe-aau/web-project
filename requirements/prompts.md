@@ -44,3 +44,11 @@ Mach ordentliche und genügend User Stories mit genügend Informationen.
 
 # implemntierung 
 du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0005-restaurant-profile-management.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
+
+# Datenbank Erweiterung für Bestellungen etc
+Du bist senior product owner eine agilen entwickler teams der ein feature einem entwickler team bereistellen muss. Das Feature muss ohne rückfragen der entwickler implentierbar sein, daher achte auf vollsätndigkeit und konsisten. 
+Ein Teil des Projektes ist schon umgesetzt. Login,... Nun muss die derzeitige Datenbank erweitert werden, damit Bestellungen und alle anderen Informationen vorahnden sind, weil das Team sich dann aufteilt. Erstelle ein Datenbank Konzept mit User Story und erklärung wie man damit alle Fälle bzw den Funktionsumfang des Anforderung.md erfüllt.
+Alle weiteren Details werden in späteren iterationen implmentiert. Berücksichtige die /requieremtns/Anforderung.md um die infomrationnen aus den instrciton file penibel.
+
+# implemntierung 
+du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0006-database-extension-orders-and-reviews.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
