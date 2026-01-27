@@ -7,7 +7,7 @@
 -- Create new dishes table with display_order
 CREATE TABLE IF NOT EXISTS dishes_new (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    restaurant_id INTEGER NOT NULL,
+    restaurant_id TEXT NOT NULL,
     category_id INTEGER,
     name TEXT NOT NULL,
     description TEXT,

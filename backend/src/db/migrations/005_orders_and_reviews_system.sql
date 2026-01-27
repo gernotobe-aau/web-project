@@ -19,8 +19,8 @@ ALTER TABLE dishes ADD COLUMN cooking_time_minutes INTEGER DEFAULT 15 NOT NULL C
 
 CREATE TABLE IF NOT EXISTS orders (
     id TEXT PRIMARY KEY,  -- UUID as TEXT
-    customer_id INTEGER NOT NULL,
-    restaurant_id INTEGER NOT NULL,
+    customer_id TEXT NOT NULL,
+    restaurant_id TEXT NOT NULL,
     
     -- Order status
     order_status TEXT NOT NULL DEFAULT 'pending' CHECK(order_status IN ('pending', 'accepted', 'rejected', 'preparing', 'ready', 'delivering', 'delivered', 'cancelled')),
@@ -36,6 +36,9 @@ CREATE TABLE IF NOT EXISTS orders (
     
     -- Delivery address (copied from customer at order time)
     delivery_street TEXT NOT NULL,
+    delivery_house_number TEXT NOT NULL,
+    delivery_staircase TEXT,
+    delivery_door TEXT,
     delivery_postal_code TEXT NOT NULL,
     delivery_city TEXT NOT NULL,
     
@@ -138,7 +141,7 @@ CREATE TABLE IF NOT EXISTS vouchers (
     usage_count INTEGER NOT NULL DEFAULT 0 CHECK(usage_count >= 0),
     
     -- Restaurant-specific (NULL = global voucher)
-    restaurant_id INTEGER,
+    restaurant_id TEXT,
     
     -- Description
     description TEXT,
@@ -164,9 +167,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_vouchers_code ON vouchers(code COLLATE NOC
 
 CREATE TABLE IF NOT EXISTS restaurant_reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    restaurant_id INTEGER NOT NULL,
-    customer_id INTEGER NOT NULL,
-    order_id INTEGER,  -- Optional: link to order
+    restaurant_id TEXT NOT NULL,
+    customer_id TEXT NOT NULL,
+    order_id TEXT,  -- Optional: link to order
     
     -- Rating and comment
     rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),

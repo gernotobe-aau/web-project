@@ -2,7 +2,7 @@ import { Database } from 'sqlite3';
 
 export interface Dish {
   id: number;
-  restaurant_id: number;
+  restaurant_id: string;
   category_id: number | null;
   name: string;
   description: string | null;
@@ -14,7 +14,7 @@ export interface Dish {
 }
 
 export interface CreateDishData {
-  restaurant_id: number;
+  restaurant_id: string;
   category_id?: number | null;
   name: string;
   description?: string | null;

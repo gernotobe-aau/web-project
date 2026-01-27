@@ -2,7 +2,7 @@ import { Database } from 'sqlite3';
 
 export interface Category {
   id: number;
-  restaurant_id: number;
+  restaurant_id: string;
   name: string;
   display_order: number;
   created_at: string;
@@ -14,7 +14,7 @@ export interface CategoryWithDishCount extends Category {
 }
 
 export interface CreateCategoryData {
-  restaurant_id: number;
+  restaurant_id: string;
   name: string;
   display_order?: number;
 }

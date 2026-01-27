@@ -4,7 +4,7 @@
 -- Categories table
 CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    restaurant_id INTEGER NOT NULL,
+    restaurant_id TEXT NOT NULL,
     name TEXT NOT NULL,
     display_order INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -18,7 +18,7 @@ CREATE INDEX IF NOT EXISTS idx_categories_restaurant_order ON categories(restaur
 -- Dishes table
 CREATE TABLE IF NOT EXISTS dishes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    restaurant_id INTEGER NOT NULL,
+    restaurant_id TEXT NOT NULL,
     category_id INTEGER,
     name TEXT NOT NULL,
     description TEXT,
