@@ -12,7 +12,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
 $BackendDir = Join-Path $ProjectRoot "backend"
 $FrontendDir = Join-Path $ProjectRoot "frontend"
-$DbPath = Join-Path $BackendDir "data\app.db"
+$DbPath = Join-Path $BackendDir "database.sqlite"
 
 function Write-Step {
     param([string]$Message)
