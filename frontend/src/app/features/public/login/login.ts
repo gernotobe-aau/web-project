@@ -28,6 +28,28 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
+
+    // Clear incorrect errors when user types
+    this.loginForm.valueChanges.subscribe(() => {
+      const emailControl = this.loginForm.get('email');
+      const passwordControl = this.loginForm.get('password');
+      
+      if (emailControl?.hasError('incorrect')) {
+        emailControl.setErrors(
+          emailControl.hasError('required') || emailControl.hasError('email') 
+            ? { required: emailControl.hasError('required'), email: emailControl.hasError('email') } 
+            : null
+        );
+      }
+      
+      if (passwordControl?.hasError('incorrect')) {
+        passwordControl.setErrors(
+          passwordControl.hasError('required') 
+            ? { required: true } 
+            : null
+        );
+      }
+    });
   }
 
   togglePasswordVisibility(): void {
@@ -35,6 +57,26 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
+    // Clear previous incorrect errors before validating
+    const emailControl = this.loginForm.get('email');
+    const passwordControl = this.loginForm.get('password');
+    
+    if (emailControl?.hasError('incorrect')) {
+      emailControl.setErrors(
+        emailControl.hasError('required') || emailControl.hasError('email') 
+          ? { required: emailControl.hasError('required'), email: emailControl.hasError('email') } 
+          : null
+      );
+    }
+    
+    if (passwordControl?.hasError('incorrect')) {
+      passwordControl.setErrors(
+        passwordControl.hasError('required') 
+          ? { required: true } 
+          : null
+      );
+    }
+
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
