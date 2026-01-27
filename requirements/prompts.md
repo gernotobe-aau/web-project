@@ -53,10 +53,19 @@ Alle weiteren Details werden in späteren iterationen implmentiert. Berücksicht
 # implemntierung 
 du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0006-database-extension-orders-and-reviews.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
 
-# Datenbank Erweiterung für Bestellungen etc
+# Rest API
 Du bist senior product owner eine agilen entwickler teams der ein feature einem entwickler team bereistellen muss. Das Feature muss ohne rückfragen der entwickler implentierbar sein, daher achte auf vollsätndigkeit und konsisten. 
 Ein Teil des Projektes ist schon umgesetzt. Login, Datenbank, Restaunowner,... In dieser Iteration geht es um die API, hier sollten alle Methoden definiert ewrden wie z.b. Bestellung aufgeben, aber auch die ganzen Reaktionen des Restaunt Owners (bestllung annehmen, ...). Nachdem dein Kollege Krank ist, musst du es so vorbereiten, dass man mit Postman/... eine Bestellung aufgeben kann um das ganze zu testen, erzeuge  User Story und erklärung wie man damit alle Fälle bzw den Funktionsumfang des Anforderung.md erfüllt.
 Alle weiteren Details werden in späteren iterationen implmentiert. Berücksichtige die /requieremtns/Anforderung.md um die infomrationnen aus den instruction file penibel.
 
 # implemntierung 
 du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0007-order-managment-api.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
+
+# Restaurantübe
+Du bist senior product owner eine agilen entwickler teams der ein feature einem entwickler team bereistellen muss. Das Feature muss ohne rückfragen der entwickler implentierbar sein, daher achte auf vollsätndigkeit und konsisten. 
+Ein Teil des Projektes ist schon umgesetzt. Login, Datenbank, Restaunowner, Rest API,.. In dieser Iteration machst du die Restaurant Details View für den Costumer, es sollen die Kategorien und Gerichte in richterger Reihenfolge angezeigt werden. Es soll das Bild angezeigt werden falls gespeichert, sonst ein Platzhalter. Man kann dann Gerichte den WarenKorb hinzufügen. Wenn man die SEite verlässt wird der Warenkorb gelert. Erzeuge  User Story und erklärung wie man damit alle Fälle bzw den Funktionsumfang des Anforderung.md erfüllt.
+Alle weiteren Details werden in späteren iterationen implmentiert. Berücksichtige die /requieremtns/Anforderung.md um die infomrationnen aus den instruction file penibel.
+
+# implemntierung 
+du bist ein senior full stack web developer in einem agilen entwicklungs team. Deine aufgabe ist die implementierung des features in der datei /requiremnts/feature-0008-order-overwie-restauant-owner.md. Dies ist die aufgabe für diese interation, alle weiteren funktionalitäten werden in zukünfigen sprints implementiert, für die vollständige sicht kannst du in das /requirements/Anforderung.md hineinschauen.
+

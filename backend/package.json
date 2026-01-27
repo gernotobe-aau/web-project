@@ -8,7 +8,7 @@
     "build": "tsc && node -e \"require('fs').cpSync('src/db/migrations', 'dist/db/migrations', {recursive: true})\"",
     "start": "node dist/app.js",
     "migrate": "ts-node src/db/migration-runner.ts",
-    "seed:orders": "ts-node src/db/seed-order-test-data.ts"
+    "seed:orders": "ts-node src/db/seed-test-data.ts"
   },
   "keywords": [
     "food-delivery",
