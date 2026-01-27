@@ -50,4 +50,12 @@ export class RestaurantCardComponent {
     const addr = this.restaurant.address;
     return `${addr.street} ${addr.houseNumber}, ${addr.postalCode} ${addr.city}`;
   }
+
+  /**
+   * Capitalize first letter of category for display
+   */
+  capitalizeCategory(category: string): string {
+    if (!category) return '';
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  }
 }

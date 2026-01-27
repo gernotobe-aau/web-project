@@ -40,6 +40,4 @@ router.get('/categories', async (req: Request, res: Response) => {
   }
 });
 
-console.log('Restaurant routes registered: /restaurants, /categories');
-
 export default router;

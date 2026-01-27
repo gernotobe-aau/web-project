@@ -51,29 +51,20 @@ export const authService = new AuthService();
  * Express middleware to require authentication
  */
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  console.log('[requireAuth] Checking authorization header...');
   const authHeader = req.headers.authorization;
-  console.log('[requireAuth] Auth header:', authHeader ? 'exists' : 'missing');
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.log('[requireAuth] No valid auth header found');
     return res.status(401).json({ message: 'Unauthorized: No token provided' });
   }
 
   const token = authHeader.substring(7);
-  console.log('[requireAuth] Token extracted:', token.substring(0, 20) + '...');
-  
   const payload = authService.verifyToken(token);
-  console.log('[requireAuth] Token verification result:', payload ? 'valid' : 'invalid');
-  console.log('[requireAuth] Payload:', payload);
 
   if (!payload) {
-    console.log('[requireAuth] Invalid token');
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
   }
 
   // Attach user info to request
   (req as any).user = payload;
-  console.log('[requireAuth] User attached to request:', (req as any).user);
   next();
 }

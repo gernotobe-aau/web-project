@@ -9,6 +9,7 @@ import { ForbiddenComponent } from './features/public/forbidden/forbidden';
 import { RestaurantDetailComponent } from './features/public/restaurant-detail/restaurant-detail.component';
 import { MenuManagementComponent } from './features/restaurant/menu-management/menu-management';
 import { ProfileComponent } from './features/restaurant/profile/profile';
+import { OrderOverviewComponent } from './features/restaurant/order-overview/order-overview.component';
 
 export const routes: Routes = [
   // Public routes
@@ -26,7 +27,8 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'menu-management', pathMatch: 'full' },
       { path: 'menu-management', component: MenuManagementComponent },
-      { path: 'profile', component: ProfileComponent }
+      { path: 'profile', component: ProfileComponent },
+      { path: 'orders', component: OrderOverviewComponent }
     ]
   },
 

@@ -9,7 +9,7 @@
     <div class="categories">
       <mat-chip-set>
         <mat-chip *ngFor="let category of restaurant.categories">
-          {{ category }}
+          {{ capitalizeCategory(category) }}
         </mat-chip>
       </mat-chip-set>
     </div>

@@ -86,12 +86,12 @@ export class OrderController {
   };
 
   /**
-   * POST /api/orders/:id/accept - Accept an order (Owner only)
+   * POST /api/restaurants/:restaurantId/orders/:orderId/accept - Accept an order (Owner only)
    */
   acceptOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const user = (req as any).user;
-      const orderId = req.params.id;
+      const orderId = req.params.orderId;
 
       const order = await this.orderService.acceptOrder(orderId, user.sub);
 
@@ -102,12 +102,12 @@ export class OrderController {
   };
 
   /**
-   * POST /api/orders/:id/reject - Reject an order (Owner only)
+   * POST /api/restaurants/:restaurantId/orders/:orderId/reject - Reject an order (Owner only)
    */
   rejectOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const user = (req as any).user;
-      const orderId = req.params.id;
+      const orderId = req.params.orderId;
       const { reason } = req.body;
 
       const order = await this.orderService.rejectOrder(orderId, user.sub, reason);
@@ -119,12 +119,12 @@ export class OrderController {
   };
 
   /**
-   * PATCH /api/orders/:id/status - Update order status (Owner only)
+   * PATCH /api/restaurants/:restaurantId/orders/:orderId/status - Update order status (Owner only)
    */
   updateOrderStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const user = (req as any).user;
-      const orderId = req.params.id;
+      const orderId = req.params.orderId;
       const { status, notes } = req.body;
 
       if (!status) {

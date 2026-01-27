@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Bestellung ablehnen</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Möchten Sie diese Bestellung wirklich ablehnen? Der Kunde wird darüber informiert.
+  </p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Grund (optional)</mat-label>
+    <textarea 
+      matInput 
+      [(ngModel)]="reason"
+      [maxlength]="maxLength"
+      rows="4"
+      placeholder="Z.B. Zu viele Bestellungen, Zutaten nicht verfügbar..."
+      cdkTextareaAutosize
+      cdkAutosizeMinRows="4"
+      cdkAutosizeMaxRows="8">
+    </textarea>
+    <mat-hint align="end">{{ remainingChars }} / {{ maxLength }}</mat-hint>
+  </mat-form-field>
+
+  <p class="warning">
+    <mat-icon>warning</mat-icon>
+    Diese Aktion kann nicht rückgängig gemacht werden.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-raised-button color="warn" (click)="onConfirm()">
+    <mat-icon>close</mat-icon>
+    Ablehnen
+  </button>
+</mat-dialog-actions>

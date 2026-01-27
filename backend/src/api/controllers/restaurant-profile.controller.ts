@@ -10,14 +10,10 @@ export class RestaurantProfileController {
    */
   async getProfile(req: Request, res: Response): Promise<void> {
     try {
-      console.log('[RestaurantProfileController] getProfile called');
       const user = (req as any).user;
-      console.log('[RestaurantProfileController] User from request:', user);
       const ownerId = user?.sub || user?.userId;
-      console.log('[RestaurantProfileController] Owner ID:', ownerId);
 
       if (!ownerId) {
-        console.log('[RestaurantProfileController] No owner ID found, returning 401');
         res.status(401).json({ message: 'Nicht authentifiziert' });
         return;
       }

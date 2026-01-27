@@ -44,24 +44,24 @@ async function createCustomers(db: sqlite3.Database): Promise<void> {
       lastName: 'Mustermann',
       email: 'max.mustermann@test.com',
       birthDate: '1995-05-15',
-      deliveryStreet: 'Teststraße',
-      deliveryHouseNumber: '1',
+      deliveryStreet: 'Widmanngasse',
+      deliveryHouseNumber: '12',
       deliveryStaircase: null,
       deliveryDoor: null,
-      deliveryPostalCode: '1010',
-      deliveryCity: 'Wien'
+      deliveryPostalCode: '9500',
+      deliveryCity: 'Villach'
     },
     {
       firstName: 'Anna',
       lastName: 'Schmidt',
       email: 'anna.schmidt@test.com',
       birthDate: '1998-08-22',
-      deliveryStreet: 'Beispielweg',
-      deliveryHouseNumber: '5',
+      deliveryStreet: 'Peraustraße',
+      deliveryHouseNumber: '45',
       deliveryStaircase: '2',
       deliveryDoor: '15',
-      deliveryPostalCode: '1020',
-      deliveryCity: 'Wien'
+      deliveryPostalCode: '9500',
+      deliveryCity: 'Villach'
     }
   ];
 
@@ -87,7 +87,13 @@ async function createCustomers(db: sqlite3.Database): Promise<void> {
           if (err) {
             if (err.message.includes('UNIQUE constraint failed')) {
               console.log(`  ↪ Customer ${customer.email} already exists (skipped)`);
-              resolve();
+              // Load existing customer ID
+              db.get('SELECT id FROM customers WHERE email = ?', [customer.email], (err, row: any) => {
+                if (row) {
+                  testData.customers.push({ id: row.id, email: customer.email, password: 'Test1234!' });
+                }
+                resolve();
+              });
             } else {
               reject(err);
             }
@@ -117,6 +123,18 @@ async function createRestaurantOwners(db: sqlite3.Database): Promise<void> {
       lastName: 'Burger',
       email: 'owner@burgerpalace.com',
       birthDate: '1975-11-25'
+    },
+    {
+      firstName: 'Yuki',
+      lastName: 'Tanaka',
+      email: 'owner@sushidreams.com',
+      birthDate: '1985-07-15'
+    },
+    {
+      firstName: 'Raj',
+      lastName: 'Patel',
+      email: 'owner@tajmahal.com',
+      birthDate: '1978-04-20'
     }
   ];
 
@@ -164,24 +182,46 @@ async function createRestaurants(db: sqlite3.Database): Promise<void> {
     {
       name: 'Pizza Mario',
       ownerEmail: 'owner@pizzamario.com',
-      street: 'Kärtner Straße',
-      houseNumber: '10',
-      postalCode: '1010',
-      city: 'Wien',
-      contactPhone: '+43 1 234567',
+      street: 'Hauptplatz',
+      houseNumber: '12',
+      postalCode: '9500',
+      city: 'Villach',
+      contactPhone: '+43 4242 234567',
       contactEmail: 'info@pizzamario.com',
       categories: ['italienisch', 'pizza']
     },
     {
       name: 'Burger Palace',
       ownerEmail: 'owner@burgerpalace.com',
-      street: 'Mariahilfer Straße',
-      houseNumber: '50',
-      postalCode: '1070',
-      city: 'Wien',
-      contactPhone: '+43 1 345678',
+      street: 'Italiener Straße',
+      houseNumber: '25',
+      postalCode: '9500',
+      city: 'Villach',
+      contactPhone: '+43 4242 345678',
       contactEmail: 'info@burgerpalace.com',
       categories: ['amerikanisch', 'burger']
+    },
+    {
+      name: 'Sushi Dreams',
+      ownerEmail: 'owner@sushidreams.com',
+      street: 'Bahnhofstraße',
+      houseNumber: '8',
+      postalCode: '9500',
+      city: 'Villach',
+      contactPhone: '+43 4242 456789',
+      contactEmail: 'info@sushidreams.com',
+      categories: ['asiatisch', 'sushi']
+    },
+    {
+      name: 'Taj Mahal',
+      ownerEmail: 'owner@tajmahal.com',
+      street: 'Klagenfurter Straße',
+      houseNumber: '45',
+      postalCode: '9500',
+      city: 'Villach',
+      contactPhone: '+43 4242 567890',
+      contactEmail: 'info@tajmahal.com',
+      categories: ['indisch', 'vegetarisch']
     }
   ];
 
@@ -267,17 +307,38 @@ async function createDishes(db: sqlite3.Database): Promise<void> {
 
   const pizzaMario = testData.restaurants.find(r => r.name === 'Pizza Mario');
   const burgerPalace = testData.restaurants.find(r => r.name === 'Burger Palace');
+  const sushiDreams = testData.restaurants.find(r => r.name === 'Sushi Dreams');
+  const tajMahal = testData.restaurants.find(r => r.name === 'Taj Mahal');
 
-  if (!pizzaMario || !burgerPalace) {
+  if (!pizzaMario || !burgerPalace || !sushiDreams || !tajMahal) {
     console.log('  ⚠ Restaurants not found, skipping dishes');
     return;
   }
 
   // Create categories
   const categories = [
+    // Pizza Mario
     { restaurantId: pizzaMario.id, name: 'Pizzen', displayOrder: 1 },
     { restaurantId: pizzaMario.id, name: 'Pasta', displayOrder: 2 },
-    { restaurantId: burgerPalace.id, name: 'Burgers', displayOrder: 1 }
+    { restaurantId: pizzaMario.id, name: 'Salate', displayOrder: 3 },
+    { restaurantId: pizzaMario.id, name: 'Desserts', displayOrder: 4 },
+    
+    // Burger Palace
+    { restaurantId: burgerPalace.id, name: 'Burgers', displayOrder: 1 },
+    { restaurantId: burgerPalace.id, name: 'Sides', displayOrder: 2 },
+    { restaurantId: burgerPalace.id, name: 'Salads', displayOrder: 3 },
+    { restaurantId: burgerPalace.id, name: 'Shakes', displayOrder: 4 },
+    
+    // Sushi Dreams
+    { restaurantId: sushiDreams.id, name: 'Nigiri', displayOrder: 1 },
+    { restaurantId: sushiDreams.id, name: 'Maki', displayOrder: 2 },
+    { restaurantId: sushiDreams.id, name: 'Ramen', displayOrder: 3 },
+    
+    // Taj Mahal
+    { restaurantId: tajMahal.id, name: 'Curry', displayOrder: 1 },
+    { restaurantId: tajMahal.id, name: 'Tandoori', displayOrder: 2 },
+    { restaurantId: tajMahal.id, name: 'Beilagen', displayOrder: 3 },
+    { restaurantId: tajMahal.id, name: 'Getränke', displayOrder: 4 }
   ];
 
   const categoryIds: { [key: string]: number } = {};
@@ -317,42 +378,88 @@ async function createDishes(db: sqlite3.Database): Promise<void> {
 
   // Create dishes
   const dishes = [
-    {
-      restaurantId: pizzaMario.id,
-      categoryName: 'Pizzen',
-      name: 'Pizza Margherita',
-      description: 'Klassische Pizza mit Tomatensauce und Mozzarella',
-      price: 8.00,
-      cookingTimeMinutes: 15,
-      displayOrder: 1
-    },
-    {
-      restaurantId: pizzaMario.id,
-      categoryName: 'Pizzen',
-      name: 'Pizza Salami',
-      description: 'Pizza mit Salami',
-      price: 10.00,
-      cookingTimeMinutes: 15,
-      displayOrder: 2
-    },
-    {
-      restaurantId: pizzaMario.id,
-      categoryName: 'Pasta',
-      name: 'Spaghetti Carbonara',
-      description: 'Spaghetti mit Ei, Speck und Parmesan',
-      price: 12.00,
-      cookingTimeMinutes: 20,
-      displayOrder: 1
-    },
-    {
-      restaurantId: burgerPalace.id,
-      categoryName: 'Burgers',
-      name: 'Classic Cheeseburger',
-      description: 'Beef Patty mit Käse, Salat und Tomaten',
-      price: 9.00,
-      cookingTimeMinutes: 10,
-      displayOrder: 1
-    }
+    // Pizza Mario - Pizzen
+    { restaurantId: pizzaMario.id, categoryName: 'Pizzen', name: 'Pizza Margherita', description: 'Klassische Pizza mit Tomatensauce und Mozzarella', price: 8.50, cookingTimeMinutes: 15, displayOrder: 1 },
+    { restaurantId: pizzaMario.id, categoryName: 'Pizzen', name: 'Pizza Salami', description: 'Mit italienischer Salami', price: 10.00, cookingTimeMinutes: 15, displayOrder: 2 },
+    { restaurantId: pizzaMario.id, categoryName: 'Pizzen', name: 'Pizza Prosciutto', description: 'Mit Schinken und Champignons', price: 11.00, cookingTimeMinutes: 15, displayOrder: 3 },
+    { restaurantId: pizzaMario.id, categoryName: 'Pizzen', name: 'Pizza Quattro Formaggi', description: 'Vier Käsesorten: Mozzarella, Gorgonzola, Parmesan, Emmentaler', price: 12.50, cookingTimeMinutes: 18, displayOrder: 4 },
+    { restaurantId: pizzaMario.id, categoryName: 'Pizzen', name: 'Pizza Diavola', description: 'Scharfe Salami, Peperoni, Chili', price: 11.50, cookingTimeMinutes: 15, displayOrder: 5 },
+    
+    // Pizza Mario - Pasta
+    { restaurantId: pizzaMario.id, categoryName: 'Pasta', name: 'Spaghetti Carbonara', description: 'Mit Ei, Speck und Parmesan', price: 12.00, cookingTimeMinutes: 20, displayOrder: 1 },
+    { restaurantId: pizzaMario.id, categoryName: 'Pasta', name: 'Penne Arrabiata', description: 'Scharfe Tomatensauce mit Knoblauch', price: 10.50, cookingTimeMinutes: 18, displayOrder: 2 },
+    { restaurantId: pizzaMario.id, categoryName: 'Pasta', name: 'Lasagne Bolognese', description: 'Klassische Lasagne mit Hackfleischsauce', price: 13.50, cookingTimeMinutes: 25, displayOrder: 3 },
+    { restaurantId: pizzaMario.id, categoryName: 'Pasta', name: 'Tagliatelle al Salmone', description: 'Bandnudeln mit Lachs in Sahnesauce', price: 15.00, cookingTimeMinutes: 20, displayOrder: 4 },
+    
+    // Pizza Mario - Salate
+    { restaurantId: pizzaMario.id, categoryName: 'Salate', name: 'Insalata Mista', description: 'Gemischter Salat mit Balsamico-Dressing', price: 6.50, cookingTimeMinutes: 5, displayOrder: 1 },
+    { restaurantId: pizzaMario.id, categoryName: 'Salate', name: 'Caesar Salad', description: 'Römersalat mit Parmesan und Croûtons', price: 9.00, cookingTimeMinutes: 8, displayOrder: 2 },
+    
+    // Pizza Mario - Desserts
+    { restaurantId: pizzaMario.id, categoryName: 'Desserts', name: 'Tiramisu', description: 'Klassisches italienisches Dessert', price: 6.00, cookingTimeMinutes: 1, displayOrder: 1 },
+    { restaurantId: pizzaMario.id, categoryName: 'Desserts', name: 'Panna Cotta', description: 'Mit Erdbeersauce', price: 5.50, cookingTimeMinutes: 1, displayOrder: 2 },
+    
+    // Burger Palace - Burgers
+    { restaurantId: burgerPalace.id, categoryName: 'Burgers', name: 'Classic Cheeseburger', description: 'Beef Patty mit Käse, Salat und Tomaten', price: 9.50, cookingTimeMinutes: 12, displayOrder: 1 },
+    { restaurantId: burgerPalace.id, categoryName: 'Burgers', name: 'Bacon Burger', description: 'Mit knusprigem Bacon und BBQ-Sauce', price: 11.00, cookingTimeMinutes: 15, displayOrder: 2 },
+    { restaurantId: burgerPalace.id, categoryName: 'Burgers', name: 'Double Whopper', description: 'Doppeltes Beef Patty, doppelter Käse', price: 13.50, cookingTimeMinutes: 18, displayOrder: 3 },
+    { restaurantId: burgerPalace.id, categoryName: 'Burgers', name: 'Veggie Burger', description: 'Vegetarisches Patty mit Avocado', price: 10.00, cookingTimeMinutes: 12, displayOrder: 4 },
+    { restaurantId: burgerPalace.id, categoryName: 'Burgers', name: 'Chicken Burger', description: 'Knuspriges Hähnchenfilet mit Mayo', price: 10.50, cookingTimeMinutes: 15, displayOrder: 5 },
+    
+    // Burger Palace - Sides
+    { restaurantId: burgerPalace.id, categoryName: 'Sides', name: 'French Fries', description: 'Klassische Pommes Frites', price: 4.00, cookingTimeMinutes: 8, displayOrder: 1 },
+    { restaurantId: burgerPalace.id, categoryName: 'Sides', name: 'Sweet Potato Fries', description: 'Süßkartoffel Pommes', price: 5.00, cookingTimeMinutes: 10, displayOrder: 2 },
+    { restaurantId: burgerPalace.id, categoryName: 'Sides', name: 'Onion Rings', description: 'Frittierte Zwiebelringe', price: 4.50, cookingTimeMinutes: 8, displayOrder: 3 },
+    { restaurantId: burgerPalace.id, categoryName: 'Sides', name: 'Coleslaw', description: 'Krautsalat', price: 3.50, cookingTimeMinutes: 1, displayOrder: 4 },
+    
+    // Burger Palace - Salads
+    { restaurantId: burgerPalace.id, categoryName: 'Salads', name: 'Garden Salad', description: 'Frischer Gartensalat', price: 7.00, cookingTimeMinutes: 5, displayOrder: 1 },
+    { restaurantId: burgerPalace.id, categoryName: 'Salads', name: 'Chicken Caesar', description: 'Mit gegrilltem Hähnchen', price: 10.50, cookingTimeMinutes: 10, displayOrder: 2 },
+    
+    // Burger Palace - Shakes
+    { restaurantId: burgerPalace.id, categoryName: 'Shakes', name: 'Vanilla Shake', description: 'Cremiger Vanille-Milchshake', price: 5.00, cookingTimeMinutes: 3, displayOrder: 1 },
+    { restaurantId: burgerPalace.id, categoryName: 'Shakes', name: 'Chocolate Shake', description: 'Schokoladen-Milchshake', price: 5.00, cookingTimeMinutes: 3, displayOrder: 2 },
+    { restaurantId: burgerPalace.id, categoryName: 'Shakes', name: 'Strawberry Shake', description: 'Erdbeer-Milchshake', price: 5.50, cookingTimeMinutes: 3, displayOrder: 3 },
+    
+    // Sushi Dreams - Nigiri
+    { restaurantId: sushiDreams.id, categoryName: 'Nigiri', name: 'Sake Nigiri', description: 'Lachs Nigiri (2 Stück)', price: 5.50, cookingTimeMinutes: 5, displayOrder: 1 },
+    { restaurantId: sushiDreams.id, categoryName: 'Nigiri', name: 'Maguro Nigiri', description: 'Thunfisch Nigiri (2 Stück)', price: 6.00, cookingTimeMinutes: 5, displayOrder: 2 },
+    { restaurantId: sushiDreams.id, categoryName: 'Nigiri', name: 'Ebi Nigiri', description: 'Garnelen Nigiri (2 Stück)', price: 5.00, cookingTimeMinutes: 5, displayOrder: 3 },
+    { restaurantId: sushiDreams.id, categoryName: 'Nigiri', name: 'Unagi Nigiri', description: 'Aal Nigiri (2 Stück)', price: 7.00, cookingTimeMinutes: 5, displayOrder: 4 },
+    
+    // Sushi Dreams - Maki
+    { restaurantId: sushiDreams.id, categoryName: 'Maki', name: 'California Roll', description: 'Mit Surimi, Avocado und Gurke (8 Stück)', price: 9.00, cookingTimeMinutes: 10, displayOrder: 1 },
+    { restaurantId: sushiDreams.id, categoryName: 'Maki', name: 'Spicy Tuna Roll', description: 'Scharfer Thunfisch (8 Stück)', price: 10.50, cookingTimeMinutes: 10, displayOrder: 2 },
+    { restaurantId: sushiDreams.id, categoryName: 'Maki', name: 'Rainbow Roll', description: 'Mit verschiedenen Fischsorten (8 Stück)', price: 12.00, cookingTimeMinutes: 12, displayOrder: 3 },
+    { restaurantId: sushiDreams.id, categoryName: 'Maki', name: 'Veggie Roll', description: 'Vegetarisch mit Avocado, Gurke, Karotte (8 Stück)', price: 7.50, cookingTimeMinutes: 10, displayOrder: 4 },
+    { restaurantId: sushiDreams.id, categoryName: 'Maki', name: 'Dragon Roll', description: 'Mit Aal und Avocado (8 Stück)', price: 13.00, cookingTimeMinutes: 15, displayOrder: 5 },
+    
+    // Sushi Dreams - Ramen
+    { restaurantId: sushiDreams.id, categoryName: 'Ramen', name: 'Shoyu Ramen', description: 'Klassische Soja-Ramen mit Schweinebrühe', price: 13.50, cookingTimeMinutes: 20, displayOrder: 1 },
+    { restaurantId: sushiDreams.id, categoryName: 'Ramen', name: 'Miso Ramen', description: 'Mit Miso-Paste und Tofu', price: 12.50, cookingTimeMinutes: 20, displayOrder: 2 },
+    { restaurantId: sushiDreams.id, categoryName: 'Ramen', name: 'Tonkotsu Ramen', description: 'Cremige Schweineknochenbrühe', price: 14.50, cookingTimeMinutes: 25, displayOrder: 3 },
+    
+    // Taj Mahal - Curry
+    { restaurantId: tajMahal.id, categoryName: 'Curry', name: 'Chicken Tikka Masala', description: 'Hähnchen in Tomaten-Sahne-Sauce', price: 14.50, cookingTimeMinutes: 25, displayOrder: 1 },
+    { restaurantId: tajMahal.id, categoryName: 'Curry', name: 'Lamb Vindaloo', description: 'Scharfes Lamm-Curry', price: 16.00, cookingTimeMinutes: 30, displayOrder: 2 },
+    { restaurantId: tajMahal.id, categoryName: 'Curry', name: 'Palak Paneer', description: 'Spinat mit indischem Käse', price: 12.50, cookingTimeMinutes: 20, displayOrder: 3 },
+    { restaurantId: tajMahal.id, categoryName: 'Curry', name: 'Butter Chicken', description: 'Hähnchen in cremiger Buttersauce', price: 15.00, cookingTimeMinutes: 25, displayOrder: 4 },
+    { restaurantId: tajMahal.id, categoryName: 'Curry', name: 'Chana Masala', description: 'Würzige Kichererbsen (vegan)', price: 11.00, cookingTimeMinutes: 20, displayOrder: 5 },
+    
+    // Taj Mahal - Tandoori
+    { restaurantId: tajMahal.id, categoryName: 'Tandoori', name: 'Tandoori Chicken', description: 'Im Lehmofen gegrilltes Hähnchen', price: 13.50, cookingTimeMinutes: 30, displayOrder: 1 },
+    { restaurantId: tajMahal.id, categoryName: 'Tandoori', name: 'Seekh Kabab', description: 'Würzige Lammspieße', price: 15.00, cookingTimeMinutes: 25, displayOrder: 2 },
+    { restaurantId: tajMahal.id, categoryName: 'Tandoori', name: 'Paneer Tikka', description: 'Gegrillter indischer Käse', price: 11.50, cookingTimeMinutes: 20, displayOrder: 3 },
+    
+    // Taj Mahal - Beilagen
+    { restaurantId: tajMahal.id, categoryName: 'Beilagen', name: 'Basmati Reis', description: 'Gedämpfter Basmati-Reis', price: 3.50, cookingTimeMinutes: 15, displayOrder: 1 },
+    { restaurantId: tajMahal.id, categoryName: 'Beilagen', name: 'Naan Brot', description: 'Frisches Fladenbrot aus dem Tandoor', price: 3.00, cookingTimeMinutes: 8, displayOrder: 2 },
+    { restaurantId: tajMahal.id, categoryName: 'Beilagen', name: 'Garlic Naan', description: 'Naan mit Knoblauch', price: 3.50, cookingTimeMinutes: 8, displayOrder: 3 },
+    { restaurantId: tajMahal.id, categoryName: 'Beilagen', name: 'Raita', description: 'Joghurt mit Gurke und Minze', price: 4.00, cookingTimeMinutes: 1, displayOrder: 4 },
+    
+    // Taj Mahal - Getränke
+    { restaurantId: tajMahal.id, categoryName: 'Getränke', name: 'Mango Lassi', description: 'Joghurt-Drink mit Mango', price: 4.50, cookingTimeMinutes: 3, displayOrder: 1 },
+    { restaurantId: tajMahal.id, categoryName: 'Getränke', name: 'Masala Chai', description: 'Gewürzter indischer Tee', price: 3.50, cookingTimeMinutes: 5, displayOrder: 2 }
   ];
 
   for (const dish of dishes) {
@@ -492,6 +599,273 @@ function printSummary(): void {
   console.log('='.repeat(80) + '\n');
 }
 
+async function createSampleOrders(db: sqlite3.Database): Promise<void> {
+  console.log('Creating sample orders...');
+
+  const burgerPalace = testData.restaurants.find(r => r.name === 'Burger Palace');
+  const customer1 = testData.customers.find(c => c.email === 'max.mustermann@test.com');
+  const customer2 = testData.customers.find(c => c.email === 'anna.schmidt@test.com');
+
+  if (!burgerPalace || !customer1 || !customer2) {
+    console.log('  ⚠ Required data not found, skipping sample orders');
+    return;
+  }
+
+  // Get dish IDs for Burger Palace
+  const getDishId = (name: string): Promise<number | null> => {
+    return new Promise((resolve) => {
+      db.get(
+        'SELECT id FROM dishes WHERE restaurant_id = ? AND name = ?',
+        [burgerPalace.id, name],
+        (err, row: any) => {
+          if (err || !row) resolve(null);
+          else resolve(row.id);
+        }
+      );
+    });
+  };
+
+  const cheeseburger = await getDishId('Classic Cheeseburger');
+  const baconBurger = await getDishId('Bacon Burger');
+  const fries = await getDishId('French Fries');
+  const shake = await getDishId('Vanilla Shake');
+  const veggiBurger = await getDishId('Veggie Burger');
+  const sweetPotatoFries = await getDishId('Sweet Potato Fries');
+
+  if (!cheeseburger || !fries) {
+    console.log('  ⚠ Required dishes not found, skipping sample orders');
+    return;
+  }
+
+  const now = new Date();
+
+  // Helper function to create order with items
+  const createOrder = async (orderData: {
+    customerId: string;
+    items: Array<{ dishId: number; dishName: string; dishPrice: number; quantity: number }>;
+    status: string;
+    createdAt: Date;
+    acceptedAt?: Date;
+    preparingStartedAt?: Date;
+    readyAt?: Date;
+    deliveringStartedAt?: Date;
+    deliveredAt?: Date;
+    dailyOrderNumber?: number;
+  }) => {
+    const orderId = uuidv4();
+    const subtotal = orderData.items.reduce((sum, item) => sum + item.dishPrice * item.quantity, 0);
+    const finalPrice = Math.round(subtotal * 100) / 100;
+    const orderDate = orderData.createdAt.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // Get customer address
+    const customerAddress: any = await new Promise((resolve) => {
+      db.get(
+        'SELECT street, house_number, staircase, door, postal_code, city FROM customers WHERE id = ?',
+        [orderData.customerId],
+        (err, row) => resolve(row || {})
+      );
+    });
+    
+    // Get next daily order number if not provided
+    const dailyOrderNumber = orderData.dailyOrderNumber || await new Promise<number>((resolve) => {
+      db.get(
+        'SELECT COALESCE(MAX(daily_order_number), 0) + 1 as next_num FROM orders WHERE restaurant_id = ? AND order_date = ?',
+        [burgerPalace.id, orderDate],
+        (err, row: any) => resolve(row?.next_num || 1)
+      );
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      db.run(
+        `INSERT INTO orders (
+          id, customer_id, restaurant_id, order_status, 
+          daily_order_number, order_date,
+          subtotal, discount_amount, final_price,
+          delivery_street, delivery_house_number, delivery_staircase, delivery_door,
+          delivery_postal_code, delivery_city, estimated_delivery_minutes,
+          created_at, updated_at, accepted_at, preparing_started_at, ready_at,
+          delivering_started_at, delivered_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          orderId, orderData.customerId, burgerPalace.id, orderData.status,
+          dailyOrderNumber, orderDate,
+          subtotal, 0, finalPrice,
+          customerAddress.street || 'Teststraße',
+          customerAddress.house_number || '1',
+          customerAddress.staircase,
+          customerAddress.door,
+          customerAddress.postal_code || '1010',
+          customerAddress.city || 'Wien',
+          30,
+          orderData.createdAt.toISOString(),
+          orderData.createdAt.toISOString(),
+          orderData.acceptedAt?.toISOString(),
+          orderData.preparingStartedAt?.toISOString(),
+          orderData.readyAt?.toISOString(),
+          orderData.deliveringStartedAt?.toISOString(),
+          orderData.deliveredAt?.toISOString()
+        ],
+        async (err) => {
+          if (err) return reject(err);
+
+          // Create order items
+          for (const item of orderData.items) {
+            const itemSubtotal = Math.round(item.dishPrice * item.quantity * 100) / 100;
+            await new Promise<void>((res, rej) => {
+              db.run(
+                `INSERT INTO order_items (
+                  order_id, dish_id, dish_name, dish_price, quantity, subtotal, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [orderId, item.dishId, item.dishName, item.dishPrice, item.quantity, itemSubtotal, orderData.createdAt.toISOString()],
+                (err) => (err ? rej(err) : res())
+              );
+            });
+          }
+
+          // Create status history entries
+          const statusHistory = [
+            { status: 'pending', timestamp: orderData.createdAt }
+          ];
+          
+          if (orderData.acceptedAt) {
+            statusHistory.push({ status: 'accepted', timestamp: orderData.acceptedAt });
+          }
+          if (orderData.preparingStartedAt) {
+            statusHistory.push({ status: 'preparing', timestamp: orderData.preparingStartedAt });
+          }
+          if (orderData.readyAt) {
+            statusHistory.push({ status: 'ready', timestamp: orderData.readyAt });
+          }
+          if (orderData.deliveringStartedAt) {
+            statusHistory.push({ status: 'delivering', timestamp: orderData.deliveringStartedAt });
+          }
+          if (orderData.deliveredAt) {
+            statusHistory.push({ status: 'delivered', timestamp: orderData.deliveredAt });
+          }
+
+          for (const entry of statusHistory) {
+            await new Promise<void>((res, rej) => {
+              db.run(
+                'INSERT INTO order_status_history (order_id, status, changed_at) VALUES (?, ?, ?)',
+                [orderId, entry.status, entry.timestamp.toISOString()],
+                (err) => (err ? rej(err) : res())
+              );
+            });
+          }
+
+          resolve();
+        }
+      );
+    });
+
+    return orderId;
+  };
+
+  // Order 1: Delivered order from ~3 hours ago (16:00-17:00)
+  const order1Time = new Date(now);
+  order1Time.setHours(16, 30, 0, 0);
+  const order1Accepted = new Date(order1Time.getTime() + 2 * 60 * 1000); // +2 min
+  const order1Preparing = new Date(order1Accepted.getTime() + 3 * 60 * 1000); // +3 min
+  const order1Ready = new Date(order1Preparing.getTime() + 15 * 60 * 1000); // +15 min
+  const order1Delivering = new Date(order1Ready.getTime() + 2 * 60 * 1000); // +2 min
+  const order1Delivered = new Date(order1Delivering.getTime() + 25 * 60 * 1000); // +25 min
+
+  await createOrder({
+    customerId: customer1!.id,
+    items: [
+      { dishId: cheeseburger, dishName: 'Classic Cheeseburger', dishPrice: 9.50, quantity: 2 },
+      { dishId: fries, dishName: 'French Fries', dishPrice: 4.00, quantity: 2 },
+      { dishId: shake!, dishName: 'Vanilla Shake', dishPrice: 5.00, quantity: 1 }
+    ],
+    status: 'delivered',
+    createdAt: order1Time,
+    acceptedAt: order1Accepted,
+    preparingStartedAt: order1Preparing,
+    readyAt: order1Ready,
+    deliveringStartedAt: order1Delivering,
+    deliveredAt: order1Delivered
+  });
+  console.log('  ✓ Created delivered order (16:30)');
+
+  // Order 2: Delivered order from ~2.5 hours ago (17:00)
+  const order2Time = new Date(now);
+  order2Time.setHours(17, 0, 0, 0);
+  const order2Accepted = new Date(order2Time.getTime() + 1 * 60 * 1000);
+  const order2Preparing = new Date(order2Accepted.getTime() + 2 * 60 * 1000);
+  const order2Ready = new Date(order2Preparing.getTime() + 12 * 60 * 1000);
+  const order2Delivering = new Date(order2Ready.getTime() + 1 * 60 * 1000);
+  const order2Delivered = new Date(order2Delivering.getTime() + 20 * 60 * 1000);
+
+  if (baconBurger) {
+    await createOrder({
+      customerId: customer2!.id,
+      items: [
+        { dishId: baconBurger, dishName: 'Bacon Burger', dishPrice: 11.00, quantity: 1 },
+        { dishId: sweetPotatoFries!, dishName: 'Sweet Potato Fries', dishPrice: 5.00, quantity: 1 }
+      ],
+      status: 'delivered',
+      createdAt: order2Time,
+      acceptedAt: order2Accepted,
+      preparingStartedAt: order2Preparing,
+      readyAt: order2Ready,
+      deliveringStartedAt: order2Delivering,
+      deliveredAt: order2Delivered
+    });
+    console.log('  ✓ Created delivered order (17:00)');
+  }
+
+  // Order 3: Accepted order from ~15 minutes ago
+  const order3Time = new Date(now.getTime() - 15 * 60 * 1000);
+  const order3Accepted = new Date(order3Time.getTime() + 3 * 60 * 1000);
+  const order3Preparing = new Date(order3Accepted.getTime() + 2 * 60 * 1000);
+
+  if (veggiBurger) {
+    await createOrder({
+      customerId: customer1!.id,
+      items: [
+        { dishId: veggiBurger, dishName: 'Veggie Burger', dishPrice: 10.00, quantity: 1 },
+        { dishId: fries, dishName: 'French Fries', dishPrice: 4.00, quantity: 1 }
+      ],
+      status: 'preparing',
+      createdAt: order3Time,
+      acceptedAt: order3Accepted,
+      preparingStartedAt: order3Preparing
+    });
+    console.log('  ✓ Created preparing order (15 min ago)');
+  }
+
+  // Order 4: New pending order from ~5 minutes ago
+  const order4Time = new Date(now.getTime() - 5 * 60 * 1000);
+
+  await createOrder({
+    customerId: customer2!.id,
+    items: [
+      { dishId: cheeseburger, dishName: 'Classic Cheeseburger', dishPrice: 9.50, quantity: 1 },
+      { dishId: shake!, dishName: 'Vanilla Shake', dishPrice: 5.00, quantity: 1 }
+    ],
+    status: 'pending',
+    createdAt: order4Time
+  });
+  console.log('  ✓ Created pending order (5 min ago)');
+
+  // Order 5: Very new pending order from ~1 minute ago
+  const order5Time = new Date(now.getTime() - 1 * 60 * 1000);
+
+  if (baconBurger) {
+    await createOrder({
+      customerId: customer1!.id,
+      items: [
+        { dishId: baconBurger, dishName: 'Bacon Burger', dishPrice: 11.00, quantity: 2 },
+        { dishId: fries, dishName: 'French Fries', dishPrice: 4.00, quantity: 2 },
+        { dishId: shake!, dishName: 'Vanilla Shake', dishPrice: 5.00, quantity: 2 }
+      ],
+      status: 'pending',
+      createdAt: order5Time
+    });
+    console.log('  ✓ Created pending order (1 min ago)');
+  }
+}
+
 async function main(): Promise<void> {
   console.log('Starting Order Management test data seeding...\n');
 
@@ -511,6 +885,7 @@ async function main(): Promise<void> {
     await createRestaurants(db);
     await createDishes(db);
     await createVouchers(db);
+    await createSampleOrders(db);
 
     printSummary();
   } catch (error) {

@@ -23,7 +23,15 @@
 
     <!-- Navigation for authenticated users -->
     <div *ngIf="isAuthenticated()" class="user-menu">
-      <!-- Restaurant Owner Menu Link -->
+      <!-- Restaurant Owner Menu Links -->
+      <button *ngIf="currentUser?.role === 'restaurantOwner'" 
+              mat-button 
+              routerLink="/restaurant/orders" 
+              class="nav-button">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Bestellungen</span>
+      </button>
+
       <button *ngIf="currentUser?.role === 'restaurantOwner'" 
               mat-button 
               routerLink="/restaurant/menu-management" 

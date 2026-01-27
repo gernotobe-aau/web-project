@@ -68,6 +68,14 @@ export class RestaurantFilterComponent {
   }
 
   /**
+   * Capitalize first letter of category for display
+   */
+  capitalizeCategory(category: string): string {
+    if (!category) return '';
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  }
+
+  /**
    * Update rating filter
    */
   onRatingChange(): void {
