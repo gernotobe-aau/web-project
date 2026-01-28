@@ -42,16 +42,18 @@ export class ProfileComponent implements OnInit {
   availableCategories = [
     'italienisch',
     'asiatisch',
-    'griechisch',
-    'amerikanisch',
+    'deutsch',
+    'türkisch',
+    'pizza',
+    'burger',
     'vegetarisch',
     'vegan',
-    'fastfood',
-    'burger',
-    'pizza',
-    'sushi',
     'indisch',
-    'mexikanisch'
+    'mexikanisch',
+    'griechisch',
+    'amerikanisch',
+    'fastfood',
+    'sushi'
   ];
   
   daysOfWeek = [

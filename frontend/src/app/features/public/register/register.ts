@@ -19,9 +19,10 @@ export class RegisterComponent implements OnInit {
   errorMessage = '';
   
   cuisineCategories = [
-    'italienisch', 'asiatisch', 'griechisch', 'amerikanisch', 
-    'vegetarisch', 'vegan', 'fastfood', 'burger', 
-    'pizza', 'sushi', 'indisch', 'mexikanisch'
+    'italienisch', 'asiatisch', 'deutsch', 'türkisch',
+    'pizza', 'burger', 'vegetarisch', 'vegan',
+    'indisch', 'mexikanisch', 'griechisch', 'amerikanisch',
+    'fastfood', 'sushi'
   ];
 
   dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];

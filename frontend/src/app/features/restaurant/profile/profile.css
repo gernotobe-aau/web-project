@@ -42,6 +42,15 @@ mat-card-title {
   margin-bottom: 16px;
 }
 
+.capitalize-text {
+  text-transform: capitalize;
+}
+
+.capitalize-options ::ng-deep .mat-mdc-select-value-text,
+.capitalize-options ::ng-deep .mat-mdc-select-trigger {
+  text-transform: capitalize;
+}
+
 .categories-section {
   margin-top: 16px;
 }
