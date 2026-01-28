@@ -81,7 +81,7 @@ export class RestaurantOwnerRegistrationService {
         phone: input.restaurant.contactInfo.phone,
         email: input.restaurant.contactInfo.email || input.email // Use owner's email if not provided
       },
-      categories: input.restaurant.categories,
+      categories: input.restaurant.categories.map(c => c.toLowerCase()), // Normalize to lowercase
       openingHours: input.restaurant.openingHours
     };
 

@@ -34,8 +34,8 @@
         <!-- Categories (Editable) -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Kategorien</mat-label>
-          <mat-select formControlName="categories" multiple>
-            <mat-option *ngFor="let category of availableCategories" [value]="category">
+          <mat-select formControlName="categories" multiple class="capitalize-options">
+            <mat-option *ngFor="let category of availableCategories" [value]="category" class="capitalize-text">
               {{ category }}
             </mat-option>
           </mat-select>

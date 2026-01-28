@@ -101,7 +101,9 @@ export class RestaurantProfileService {
 
     // Update categories if provided
     if (updateData.categories !== undefined) {
-      await this.restaurantRepository.updateCategories(restaurant.id, updateData.categories);
+      // Normalize categories to lowercase
+      const normalizedCategories = updateData.categories.map(c => c.toLowerCase());
+      await this.restaurantRepository.updateCategories(restaurant.id, normalizedCategories);
     }
 
     // Update opening hours if provided
@@ -197,9 +199,10 @@ export class RestaurantProfileService {
 
     const config = require('../config/config').default;
     const validCategories = config.cuisineCategories;
+    const validCategoriesLowerCase = validCategories.map((c: string) => c.toLowerCase());
 
     for (const category of categories) {
-      if (!validCategories.includes(category)) {
+      if (!validCategoriesLowerCase.includes(category.toLowerCase())) {
         throw new ValidationError(
           `Ungültige Kategorie: ${category}. Erlaubte Kategorien: ${validCategories.join(', ')}`,
           'categories'
