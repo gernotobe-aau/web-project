@@ -9,6 +9,7 @@ import { ForbiddenComponent } from './features/public/forbidden/forbidden';
 import { RestaurantDetailComponent } from './features/public/restaurant-detail/restaurant-detail.component';
 import { MenuManagementComponent } from './features/restaurant/menu-management/menu-management';
 import { ProfileComponent } from './features/restaurant/profile/profile';
+import { ProfileComponent as CustomerProfileComponent } from './features/customer/profile/profile';
 import { OrderOverviewComponent } from './features/restaurant/order-overview/order-overview.component';
 import { AnalyticsComponent } from './features/restaurant/analytics/analytics';
 
@@ -31,6 +32,17 @@ export const routes: Routes = [
       { path: 'profile', component: ProfileComponent },
       { path: 'orders', component: OrderOverviewComponent },
       { path: 'analytics', component: AnalyticsComponent }
+    ]
+  },
+
+  // Customer routes (protected)
+  {
+    path: 'customer',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['customer'] },
+    children: [
+      { path: '', redirectTo: 'landing', pathMatch: 'full' },
+      { path: 'profile', component: CustomerProfileComponent }
     ]
   },
 
