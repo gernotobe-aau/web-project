@@ -1039,6 +1039,208 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Restaurant Owner - Analytics",
+			"item": [
+				{
+					"name": "Get Daily Order Count",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('date');",
+									"    pm.expect(jsonData).to.have.property('orderCount');",
+									"    pm.expect(jsonData.orderCount).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/orders/daily",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "orders", "daily"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Weekly Order Count",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('weekStart');",
+									"    pm.expect(jsonData).to.have.property('weekEnd');",
+									"    pm.expect(jsonData).to.have.property('weekNumber');",
+									"    pm.expect(jsonData).to.have.property('orderCount');",
+									"    pm.expect(jsonData.orderCount).to.be.a('number');",
+									"    pm.expect(jsonData.weekNumber).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/orders/weekly",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "orders", "weekly"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Top Dishes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('period');",
+									"    pm.expect(jsonData).to.have.property('periodStart');",
+									"    pm.expect(jsonData).to.have.property('periodEnd');",
+									"    pm.expect(jsonData).to.have.property('dishes');",
+									"    pm.expect(jsonData.dishes).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Dishes have correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.dishes.length > 0) {",
+									"        var dish = jsonData.dishes[0];",
+									"        pm.expect(dish).to.have.property('dishId');",
+									"        pm.expect(dish).to.have.property('dishName');",
+									"        pm.expect(dish).to.have.property('orderCount');",
+									"        pm.expect(dish).to.have.property('totalQuantity');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ownerToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/dishes/top?limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "dishes", "top"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Analytics - No Auth (Error)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/orders/daily",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "orders", "daily"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Analytics - Customer Token (Error)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{customerToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/analytics/orders/daily",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "analytics", "orders", "daily"]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

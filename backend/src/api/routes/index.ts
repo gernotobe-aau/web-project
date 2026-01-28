@@ -5,6 +5,7 @@ import restaurantRoutes from './restaurant.routes';
 import restaurantProfileRoutes from './restaurant-profile.routes';
 import orderRoutes from './order.routes';
 import voucherRoutes from './voucher.routes';
+import analyticsRoutes from './analytics.routes';
 
 const router = Router();
 
@@ -22,5 +23,8 @@ router.use('/menu', menuRoutes);
 
 // Order management routes
 router.use('/', orderRoutes);
+
+// Analytics routes (restaurant owner only)
+router.use('/', analyticsRoutes);
 
 export default router;

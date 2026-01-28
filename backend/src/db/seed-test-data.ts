@@ -864,6 +864,134 @@ async function createSampleOrders(db: sqlite3.Database): Promise<void> {
     });
     console.log('  ✓ Created pending order (1 min ago)');
   }
+
+  // ==========================================
+  // ORDERS FROM LAST WEEK (for analytics)
+  // ==========================================
+  console.log('Creating orders from last week for analytics...');
+
+  // Order from 5 days ago - delivered
+  const lastWeekOrder1 = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000);
+  await createOrder({
+    customerId: customer2!.id,
+    items: [
+      { dishId: cheeseburger, dishName: 'Classic Cheeseburger', dishPrice: 9.50, quantity: 2 },
+      { dishId: fries, dishName: 'French Fries', dishPrice: 4.00, quantity: 2 }
+    ],
+    status: 'delivered',
+    createdAt: lastWeekOrder1,
+    acceptedAt: new Date(lastWeekOrder1.getTime() + 2 * 60 * 1000),
+    preparingStartedAt: new Date(lastWeekOrder1.getTime() + 5 * 60 * 1000),
+    readyAt: new Date(lastWeekOrder1.getTime() + 25 * 60 * 1000),
+    deliveringStartedAt: new Date(lastWeekOrder1.getTime() + 27 * 60 * 1000),
+    deliveredAt: new Date(lastWeekOrder1.getTime() + 47 * 60 * 1000)
+  });
+  console.log('  ✓ Created delivered order (5 days ago)');
+
+  // Order from 4 days ago - delivered
+  if (veggiBurger && sweetPotatoFries) {
+    const lastWeekOrder2 = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000);
+    await createOrder({
+      customerId: customer1!.id,
+      items: [
+        { dishId: veggiBurger, dishName: 'Veggie Burger', dishPrice: 10.00, quantity: 1 },
+        { dishId: sweetPotatoFries, dishName: 'Sweet Potato Fries', dishPrice: 4.50, quantity: 1 },
+        { dishId: shake!, dishName: 'Vanilla Shake', dishPrice: 5.00, quantity: 1 }
+      ],
+      status: 'delivered',
+      createdAt: lastWeekOrder2,
+      acceptedAt: new Date(lastWeekOrder2.getTime() + 3 * 60 * 1000),
+      preparingStartedAt: new Date(lastWeekOrder2.getTime() + 5 * 60 * 1000),
+      readyAt: new Date(lastWeekOrder2.getTime() + 28 * 60 * 1000),
+      deliveringStartedAt: new Date(lastWeekOrder2.getTime() + 30 * 60 * 1000),
+      deliveredAt: new Date(lastWeekOrder2.getTime() + 50 * 60 * 1000)
+    });
+    console.log('  ✓ Created delivered order (4 days ago)');
+  }
+
+  // Order from 6 days ago - delivered
+  if (baconBurger) {
+    const lastWeekOrder3 = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000);
+    await createOrder({
+      customerId: customer2!.id,
+      items: [
+        { dishId: baconBurger, dishName: 'Bacon Burger', dishPrice: 11.00, quantity: 3 },
+        { dishId: fries, dishName: 'French Fries', dishPrice: 4.00, quantity: 3 }
+      ],
+      status: 'delivered',
+      createdAt: lastWeekOrder3,
+      acceptedAt: new Date(lastWeekOrder3.getTime() + 2 * 60 * 1000),
+      preparingStartedAt: new Date(lastWeekOrder3.getTime() + 4 * 60 * 1000),
+      readyAt: new Date(lastWeekOrder3.getTime() + 30 * 60 * 1000),
+      deliveringStartedAt: new Date(lastWeekOrder3.getTime() + 32 * 60 * 1000),
+      deliveredAt: new Date(lastWeekOrder3.getTime() + 55 * 60 * 1000)
+    });
+    console.log('  ✓ Created delivered order (6 days ago)');
+  }
+
+  // ==========================================
+  // ORDERS FROM 1-2 DAYS AGO (for current week analytics)
+  // ==========================================
+  console.log('Creating orders from 1-2 days ago for analytics...');
+
+  // Order from yesterday (1 day ago) - delivered
+  const yesterday = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
+  await createOrder({
+    customerId: customer1!.id,
+    items: [
+      { dishId: cheeseburger, dishName: 'Classic Cheeseburger', dishPrice: 9.50, quantity: 1 },
+      { dishId: fries, dishName: 'French Fries', dishPrice: 4.00, quantity: 1 },
+      { dishId: shake!, dishName: 'Vanilla Shake', dishPrice: 5.00, quantity: 1 }
+    ],
+    status: 'delivered',
+    createdAt: yesterday,
+    acceptedAt: new Date(yesterday.getTime() + 3 * 60 * 1000),
+    preparingStartedAt: new Date(yesterday.getTime() + 6 * 60 * 1000),
+    readyAt: new Date(yesterday.getTime() + 26 * 60 * 1000),
+    deliveringStartedAt: new Date(yesterday.getTime() + 28 * 60 * 1000),
+    deliveredAt: new Date(yesterday.getTime() + 48 * 60 * 1000)
+  });
+  console.log('  ✓ Created delivered order (1 day ago - yesterday)');
+
+  // Order from 2 days ago - delivered
+  if (baconBurger) {
+    const twoDaysAgo = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
+    await createOrder({
+      customerId: customer2!.id,
+      items: [
+        { dishId: baconBurger, dishName: 'Bacon Burger', dishPrice: 11.00, quantity: 2 },
+        { dishId: fries, dishName: 'French Fries', dishPrice: 4.00, quantity: 2 }
+      ],
+      status: 'delivered',
+      createdAt: twoDaysAgo,
+      acceptedAt: new Date(twoDaysAgo.getTime() + 2 * 60 * 1000),
+      preparingStartedAt: new Date(twoDaysAgo.getTime() + 5 * 60 * 1000),
+      readyAt: new Date(twoDaysAgo.getTime() + 30 * 60 * 1000),
+      deliveringStartedAt: new Date(twoDaysAgo.getTime() + 32 * 60 * 1000),
+      deliveredAt: new Date(twoDaysAgo.getTime() + 52 * 60 * 1000)
+    });
+    console.log('  ✓ Created delivered order (2 days ago)');
+  }
+
+  // Another order from yesterday afternoon - delivered
+  if (veggiBurger) {
+    const yesterdayAfternoon = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000); // Yesterday + 6 hours
+    await createOrder({
+      customerId: customer1!.id,
+      items: [
+        { dishId: veggiBurger, dishName: 'Veggie Burger', dishPrice: 10.00, quantity: 2 },
+        { dishId: sweetPotatoFries!, dishName: 'Sweet Potato Fries', dishPrice: 4.50, quantity: 2 }
+      ],
+      status: 'delivered',
+      createdAt: yesterdayAfternoon,
+      acceptedAt: new Date(yesterdayAfternoon.getTime() + 4 * 60 * 1000),
+      preparingStartedAt: new Date(yesterdayAfternoon.getTime() + 7 * 60 * 1000),
+      readyAt: new Date(yesterdayAfternoon.getTime() + 32 * 60 * 1000),
+      deliveringStartedAt: new Date(yesterdayAfternoon.getTime() + 34 * 60 * 1000),
+      deliveredAt: new Date(yesterdayAfternoon.getTime() + 54 * 60 * 1000)
+    });
+    console.log('  ✓ Created delivered order (yesterday afternoon)');
+  }
 }
 
 async function main(): Promise<void> {

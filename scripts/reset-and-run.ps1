@@ -1,8 +1,29 @@
-# Reset and Run Script
-# Resets the database, seeds test data, and starts the development servers.
+<#
+.SYNOPSIS
+    Reset database and start development servers
+
+.DESCRIPTION
+    This script:
+    1. Stops running servers
+    2. Deletes the database
+    3. Runs migrations
+    4. Seeds test data
+    5. Optionally starts development servers
+
+.PARAMETER SeedOnly
+    Only reset and seed the database, don't start servers
+
+.PARAMETER Help
+    Display this help message
+
+.EXAMPLE
+    .\reset-and-run.ps1
+    
+.EXAMPLE
+    .\reset-and-run.ps1 -SeedOnly
+#>
 
 param(
-    [switch]$SkipBuild,
     [switch]$SeedOnly,
     [switch]$Help
 )
@@ -32,21 +53,46 @@ function Write-Info {
     Write-Host "[->] $Message" -ForegroundColor Yellow
 }
 
+function Write-Error-Custom {
+    param([string]$Message)
+    Write-Host "[ERROR] $Message" -ForegroundColor Red
+}
+
 if ($Help) {
     Write-Host ""
-    Write-Host "USAGE: .\reset-and-run.ps1 [OPTIONS]" -ForegroundColor White
+    Write-Host "Food Delivery Platform - Reset and Run" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "DESCRIPTION:" -ForegroundColor Yellow
+    Write-Host "  Resets database, runs migrations, seeds test data, and starts servers."
+    Write-Host ""
+    Write-Host "USAGE:" -ForegroundColor Yellow
+    Write-Host "  .\reset-and-run.ps1 [OPTIONS]"
     Write-Host ""
     Write-Host "OPTIONS:" -ForegroundColor Yellow
-    Write-Host "  -SkipBuild   Skip frontend build (use existing build)"
-    Write-Host "  -SeedOnly    Only reset and seed the database, don't start servers"
-    Write-Host "  -Help        Show this help"
+    Write-Host "  -SeedOnly    Only reset and seed database, don't start servers"
+    Write-Host "  -Help        Show this help message"
     Write-Host ""
     Write-Host "EXAMPLES:" -ForegroundColor Yellow
     Write-Host "  .\reset-and-run.ps1              # Full reset and start servers"
-    Write-Host "  .\reset-and-run.ps1 -SkipBuild   # Reset DB, skip build, start servers"
     Write-Host "  .\reset-and-run.ps1 -SeedOnly    # Only reset and seed database"
     Write-Host ""
     exit 0
+}
+
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "   Food Delivery - Reset Database      " -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Project Root: $ProjectRoot" -ForegroundColor Gray
+Write-Host ""
+
+# Check if dependencies are installed
+$backendModules = Join-Path $BackendDir "node_modules"
+if (-not (Test-Path $backendModules)) {
+    Write-Error-Custom "Backend dependencies not installed"
+    Write-Host "Run: .\install.ps1" -ForegroundColor Yellow
+    exit 1
 }
 
 # Step 1: Stop running processes
@@ -91,31 +137,16 @@ if ($SeedOnly) {
     Write-Step "Done (Seed Only Mode)"
     Write-Host ""
     Write-Host "Database has been reset and seeded." -ForegroundColor Green
-    Write-Host "Run '.\build-and-run.ps1' to start the servers." -ForegroundColor Yellow
+    Write-Host "Run '.\start.ps1' to start the servers." -ForegroundColor Yellow
     Write-Host ""
     exit 0
 }
 
-# Step 5: Build frontend (optional)
-if (-not $SkipBuild) {
-    Write-Step "Building frontend"
-    Push-Location $FrontendDir
-    try {
-        ng build --configuration development
-        if ($LASTEXITCODE -ne 0) { throw "Frontend build failed" }
-        Write-OK "Frontend built"
-    } finally {
-        Pop-Location
-    }
-} else {
-    Write-Info "Skipping frontend build"
-}
-
-# Step 6: Start servers
+# Step 5: Start servers
 Write-Step "Starting development servers"
 Push-Location $ScriptDir
 try {
-    & .\build-and-run.ps1
+    & .\start.ps1
 } finally {
     Pop-Location
 }

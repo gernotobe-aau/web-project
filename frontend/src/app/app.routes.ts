@@ -10,6 +10,7 @@ import { RestaurantDetailComponent } from './features/public/restaurant-detail/r
 import { MenuManagementComponent } from './features/restaurant/menu-management/menu-management';
 import { ProfileComponent } from './features/restaurant/profile/profile';
 import { OrderOverviewComponent } from './features/restaurant/order-overview/order-overview.component';
+import { AnalyticsComponent } from './features/restaurant/analytics/analytics';
 
 export const routes: Routes = [
   // Public routes
@@ -28,7 +29,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'menu-management', pathMatch: 'full' },
       { path: 'menu-management', component: MenuManagementComponent },
       { path: 'profile', component: ProfileComponent },
-      { path: 'orders', component: OrderOverviewComponent }
+      { path: 'orders', component: OrderOverviewComponent },
+      { path: 'analytics', component: AnalyticsComponent }
     ]
   },
 

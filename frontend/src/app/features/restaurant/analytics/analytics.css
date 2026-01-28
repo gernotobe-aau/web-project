@@ -1,0 +1,217 @@
+.analytics-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 32px;
+  color: #333;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+/* Loading & Error States */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+}
+
+.loading-container p,
+.error-container p {
+  margin-top: 16px;
+  color: #666;
+  font-size: 16px;
+}
+
+.error-container mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+/* Analytics Content */
+.analytics-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Stats Cards Grid */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card mat-card-header {
+  margin-bottom: 16px;
+}
+
+.stat-card mat-icon[mat-card-avatar] {
+  width: 48px;
+  height: 48px;
+  font-size: 48px;
+  color: #1976d2;
+}
+
+.stat-card mat-card-title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.stat-card mat-card-subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+.stat-value {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1976d2;
+  text-align: center;
+  margin: 16px 0 8px 0;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Top Dishes Card */
+.top-dishes-card {
+  margin-top: 24px;
+}
+
+.top-dishes-card mat-icon[mat-card-avatar] {
+  width: 48px;
+  height: 48px;
+  font-size: 48px;
+  color: #ff6f00;
+}
+
+.top-dishes-card mat-card-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.top-dishes-card mat-card-subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+/* No Data Message */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  text-align: center;
+  color: #666;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #bbb;
+  margin-bottom: 16px;
+}
+
+/* Dishes Table */
+.dishes-table {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.dishes-table th {
+  font-weight: 600;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.dishes-table td,
+.dishes-table th {
+  padding: 16px;
+}
+
+.dishes-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Rank Styling */
+.rank {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.rank.top-three {
+  font-size: 18px;
+}
+
+.medal {
+  width: 28px;
+  height: 28px;
+  font-size: 28px;
+}
+
+.medal.gold {
+  color: #ffd700;
+}
+
+.medal.silver {
+  color: #c0c0c0;
+}
+
+.medal.bronze {
+  color: #cd7f32;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .analytics-container {
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .stats-cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+  }
+
+  .dishes-table td,
+  .dishes-table th {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+}
