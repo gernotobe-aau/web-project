@@ -51,6 +51,36 @@ export class RestaurantBrowsingService {
   }
 
   /**
+   * Get all available restaurants with browsing information
+   */
+  async getRestaurantById(id: string): Promise<RestaurantBrowsingDTO | null> {
+    const restaurant = await this.restaurantRepository.findById(id);
+    
+    if (!restaurant) {
+      return null;
+    }
+
+    const averageRating = await this.restaurantRepository.getAverageRating(restaurant.id);
+    const isOpen = this.isRestaurantOpen(restaurant.openingHours);
+    const estimatedDeliveryTime = this.calculateDeliveryTime(restaurant.id);
+
+    return {
+      id: restaurant.id,
+      name: restaurant.name,
+      categories: restaurant.categories,
+      address: {
+        street: restaurant.street,
+        houseNumber: restaurant.houseNumber,
+        postalCode: restaurant.postalCode,
+        city: restaurant.city
+      },
+      averageRating,
+      estimatedDeliveryTime: this.calculateDeliveryTime(restaurant.id),
+      isOpen
+    };
+  }
+
+  /**
    * Calculate estimated delivery time for a restaurant
    * For this iteration: flat 10 minutes
    * Later: will be extended with dish cooking times and peak hour logic

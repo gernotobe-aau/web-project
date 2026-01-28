@@ -19,6 +19,17 @@ function getRestaurantController(): RestaurantController {
   return restaurantController;
 }
 
+
+router.get('/restaurants/:id', async (req: Request, res: Response) => {
+  try {
+    const controller = getRestaurantController();
+    await controller.getRestaurantById(req, res);
+  } catch (error) {
+    console.error('Error in /restaurants/:id route:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Direct route handlers without wrapper
 router.get('/restaurants', async (req: Request, res: Response) => {
   try {

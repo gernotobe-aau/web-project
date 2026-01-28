@@ -23,6 +23,27 @@ export class RestaurantController {
   }
 
   /**
+   * GET /api/restaurants/:id
+   * Get a specific restaurant by ID
+   */
+  async getRestaurantById(req: Request, res: Response): Promise<void> {
+    try {
+      const restaurant = await this.restaurantBrowsingService.getRestaurantById(req.params.id);
+      if (restaurant) {
+        res.status(200).json(restaurant);
+      } else {
+        res.status(404).json({ message: 'Restaurant nicht gefunden' });
+      }
+    } catch (error) {
+      console.error('Error fetching restaurant:', error);
+      res.status(500).json({ 
+        message: 'Fehler beim Laden des Restaurants',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  /**
    * GET /api/categories
    * Get all available cuisine categories from configuration
    */
