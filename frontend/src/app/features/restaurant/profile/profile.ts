@@ -40,20 +40,18 @@ export class ProfileComponent implements OnInit {
   profile: RestaurantProfile | null = null;
   
   availableCategories = [
-    'italienisch',
-    'asiatisch',
-    'deutsch',
-    'türkisch',
-    'pizza',
-    'burger',
-    'vegetarisch',
-    'vegan',
-    'indisch',
-    'mexikanisch',
-    'griechisch',
     'amerikanisch',
+    'asiatisch',
+    'burger',
     'fastfood',
-    'sushi'
+    'griechisch',
+    'indisch',
+    'italienisch',
+    'mexikanisch',
+    'pizza',
+    'sushi',
+    'vegan',
+    'vegetarisch'
   ];
   
   daysOfWeek = [
@@ -265,13 +263,20 @@ export class ProfileComponent implements OnInit {
         if (error.status === 422 && error.error?.errors) {
           // Handle validation errors
           const errors = error.error.errors;
+          let errorMessage = 'Validierungsfehler:';
+          
           for (const err of errors) {
+            errorMessage += `\n- ${err.field}: ${err.message}`;
+            
+            // Set field-specific errors if the field exists in the form
             if (err.field && this.profileForm.get(err.field)) {
               this.profileForm.get(err.field)?.setErrors({ backend: err.message });
             }
           }
-          this.snackBar.open('Validierungsfehler - bitte prüfen Sie Ihre Eingaben', 'Schließen', {
-            duration: 5000,
+          
+          console.error('Validation errors from backend:', errors);
+          this.snackBar.open(errorMessage, 'Schließen', {
+            duration: 8000,
             panelClass: ['error-snackbar']
           });
         } else {
