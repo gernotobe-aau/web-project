@@ -23,7 +23,7 @@ const config: Config = {
   minAgeRestaurantOwner: parseInt(process.env.MIN_AGE_RESTAURANT_OWNER || '18', 10),
   cuisineCategories: process.env.CUISINE_CATEGORIES 
     ? process.env.CUISINE_CATEGORIES.split(',').map(c => c.trim())
-    : ['italienisch', 'asiatisch', 'griechisch', 'amerikanisch', 'vegetarisch', 'vegan', 'fastfood', 'burger', 'pizza', 'sushi', 'indisch', 'mexikanisch']
+    : ['italienisch', 'asiatisch', 'deutsch', 'türkisch', 'griechisch', 'amerikanisch', 'vegetarisch', 'vegan', 'fastfood', 'burger', 'pizza', 'sushi', 'indisch', 'mexikanisch']
 };
 
 // Validate required configuration
