@@ -13,11 +13,11 @@ const router = Router();
 // Public voucher validation
 router.use('/', voucherRoutes);
 
-// Public restaurant browsing (must come before any /restaurants/profile or protected route)
-router.use('/', restaurantRoutes);
-
-// Auth-protected restaurant profile management
+// Auth-protected restaurant profile management (must come BEFORE public restaurant browsing to avoid conflicts)
 router.use('/restaurants', restaurantProfileRoutes);
+
+// Public restaurant browsing (must come after protected routes)
+router.use('/', restaurantRoutes);
 
 //Auth-protected customer profile management
 router.use('/customers', customerProfileRoutes);
