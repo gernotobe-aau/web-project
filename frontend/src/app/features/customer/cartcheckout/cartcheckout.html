@@ -1,0 +1,112 @@
+<div class="cartcheckout-container">
+  <div class="header">
+    <h1>Warenkorb</h1>
+  </div>
+
+  <!-- Empty Cart State -->
+  <div *ngIf="cartByRestaurant.length === 0" class="empty-state">
+    <mat-icon>shopping_cart</mat-icon>
+    <h2>Dein Warenkorb ist leer</h2>
+    <p>Füge Gerichte hinzu, um zu beginnen.</p>
+    <button mat-raised-button color="primary" routerLink="/restaurants">
+      Zum Menü
+    </button>
+  </div>
+
+  <!-- Cart Content -->
+  <div *ngIf="cartByRestaurant.length > 0" class="cart-content">
+    <!-- Restaurant Groups -->
+    <div *ngFor="let cart of cartByRestaurant; trackBy: trackByRestaurant" class="restaurant-group">
+      <!-- Restaurant Header -->
+      <div class="restaurant-header">
+        <h2>{{ cart.restaurantName }}</h2>
+        <span class="item-count">{{ cart.totalItems }} {{ cart.totalItems === 1 ? 'Artikel' : 'Artikel' }}</span>
+      </div>
+
+      <!-- Items List -->
+      <div class="items-list">
+        <div
+          *ngFor="let item of cart.items; trackBy: trackByCartItem"
+          class="cart-item"
+        >
+          <!-- Item Photo -->
+          <div *ngIf="getDishPhotoUrl(item.dish.photo_url)" class="item-photo">
+            <img
+              [src]="getDishPhotoUrl(item.dish.photo_url)"
+              [alt]="item.dish.name"
+            />
+          </div>
+          <div *ngIf="!getDishPhotoUrl(item.dish.photo_url)" class="item-photo item-photo-placeholder">
+            <mat-icon>restaurant</mat-icon>
+          </div>
+
+          <!-- Item Info -->
+          <div class="item-info">
+            <h3 class="item-name">{{ item.dish.name }}</h3>
+            <p class="item-price">
+              {{ item.dish.price | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }} x {{ item.quantity }}
+            </p>
+          </div>
+
+          <!-- Item Total Price -->
+          <div class="item-total-price">
+            {{ item.dish.price * item.quantity | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+          </div>
+
+          <!-- Quantity Controls -->
+          <div class="quantity-controls">
+            <button
+              mat-icon-button
+              (click)="decrementQuantity(item)"
+              matTooltip="Menge reduzieren"
+            >
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="quantity">{{ item.quantity }}</span>
+            <button
+              mat-icon-button
+              (click)="incrementQuantity(item)"
+              matTooltip="Menge erhöhen"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <!-- Remove Button -->
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="removeItem(item)"
+            matTooltip="Entfernen"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Restaurant Subtotal -->
+      <div class="restaurant-subtotal">
+        <span>Summe für diesen Restaurant:</span>
+        <span class="price">{{ cart.totalPrice | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}</span>
+      </div>
+    </div>
+
+    <!-- Cart Total and Checkout -->
+    <div class="checkout-section">
+      <div class="cart-total">
+        <h3>Gesamtsumme:</h3>
+        <span class="total-price">
+          {{ getGrandTotal() | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+        </span>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="proceedToCheckout()"
+        class="checkout-button"
+      >
+        Bestellen
+      </button>
+    </div>
+  </div>
+</div>

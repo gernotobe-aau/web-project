@@ -47,6 +47,14 @@
         <mat-icon>bar_chart</mat-icon>
         <span>Statistiken</span>
       </button>
+      
+      <button *ngIf="currentUser?.role === 'customer'" 
+              mat-button 
+              routerLink="/customer/cartcheckout" 
+              class="nav-button">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Cart & Checkout</span>
+      </button>
 
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
         <mat-icon>account_circle</mat-icon>

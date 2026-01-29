@@ -9,8 +9,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Restaurant } from '../../../core/services/restaurant.service';
-
+import { Restaurant, RestaurantService } from '../../../core/services/restaurant.service';
+import { CartService } from '../../../core/services/cart.service';
 import { MenuService, Category, Dish } from '../../../core/services/menu.service';
 import { CategoryDialogComponent } from './category-dialog/category-dialog';
 import { DishDialogComponent } from './dish-dialog/dish-dialog';
@@ -43,6 +43,7 @@ export class MenuViewComponent implements OnInit {
   loading = true;
   error: string | null = null;
   restaurantId: string | null = null;
+  restaurantName: string | null = null;
   isOwnerView = false;
 
   constructor(
@@ -50,13 +51,28 @@ export class MenuViewComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cartService: CartService,
+    private restaurantService: RestaurantService
   ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.restaurantId = params.get('restaurantId');
       this.isOwnerView = !this.restaurantId; // If no restaurantId, it's owner viewing their own menu
+      
+      // Load restaurant name if viewing a restaurant menu
+      if (this.restaurantId) {
+        this.restaurantService.getRestaurantById(this.restaurantId).subscribe({
+          next: (restaurant) => {
+            this.restaurantName = restaurant.name;
+          },
+          error: () => {
+            this.restaurantName = null;
+          }
+        });
+      }
+      
       this.loadCategories();
     });
   }
@@ -117,12 +133,25 @@ export class MenuViewComponent implements OnInit {
       },
     });
   }
-  
+
   getDishPhotoUrl(dish: Dish): string | null {
     if (!dish.photo_url) return null;
     // Backend serves files at /uploads/* - construct full URL
     const baseUrl = environment.apiBaseUrl.replace('/api', '');
     return `${baseUrl}${dish.photo_url}`;
+  }
+
+  onAddToCart(dish: Dish): void {
+    if (!this.restaurantId) return; // Prevent adding to cart when in owner view
+
+    this.cartService.addItem(
+      dish,
+      parseInt(this.restaurantId, 10),
+      this.restaurantName || `Restaurant #${this.restaurantName}`
+    );
+    this.snackBar.open(`${dish.name} zum Warenkorb hinzugefügt`, 'Schließen', {
+      duration: 2000,
+    });
   }
 
   // TrackBy functions for better performance and reliable rendering
