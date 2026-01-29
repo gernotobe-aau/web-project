@@ -12,6 +12,7 @@ import { ProfileComponent } from './features/restaurant/profile/profile';
 import { ProfileComponent as CustomerProfileComponent } from './features/customer/profile/profile';
 import { OrderOverviewComponent } from './features/restaurant/order-overview/order-overview.component';
 import { AnalyticsComponent } from './features/restaurant/analytics/analytics';
+import { MenuViewComponent } from './features/customer/menu-overview/menu-view';
 
 export const routes: Routes = [
   // Public routes
@@ -42,7 +43,9 @@ export const routes: Routes = [
     data: { roles: ['customer'] },
     children: [
       { path: '', redirectTo: 'landing', pathMatch: 'full' },
-      { path: 'profile', component: CustomerProfileComponent }
+      { path: 'profile', component: CustomerProfileComponent },
+      { path: 'menu', component: MenuViewComponent },
+      { path: 'menu/:restaurantId', component: MenuViewComponent }
     ]
   },
 

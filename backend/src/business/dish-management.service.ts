@@ -17,7 +17,7 @@ export class DishManagementService {
   /**
    * Get all dishes for a restaurant (optionally filtered by category)
    */
-  async getDishes(restaurantId: number, categoryId?: number) {
+  async getDishes(restaurantId: string | number, categoryId?: number) {
     return this.dishRepository.findByRestaurantId(restaurantId, categoryId);
   }
 

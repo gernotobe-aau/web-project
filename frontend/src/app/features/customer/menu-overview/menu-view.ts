@@ -1,0 +1,136 @@
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Restaurant } from '../../../core/services/restaurant.service';
+
+import { MenuService, Category, Dish } from '../../../core/services/menu.service';
+import { CategoryDialogComponent } from './category-dialog/category-dialog';
+import { DishDialogComponent } from './dish-dialog/dish-dialog';
+import { environment } from '../../../../environments/environment';
+
+interface CategoryWithDishes extends Category {
+  dishes?: Dish[];
+  loading?: boolean;
+}
+
+@Component({
+  selector: 'app-menu-view',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatExpansionModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    DragDropModule,
+  ],
+  templateUrl: './menu-view.html',
+  styleUrl: './menu-view.css',
+})
+export class MenuViewComponent implements OnInit {
+  categories: CategoryWithDishes[] = [];
+  loading = true;
+  error: string | null = null;
+  restaurantId: string | null = null;
+  isOwnerView = false;
+
+  constructor(
+    private menuService: MenuService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      this.restaurantId = params.get('restaurantId');
+      this.isOwnerView = !this.restaurantId; // If no restaurantId, it's owner viewing their own menu
+      this.loadCategories();
+    });
+  }
+
+  loadCategories(): void {
+    this.loading = true;
+    this.error = null;
+
+    // Pass restaurantId only if it exists, otherwise undefined (for authenticated owner)
+    const restaurantIdParam = this.restaurantId ? this.restaurantId : undefined;
+    this.menuService.getCategories(restaurantIdParam).subscribe({
+      next: (categories) => {
+        this.categories = categories.map((cat) => ({ ...cat, dishes: undefined }));
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = 'Fehler beim Laden der Kategorien';
+        this.loading = false;
+        this.cdr.detectChanges();
+        this.snackBar.open('Fehler beim Laden der Kategorien', 'Schließen', {
+          duration: 3000,
+        });
+      },
+    });
+  }
+
+
+  onCategoryExpanded(category: CategoryWithDishes): void {
+    const foundCategory = this.categories.find(c => c.id === category.id);
+    if (!foundCategory || foundCategory.dishes !== undefined || foundCategory.loading) return;
+
+    foundCategory.loading = true;
+    this.categories = [...this.categories];
+    this.cdr.detectChanges();
+    
+    const restaurantIdParam = this.restaurantId ? this.restaurantId : undefined;
+    this.menuService.getDishes(category.id, restaurantIdParam).subscribe({
+      next: (dishes) => {
+        const cat = this.categories.find(c => c.id === category.id);
+        if (cat) {
+          cat.dishes = dishes;
+          cat.loading = false;
+          this.categories = [...this.categories];
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        const cat = this.categories.find(c => c.id === category.id);
+        if (cat) {
+          cat.loading = false;
+          this.categories = [...this.categories];
+          this.cdr.detectChanges();
+        }
+        this.snackBar.open('Fehler beim Laden der Gerichte', 'Schließen', {
+          duration: 3000,
+        });
+      },
+    });
+  }
+  
+  getDishPhotoUrl(dish: Dish): string | null {
+    if (!dish.photo_url) return null;
+    // Backend serves files at /uploads/* - construct full URL
+    const baseUrl = environment.apiBaseUrl.replace('/api', '');
+    return `${baseUrl}${dish.photo_url}`;
+  }
+
+  // TrackBy functions for better performance and reliable rendering
+  trackByCategory(index: number, category: CategoryWithDishes): number {
+    return category.id;
+  }
+
+  trackByDish(index: number, dish: Dish): number {
+    return dish.id;
+  }
+}

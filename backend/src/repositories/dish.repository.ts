@@ -38,7 +38,7 @@ export class DishRepository {
   /**
    * Find all dishes for a restaurant
    */
-  async findByRestaurantId(restaurantId: number, categoryId?: number): Promise<Dish[]> {
+  async findByRestaurantId(restaurantId: string | number, categoryId?: number): Promise<Dish[]> {
     return new Promise((resolve, reject) => {
       let query = `
         SELECT * FROM dishes 

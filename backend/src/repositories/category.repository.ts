@@ -30,7 +30,7 @@ export class CategoryRepository {
   /**
    * Find all categories for a restaurant
    */
-  async findByRestaurantId(restaurantId: number): Promise<CategoryWithDishCount[]> {
+  async findByRestaurantId(restaurantId: string | number): Promise<CategoryWithDishCount[]> {
     return new Promise((resolve, reject) => {
       const query = `
         SELECT 

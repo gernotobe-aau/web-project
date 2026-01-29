@@ -1,0 +1,87 @@
+<div class="menu-view-container">
+  <div class="header">
+    <h1>Menü</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Lade Kategorien...</p>
+  </div>
+
+  <div *ngIf="!loading && categories.length === 0" class="empty-state">
+    <mat-icon>restaurant_menu</mat-icon>
+    <h2>Noch keine Kategorien vorhanden</h2>
+    <p>Dieser Restaurant hat noch keine Kategorien.</p>
+  </div>
+
+  <div *ngIf="!loading && categories.length > 0" class="categories-container">
+    <div class="category-list">
+      <mat-expansion-panel
+        *ngFor="let category of categories"
+        (opened)="onCategoryExpanded(category)"
+        class="category-panel"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title-content">
+            <div class="title-text">
+              <span class="category-name">{{ category.name }}</span>
+              <span class="dish-count">{{ category.dishCount }} {{ category.dishCount === 1 ? 'Gericht' : 'Gerichte' }}</span>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="category-content">
+
+          <div *ngIf="category.loading" class="loading-dishes">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Lade Gerichte...</p>
+          </div>
+
+          <div
+            *ngIf="!category.loading && category.dishes && category.dishes.length === 0"
+            class="empty-dishes"
+          >
+            <p>Noch keine Gerichte in dieser Kategorie.</p>
+          </div>
+
+          <div
+            *ngIf="!category.loading && category.dishes && category.dishes.length > 0"
+
+            class="dish-list"
+          >
+            <mat-card *ngFor="let dish of category.dishes">
+              <div class="dish-card-content">
+
+                <div *ngIf="getDishPhotoUrl(dish)" class="dish-photo">
+                  <img [src]="getDishPhotoUrl(dish)" [alt]="dish.name" />
+                </div>
+                <div *ngIf="!getDishPhotoUrl(dish)" class="dish-photo dish-photo-placeholder">
+                  <mat-icon>restaurant</mat-icon>
+                </div>
+
+                <div class="dish-info">
+                  <h3 class="dish-name">{{ dish.name }}</h3>
+                  <p *ngIf="dish.description" class="dish-description">
+                    {{ dish.description }}
+                  </p>
+                  <div class="dish-price-container">
+                    <span class="dish-price">{{ dish.price | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}</span>
+                  </div>
+                </div>
+
+                <div class="dish-actions">
+                  <button
+                    mat-icon-button
+                    
+                    matTooltip="➕">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </div>
+  </div>
+</div>

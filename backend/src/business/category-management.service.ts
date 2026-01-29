@@ -11,7 +11,7 @@ export class CategoryManagementService {
   /**
    * Get all categories for a restaurant
    */
-  async getCategories(restaurantId: number) {
+  async getCategories(restaurantId: string | number) {
     return this.categoryRepository.findByRestaurantId(restaurantId);
   }
 
