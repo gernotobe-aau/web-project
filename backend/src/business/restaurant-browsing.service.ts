@@ -10,6 +10,9 @@ export interface RestaurantBrowsingDTO {
     postalCode: string;
     city: string;
   };
+  contactPhone?: string;
+  contactEmail?: string;
+  openingHours?: OpeningHour[];
   averageRating: number | null;
   estimatedDeliveryTime: number;
   isOpen: boolean;
@@ -40,6 +43,9 @@ export class RestaurantBrowsingService {
             postalCode: restaurant.postalCode,
             city: restaurant.city
           },
+          contactPhone: restaurant.contactPhone,
+          contactEmail: restaurant.contactEmail,
+          openingHours: restaurant.openingHours,
           averageRating,
           estimatedDeliveryTime,
           isOpen
@@ -74,6 +80,9 @@ export class RestaurantBrowsingService {
         postalCode: restaurant.postalCode,
         city: restaurant.city
       },
+      contactPhone: restaurant.contactPhone,
+      contactEmail: restaurant.contactEmail,
+      openingHours: restaurant.openingHours,
       averageRating,
       estimatedDeliveryTime: this.calculateDeliveryTime(restaurant.id),
       isOpen

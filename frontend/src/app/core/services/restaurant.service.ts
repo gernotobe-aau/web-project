@@ -10,11 +10,22 @@ export interface RestaurantAddress {
   city: string;
 }
 
+export interface OpeningHour {
+  dayOfWeek: number; // 0-6 (0=Sunday)
+  day: string;
+  openTime?: string | null;
+  closeTime?: string | null;
+  isClosed: boolean;
+}
+
 export interface Restaurant {
   id: string;
   name: string;
   categories: string[];
   address: RestaurantAddress;
+  contactPhone?: string;
+  contactEmail?: string;
+  openingHours?: OpeningHour[];
   averageRating: number | null;
   estimatedDeliveryTime: number;
   isOpen: boolean;

@@ -1,29 +1,40 @@
 <div class="restaurant-detail-container">
+  <div *ngIf="loading" style="padding: 20px; text-align: center;">
+    Loading...
+  </div>
+
+  <div *ngIf="error && !loading" style="padding: 20px; text-align: center;">
+    Error: {{ error }}
+  </div>
+
   <mat-card class="restaurant-card" *ngIf="restaurant">
     <mat-card-header>
       <mat-card-title>{{ restaurant.name }}</mat-card-title>
-      <mat-card-subtitle>Feature in Entwicklung</mat-card-subtitle>
+      <mat-card-subtitle>{{ restaurant.categories.join(', ') }}</mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
       <div class="restaurant-info">
         <mat-icon class="restaurant-icon">restaurant</mat-icon>
-        <h2>{{ restaurant.address.street }} {{ restaurant.address.houseNumber }} {{ restaurant.address.postalCode }} {{ restaurant.address.city }}</h2>
-        <p>Kontakt, Öffnungszeiten</p>
-        <p>Hier werden dann folgende Informationen angezeigt:</p>
+        <h2>{{ restaurant.address.street }} {{ restaurant.address.houseNumber }}, {{ restaurant.address.postalCode }} {{ restaurant.address.city }}</h2>
+        <div class="contact-info" *ngIf="restaurant.contactEmail || restaurant.contactPhone">
+          <h3>Kontaktinformationen:</h3>
+          <p *ngIf="restaurant.contactEmail">E-Mail: {{ restaurant.contactEmail }}</p>
+          <p *ngIf="restaurant.contactPhone">Telefon: {{ restaurant.contactPhone }}</p>
+        </div>
+      </div>
+      
+      <div class="opening-hours" *ngIf="restaurant.openingHours?.length">
+        <h3>Öffnungszeiten:</h3>
         <ul>
-          <li>Restaurant-Details (Name, Adresse, Kontakt, Öffnungszeiten)</li>
-          <li>Vollständiges Menü mit Kategorien und Gerichten</li>
-          <li>Bewertungen und Kommentare</li>
-          <li>Warenkorb-Funktionalität</li>
+          <li *ngFor="let hours of restaurant.openingHours">{{ dayNames[hours.dayOfWeek] }}: {{ formatOpeningHours(hours) }}</li>
         </ul>
       </div>
     </mat-card-content>
     
     <mat-card-actions>
-      <button mat-raised-button color="primary" routerLink="/">
-        <mat-icon>arrow_back</mat-icon>
-        Zurück zur Übersicht
+      <button mat-raised-button *ngIf="currentUser?.role === 'customer'" color="primary" routerLink="/">
+        Bestellen
       </button>
     </mat-card-actions>
   </mat-card>
