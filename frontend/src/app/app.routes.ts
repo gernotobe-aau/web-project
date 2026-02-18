@@ -11,6 +11,7 @@ import { MenuManagementComponent } from './features/restaurant/menu-management/m
 import { ProfileComponent } from './features/restaurant/profile/profile';
 import { ProfileComponent as CustomerProfileComponent } from './features/customer/profile/profile';
 import { OrderOverviewComponent } from './features/restaurant/order-overview/order-overview.component';
+import { OrderOverviewComponent as CustomerOrderOverviewComponent } from './features/customer/order-overview/order-overview.component';
 import { AnalyticsComponent } from './features/restaurant/analytics/analytics';
 import { MenuViewComponent } from './features/customer/menu-overview/menu-view';
 import { CartcheckoutComponent } from './features/customer/cartcheckout/cartcheckout';
@@ -47,7 +48,8 @@ export const routes: Routes = [
       { path: 'profile', component: CustomerProfileComponent },
       { path: 'menu', component: MenuViewComponent },
       { path: 'menu/:restaurantId', component: MenuViewComponent },
-      { path: 'cartcheckout', component: CartcheckoutComponent }
+      { path: 'cartcheckout', component: CartcheckoutComponent },
+      { path: 'orders', component: CustomerOrderOverviewComponent}
     ]
   },
 

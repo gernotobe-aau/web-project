@@ -146,7 +146,7 @@ export class MenuViewComponent implements OnInit {
 
     this.cartService.addItem(
       dish,
-      parseInt(this.restaurantId, 10),
+      this.restaurantId,
       this.restaurantName || `Restaurant #${this.restaurantName}`
     );
     this.snackBar.open(`${dish.name} zum Warenkorb hinzugefügt`, 'Schließen', {

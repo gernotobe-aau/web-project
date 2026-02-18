@@ -7,6 +7,7 @@ import customerProfileRoutes from './customer-profile.routes';
 import orderRoutes from './order.routes';
 import voucherRoutes from './voucher.routes';
 import analyticsRoutes from './analytics.routes';
+import cartRoutes from './cart.routes'
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.use('/customers', customerProfileRoutes);
 
 router.use('/auth', authRoutes);
 router.use('/menu', menuRoutes);
+router.use('/cart', cartRoutes);
 
 // Order management routes
 router.use('/', orderRoutes);

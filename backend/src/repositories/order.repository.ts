@@ -226,9 +226,58 @@ export class OrderRepository {
         params.push(filters.offset);
       }
 
-      this.db.all(sql, params, (err, rows: any[]) => {
+      /*this.db.all(sql, params, (err, rows: any[]) => {
         if (err) return reject(err);
         resolve(rows.map(mapRowToOrderWithRestaurant));
+      });*/
+      const db = this.db;
+      this.db.all(sql, params, (err, rows: any[]) => {
+        if (err) return reject(err);
+        
+        // If no orders, return empty array
+        if (rows.length === 0) {
+          return resolve([]);
+        }
+        
+        // Get all order IDs to fetch items
+        const orderIds = rows.map(r => r.id);
+        const placeholders = orderIds.map(() => '?').join(',');
+        
+        const itemsSql = `
+          SELECT order_id, id, dish_id, dish_name, dish_price, quantity, subtotal
+          FROM order_items
+          WHERE order_id IN (${placeholders})
+          ORDER BY id
+        `;
+        
+        db.all(itemsSql, orderIds, (itemsErr, itemRows: any[]) => {
+          if (itemsErr) return reject(itemsErr);
+          
+          // Group items by order_id
+          const itemsByOrderId: { [orderId: string]: OrderItem[] } = {};
+          itemRows.forEach((item: any) => {
+            if (!itemsByOrderId[item.order_id]) {
+              itemsByOrderId[item.order_id] = [];
+            }
+            itemsByOrderId[item.order_id].push({
+              id: item.id,
+              dishId: item.dish_id,
+              dishName: item.dish_name,
+              dishPrice: item.dish_price,
+              quantity: item.quantity,
+              subtotal: item.subtotal
+            });
+          });
+          
+          // Map orders with their items
+          const ordersWithItems = rows.map(row => ({
+            ...mapRowToOrderWithRestaurant(row),
+            //totalItems: row.total_items,
+            items: itemsByOrderId[row.id] || []
+          }));
+          
+          resolve(ordersWithItems);
+        });
       });
     });
   }

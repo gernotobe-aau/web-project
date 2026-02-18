@@ -4,7 +4,7 @@
   </div>
 
   <!-- Empty Cart State -->
-  <div *ngIf="cartByRestaurant.length === 0" class="empty-state">
+  <div *ngIf="!cart.restaurants || cart.restaurants!.length == 0" class="empty-state">
     <mat-icon>shopping_cart</mat-icon>
     <h2>Dein Warenkorb ist leer</h2>
     <p>Füge Gerichte hinzu, um zu beginnen.</p>
@@ -14,58 +14,45 @@
   </div>
 
   <!-- Cart Content -->
-  <div *ngIf="cartByRestaurant.length > 0" class="cart-content">
+  <div *ngIf="cart.restaurants && cart.restaurants!.length > 0" class="cart-content">
     <!-- Restaurant Groups -->
-    <div *ngFor="let cart of cartByRestaurant; trackBy: trackByRestaurant" class="restaurant-group">
+    <div *ngFor="let restaurantCart of cart.restaurants; trackBy: trackByRestaurant" class="restaurant-group">
       <!-- Restaurant Header -->
       <div class="restaurant-header">
-        <h2>{{ cart.restaurantName }}</h2>
-        <span class="item-count">{{ cart.totalItems }} {{ cart.totalItems === 1 ? 'Artikel' : 'Artikel' }}</span>
+        <h2>{{ restaurantCart.restaurantName }}</h2>
+        <span class="item-count">{{ restaurantCart.totalItems }} {{ restaurantCart.totalItems === 1 ? 'Artikel' : 'Artikel' }}</span>
       </div>
 
       <!-- Items List -->
       <div class="items-list">
-        <div
-          *ngFor="let item of cart.items; trackBy: trackByCartItem"
-          class="cart-item"
-        >
-          <!-- Item Photo -->
-          <div *ngIf="getDishPhotoUrl(item.dish.photo_url)" class="item-photo">
-            <img
-              [src]="getDishPhotoUrl(item.dish.photo_url)"
-              [alt]="item.dish.name"
-            />
-          </div>
-          <div *ngIf="!getDishPhotoUrl(item.dish.photo_url)" class="item-photo item-photo-placeholder">
-            <mat-icon>restaurant</mat-icon>
-          </div>
-
+        <div *ngFor="let rItem of restaurantCart.items; trackBy: trackByCartItem" class="cart-item">
           <!-- Item Info -->
           <div class="item-info">
-            <h3 class="item-name">{{ item.dish.name }}</h3>
+            <h3 class="item-name">{{ rItem.dishName }}</h3>
             <p class="item-price">
-              {{ item.dish.price | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }} x {{ item.quantity }}
+              {{ rItem.pricePerUnit | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }} x {{ rItem.quantity }}
             </p>
           </div>
 
           <!-- Item Total Price -->
+           <!--item.pricePerUnit * itemQuantity-->
           <div class="item-total-price">
-            {{ item.dish.price * item.quantity | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+            {{ rItem.pricePerUnit * rItem.quantity  | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}
           </div>
 
           <!-- Quantity Controls -->
           <div class="quantity-controls">
             <button
               mat-icon-button
-              (click)="decrementQuantity(item)"
+              (click)="decrementQuantity(rItem)"
               matTooltip="Menge reduzieren"
             >
               <mat-icon>remove</mat-icon>
             </button>
-            <span class="quantity">{{ item.quantity }}</span>
+            <span class="quantity">{{ rItem.quantity }}</span>
             <button
               mat-icon-button
-              (click)="incrementQuantity(item)"
+              (click)="incrementQuantity(rItem)"
               matTooltip="Menge erhöhen"
             >
               <mat-icon>add</mat-icon>
@@ -76,7 +63,7 @@
           <button
             mat-icon-button
             color="warn"
-            (click)="removeItem(item)"
+            (click)="removeItem(rItem)"
             matTooltip="Entfernen"
           >
             <mat-icon>delete</mat-icon>
@@ -87,7 +74,7 @@
       <!-- Restaurant Subtotal -->
       <div class="restaurant-subtotal">
         <span>Summe für diesen Restaurant:</span>
-        <span class="price">{{ cart.totalPrice | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}</span>
+        <span class="price">{{ restaurantCart.totalPrice | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}</span>
       </div>
     </div>
 

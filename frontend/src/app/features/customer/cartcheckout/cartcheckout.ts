@@ -9,8 +9,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatBadgeModule } from '@angular/material/badge';
-import { CartService, CartByRestaurant, CartItem } from '../../../core/services/cart.service';
+import { CartService } from '../../../core/services/cart.service';
 import { environment } from '../../../../environments/environment';
+import { Cart, CartByRestaurant, CartItem } from '../../../core/models/cart.model';
 
 @Component({
   selector: 'app-cartcheckout',
@@ -31,7 +32,7 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './cartcheckout.css',
 })
 export class CartcheckoutComponent implements OnInit {
-  cartByRestaurant: CartByRestaurant[] = [];
+  cart: Cart = {} as Cart;
   loading = true;
 
   constructor(
@@ -45,24 +46,24 @@ export class CartcheckoutComponent implements OnInit {
     
     // Subscribe to cart changes
     this.cartService.cart$.subscribe(() => {
-      this.cartByRestaurant = this.cartService.getCartByRestaurant();
+      this.cart = this.cartService.getCart();
       this.cdr.detectChanges();
     });
 
     // Initial load
-    this.cartByRestaurant = this.cartService.getCartByRestaurant();
+    this.cart = this.cartService.getCart();
   }
 
   incrementQuantity(item: CartItem): void {
-    this.cartService.incrementQuantity(item.dish.id, item.restaurantId);
+    this.cartService.incrementQuantity(item.dishId, item.restaurantId);
   }
 
   decrementQuantity(item: CartItem): void {
-    this.cartService.decrementQuantity(item.dish.id, item.restaurantId);
+    this.cartService.decrementQuantity(item.dishId, item.restaurantId);
   }
 
   removeItem(item: CartItem): void {
-    this.cartService.removeItem(item.dish.id, item.restaurantId);
+    this.cartService.removeItem(item.dishId, item.restaurantId);
   }
 
   getDishPhotoUrl(photoUrl: string | null): string | null {
@@ -72,20 +73,20 @@ export class CartcheckoutComponent implements OnInit {
   }
 
   proceedToCheckout(): void {
-    // TODO: Implement checkout logic
-    console.log('Proceeding to checkout with:', this.cartByRestaurant);
+    console.log('Proceeding to checkout with:', this.cart);
+    this.cartService.createOrder();
   }
 
   getGrandTotal(): number {
-    return this.cartByRestaurant.reduce((sum, c) => sum + c.totalPrice, 0);
+    return this.cart!.restaurants.reduce((sum, r) => sum + r.totalPrice, 0);
   }
 
   // TrackBy functions
-  trackByRestaurant(index: number, cart: CartByRestaurant): number {
-    return cart.restaurantId;
+  trackByRestaurant(index: number, cartr: CartByRestaurant): string {
+    return cartr.restaurantId;
   }
 
   trackByCartItem(index: number, item: CartItem): number {
-    return item.dish.id;
+    return item.dishId;
   }
 }

@@ -56,7 +56,7 @@ export class OrderService {
    */
   async createOrder(customerId: string, orderRequest: CreateOrderRequest): Promise<OrderWithItems> {
     const errors: string[] = [];
-
+    console.log('received create order in service:', orderRequest)
     // Validate input
     if (!orderRequest.restaurantId) {
       errors.push('Restaurant ID is required');
