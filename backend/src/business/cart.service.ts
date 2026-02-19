@@ -1,25 +1,9 @@
 import { Database } from 'sqlite3';
-import { OrderRepository, Order, CreateOrderData, OrderStatus, OrderWithRestaurant, OrderWithCustomer } from '../repositories/order.repository';
-import { OrderItemRepository, CreateOrderItemData } from '../repositories/order-item.repository';
-import { OrderStatusHistoryRepository } from '../repositories/order-status-history.repository';
-import { VoucherRepository } from '../repositories/voucher.repository';
+import { OrderStatus } from '../repositories/order.repository';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { DishRepository } from '../repositories/dish.repository';
-import { CustomerRepository } from '../repositories/customer.repository';
-import { ValidationError, ConflictError, NotFoundError, AuthorizationError } from '../middleware/error.middleware';
+import { ValidationError } from '../middleware/error.middleware';
 import { Cart, CartRepository } from '../repositories/cart.repository';
-
-interface CreateOrderRequest {
-  restaurantId: string;
-  items: { dishId: number; quantity: number }[];
-  voucherCode?: string;
-  customerNotes?: string;
-}
-
-interface OrderWithItems extends Order {
-  items: any[];
-  statusHistory?: any[];
-}
 
 // Valid status transitions
 const VALID_TRANSITIONS: { [key in OrderStatus]?: OrderStatus[] } = {

@@ -4,9 +4,14 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormField } from '@angular/material/form-field';
+import { MatLabel } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 import { Restaurant, RestaurantService, OpeningHour } from '../../../core/services/restaurant.service';
 import { User } from '../../../core/models/auth.models';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReviewService, RestaurantReview } from '../../../core/services/review.service';
 
 @Component({
   selector: 'app-restaurant-detail',
@@ -16,7 +21,11 @@ import { AuthService } from '../../../core/services/auth.service';
     RouterModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    FormsModule,
+    MatFormField,
+    MatLabel,
+    MatInputModule
   ],
   templateUrl: './restaurant-detail.component.html',
   styleUrl: './restaurant-detail.component.css'
@@ -27,10 +36,11 @@ export class RestaurantDetailComponent implements OnInit {
   loading = true;
   error: string | null = null;
   currentUser: User | null = null;
+  reviewText: string = '';
 
   dayNames: string[] = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
-  constructor(private route: ActivatedRoute, private restaurantService: RestaurantService, private cdr: ChangeDetectorRef,private authService: AuthService) {}
+  constructor(private route: ActivatedRoute, private restaurantService: RestaurantService, private cdr: ChangeDetectorRef,private authService: AuthService, private reviewService: ReviewService) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -78,5 +88,20 @@ export class RestaurantDetailComponent implements OnInit {
     } else {
       return `${hours.openTime || '-'} - ${hours.closeTime || '-'}`;
     }
+  }
+
+  saveReview(review: string, rating: number): void {
+    let restaurantReview = {} as RestaurantReview
+    restaurantReview.restaurantId = this.restaurantId!
+    restaurantReview.comment = review
+    restaurantReview.rating = rating
+    this.reviewService.createRestaurantReview(restaurantReview).subscribe({
+          next: (c) =>{
+            console.log('successfully seend review to backend:', c)
+          },
+          error: (e) =>{
+            console.log('error creating review:', e)
+          }
+        })
   }
 }

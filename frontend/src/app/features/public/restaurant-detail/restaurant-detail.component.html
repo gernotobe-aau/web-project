@@ -37,5 +37,15 @@
         Menü ansehen
       </button>
     </mat-card-actions>
+    <mat-card-content class="review">
+      
+      <mat-form-field class="add-review">
+        <mat-label>Rezension hinzufügen</mat-label>
+        <textarea matInput *ngIf="currentUser?.role === 'customer'" maxlength="100" [(ngModel)]="reviewText"></textarea>
+      </mat-form-field>
+      <button class="save-review" mat-raised-button *ngIf="currentUser?.role === 'customer'" color="primary" [disabled]="!reviewText.trim()" (click)="saveReview(reviewText, 5)">
+        Rezension speichern
+      </button>
+    </mat-card-content>
   </mat-card>
 </div>

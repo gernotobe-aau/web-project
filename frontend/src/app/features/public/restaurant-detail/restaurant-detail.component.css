@@ -75,6 +75,25 @@ mat-card-actions button {
   gap: 8px;
 }
 
+.review{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+mat-card-content button {
+  display: flex;
+  align-items: right;
+  gap: 8px;
+}
+
+mat-card-content textarea {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
   .restaurant-detail-container {

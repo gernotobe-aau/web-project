@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS restaurant_reviews (
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL,
     
     -- Unique constraint: one review per customer per order per restaurant
-    UNIQUE(restaurant_id, customer_id, order_id)
+    UNIQUE(restaurant_id, customer_id)
 );
 
 -- Indexes for restaurant_reviews table

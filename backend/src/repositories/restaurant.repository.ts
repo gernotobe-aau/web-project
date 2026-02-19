@@ -45,6 +45,15 @@ export interface CreateRestaurantData {
   openingHours: OpeningHour[];
 }
 
+export interface RestaurantReview {
+  reviewId: number;
+  restaurantId: string;
+  customerId: string;
+  orderId: string;
+  rating: number;
+  comment: string;
+}
+
 export class RestaurantRepository {
   constructor(private db: Database) {}
 
@@ -138,6 +147,44 @@ export class RestaurantRepository {
         );
       });
     });
+  }
+
+  async createRestaurantReview(data: RestaurantReview): Promise<RestaurantReview>{
+    return new Promise((resolve, reject) => {
+      const id = uuidv4();
+
+      const restaurantReviewQuery = `
+      INSERT INTO restaurant_reviews (
+            id, restaurant_id, customer_id, order_id, rating, comment
+          ) VALUES (?, ?, ?, ?, ?, ?)
+           ON CONFLICT
+           DO UPDATE
+           SET rating = EXCLUDED.rating,
+            comment = EXCLUDED.comment,
+            updated_at = CURRENT_TIMESTAMP,
+           order_id = EXCLUDED.order_id`
+
+      console.log('Big success:', data)
+      this.db.run(
+        restaurantReviewQuery,
+        [
+          data.reviewId,
+          data.restaurantId,
+          data.customerId,
+          data.orderId,
+          data.rating,
+          data.comment
+        ],
+        (err) =>{
+          if(err){
+            this.db.run('ROLLBACK');
+            reject(err);
+            return;
+          }
+        }
+      )
+      
+    })
   }
 
   /**
