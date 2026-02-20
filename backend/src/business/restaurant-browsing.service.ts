@@ -10,6 +10,9 @@ export interface RestaurantBrowsingDTO {
     postalCode: string;
     city: string;
   };
+  contactPhone?: string;
+  contactEmail?: string;
+  openingHours?: OpeningHour[];
   averageRating: number | null;
   estimatedDeliveryTime: number;
   isOpen: boolean;
@@ -40,6 +43,9 @@ export class RestaurantBrowsingService {
             postalCode: restaurant.postalCode,
             city: restaurant.city
           },
+          contactPhone: restaurant.contactPhone,
+          contactEmail: restaurant.contactEmail,
+          openingHours: restaurant.openingHours,
           averageRating,
           estimatedDeliveryTime,
           isOpen
@@ -48,6 +54,39 @@ export class RestaurantBrowsingService {
     );
 
     return restaurantsWithDetails;
+  }
+
+  /**
+   * Get all available restaurants with browsing information
+   */
+  async getRestaurantById(id: string): Promise<RestaurantBrowsingDTO | null> {
+    const restaurant = await this.restaurantRepository.findById(id);
+    
+    if (!restaurant) {
+      return null;
+    }
+
+    const averageRating = await this.restaurantRepository.getAverageRating(restaurant.id);
+    const isOpen = this.isRestaurantOpen(restaurant.openingHours);
+    const estimatedDeliveryTime = this.calculateDeliveryTime(restaurant.id);
+
+    return {
+      id: restaurant.id,
+      name: restaurant.name,
+      categories: restaurant.categories,
+      address: {
+        street: restaurant.street,
+        houseNumber: restaurant.houseNumber,
+        postalCode: restaurant.postalCode,
+        city: restaurant.city
+      },
+      contactPhone: restaurant.contactPhone,
+      contactEmail: restaurant.contactEmail,
+      openingHours: restaurant.openingHours,
+      averageRating,
+      estimatedDeliveryTime: this.calculateDeliveryTime(restaurant.id),
+      isOpen
+    };
   }
 
   /**

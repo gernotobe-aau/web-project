@@ -22,6 +22,7 @@ export interface Dish {
   price: number;
   display_order: number;
   photo_url: string | null;
+  average_rating: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -85,9 +86,14 @@ export class MenuService {
 
   /**
    * Get all categories for the restaurant
+   * @param restaurantId Optional. If provided, gets categories for that restaurant. If not provided, gets for authenticated user's restaurant.
    */
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.apiUrl}/categories`);
+  getCategories(restaurantId?: string): Observable<Category[]> {
+    let params = new HttpParams();
+    if (restaurantId !== undefined) {
+      params = params.set('restaurantId', restaurantId);
+    }
+    return this.http.get<Category[]>(`${this.apiUrl}/categories`, { params });
   }
 
   /**
@@ -123,12 +129,17 @@ export class MenuService {
   // ===== DISH METHODS =====
 
   /**
-   * Get all dishes (optionally filtered by category)
+   * Get all dishes (optionally filtered by category and/or restaurant)
+   * @param categoryId Optional category filter
+   * @param restaurantId Optional restaurant filter. If provided, gets dishes for that restaurant.
    */
-  getDishes(categoryId?: number): Observable<Dish[]> {
+  getDishes(categoryId?: number, restaurantId?: string): Observable<Dish[]> {
     let params = new HttpParams();
     if (categoryId !== undefined) {
       params = params.set('categoryId', categoryId.toString());
+    }
+    if (restaurantId !== undefined) {
+      params = params.set('restaurantId', restaurantId);
     }
     return this.http.get<Dish[]>(`${this.apiUrl}/dishes`, { params });
   }

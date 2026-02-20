@@ -45,6 +45,17 @@ export interface CreateRestaurantData {
   openingHours: OpeningHour[];
 }
 
+export interface RestaurantReview {
+  reviewId: number;
+  restaurantId: string;
+  customerId: string;
+  customerName: string;
+  orderId: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
 export class RestaurantRepository {
   constructor(private db: Database) {}
 
@@ -139,6 +150,65 @@ export class RestaurantRepository {
       });
     });
   }
+
+  async createRestaurantReview(data: RestaurantReview): Promise<RestaurantReview>{
+    return new Promise((resolve, reject) => {
+      const id = uuidv4();
+
+      const restaurantReviewQuery = `
+      INSERT INTO restaurant_reviews (
+            id, restaurant_id, customer_id, order_id, rating, comment
+          ) VALUES (?, ?, ?, ?, ?, ?)
+           ON CONFLICT
+           DO UPDATE
+           SET rating = EXCLUDED.rating,
+            comment = EXCLUDED.comment,
+            updated_at = CURRENT_TIMESTAMP,
+           order_id = EXCLUDED.order_id`
+
+      console.log('Big success:', data)
+      this.db.run(
+        restaurantReviewQuery,
+        [
+          data.reviewId,
+          data.restaurantId,
+          data.customerId,
+          data.orderId,
+          data.rating,
+          data.comment
+        ],
+        (err) =>{
+          if(err){
+            reject(err);
+            return;
+          }
+          resolve(data)
+        }
+      )
+      
+    })
+  }
+
+  async getRestaurantReviews(restaurant_id: string): Promise<RestaurantReview[]>{
+    return new Promise((resolve, reject) => {
+
+      const sql = `SELECT r.*, c.first_name, c.last_name 
+      FROM restaurant_reviews r
+      JOIN customers c ON r.customer_id = c.id
+      WHERE restaurant_id = ? ORDER BY updated_at DESC
+      `;
+      
+      this.db.all(sql, [restaurant_id], (err, rows: any[]) => {
+        if(err) return reject(err);
+        if(!rows){
+          return resolve([])
+        }
+        resolve(rows.map(mapRowToRestaurantReview))
+        
+      })
+    })
+  }
+
 
   /**
    * Find restaurant by ID with categories and opening hours
@@ -559,3 +629,18 @@ export class RestaurantRepository {
     };
   }
 }
+
+
+
+  function mapRowToRestaurantReview(row: any): RestaurantReview{
+    return {
+      reviewId: row.id,
+      restaurantId: row.restaurant_id,
+      orderId: row.order_id,
+      customerId: row.customer_id,
+      customerName: row.first_name + " " + row.last_name.substring(0,1) + ".",
+      rating: row.rating,
+      comment: row.comment,
+      date: row.updated_at
+    };
+  }

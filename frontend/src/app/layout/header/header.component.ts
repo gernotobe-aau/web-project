@@ -56,4 +56,16 @@ export class HeaderComponent implements OnInit {
     }
     return `${this.currentUser.firstName} ${this.currentUser.lastName}`;
   }
+
+  /**
+   * Refresh customer name
+   */
+  refreshCustomerName(): void {
+    if (this.currentUser) {
+      const headerElement = document.querySelector('.user-name');
+      if (headerElement) {
+        headerElement.textContent = this.getUserDisplayName();
+      }
+    }
+  }
 }

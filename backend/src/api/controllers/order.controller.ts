@@ -9,6 +9,7 @@ export class OrderController {
    * POST /api/orders - Create a new order (Customer only)
    */
   createOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    console.log('received comman to create order:', req)
     try {
       const user = (req as any).user;
       const customerId = user.sub;
@@ -17,6 +18,7 @@ export class OrderController {
 
       res.status(201).json(order);
     } catch (error) {
+      console.log('Error in order controller:', error)
       next(error);
     }
   };
@@ -38,6 +40,7 @@ export class OrderController {
       };
 
       const orders = await this.orderService.getCustomerOrders(customerId, filters);
+      console.log('Loaded orders:', orders)
 
       res.status(200).json(orders);
     } catch (error) {

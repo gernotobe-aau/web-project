@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CategoryManagementService } from '../../business/category-management.service';
 import { DishManagementService } from '../../business/dish-management.service';
+import { DishReview } from '../../repositories/dish.repository';
 
 export class MenuController {
   constructor(
@@ -12,14 +13,21 @@ export class MenuController {
 
   /**
    * GET /api/menu/categories
-   * Get all categories for the logged-in restaurant
+   * Get all categories for a restaurant
+   * Can be called by:
+   * 1. Restaurant owner (uses their restaurantId from JWT)
+   * 2. Customer viewing a specific restaurant's menu (uses restaurantId query param)
    */
   getCategories = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const restaurantId = (req as any).user.restaurantId;
+      const userRestaurantId = (req as any).user?.restaurantId;
+      const queryRestaurantId = req.query.restaurantId as string | undefined;
+
+      // Determine which restaurant's menu to fetch
+      const restaurantId = queryRestaurantId || userRestaurantId;
 
       if (!restaurantId) {
-        return res.status(403).json({ message: 'Nur Restaurantbesitzer haben Zugriff' });
+        return res.status(403).json({ message: 'Restaurantid erforderlich' });
       }
 
       const categories = await this.categoryService.getCategories(restaurantId);
@@ -141,14 +149,21 @@ export class MenuController {
 
   /**
    * GET /api/menu/dishes
-   * Get all dishes (optionally filtered by category)
+   * Get all dishes (optionally filtered by category and/or restaurant)
+   * Can be called by:
+   * 1. Restaurant owner (uses their restaurantId from JWT)
+   * 2. Customer viewing a specific restaurant's menu (uses restaurantId query param)
    */
   getDishes = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const restaurantId = (req as any).user.restaurantId;
+      const userRestaurantId = (req as any).user?.restaurantId;
+      const queryRestaurantId = req.query.restaurantId as string | undefined;
+
+      // Determine which restaurant's dishes to fetch
+      const restaurantId = queryRestaurantId || userRestaurantId;
 
       if (!restaurantId) {
-        return res.status(403).json({ message: 'Nur Restaurantbesitzer haben Zugriff' });
+        return res.status(403).json({ message: 'Restaurantid erforderlich' });
       }
 
       const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string, 10) : undefined;
@@ -399,5 +414,18 @@ export class MenuController {
       next(error);
     }
   };
-}
 
+  saveDishReview = async (req: Request, res: Response, next: NextFunction) =>{
+    try{
+      const user = (req as any).user;
+      const customerId = user.sub;
+      const dishReview = req.body as DishReview
+      dishReview.customerId =customerId
+      console.log('received post request for dish review:', dishReview)
+      const result = await this.dishService.saveDishReview(dishReview);
+      res.json(result)
+    }catch(error){
+      next(error)
+    }
+  }
+}

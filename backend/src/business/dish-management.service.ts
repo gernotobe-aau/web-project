@@ -1,4 +1,4 @@
-import { DishRepository, CreateDishData, UpdateDishData } from '../repositories/dish.repository';
+import { DishRepository, CreateDishData, UpdateDishData, DishReview } from '../repositories/dish.repository';
 import { CategoryRepository } from '../repositories/category.repository';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -17,14 +17,14 @@ export class DishManagementService {
   /**
    * Get all dishes for a restaurant (optionally filtered by category)
    */
-  async getDishes(restaurantId: number, categoryId?: number) {
+  async getDishes(restaurantId: string | number, categoryId?: number) {
     return this.dishRepository.findByRestaurantId(restaurantId, categoryId);
   }
 
   /**
    * Get a single dish
    */
-  async getDish(dishId: number, restaurantId: number) {
+  async getDish(dishId: number, restaurantId: string) {
     const dish = await this.dishRepository.findById(dishId);
     if (!dish) {
       throw { statusCode: 404, message: 'Gericht nicht gefunden' };
@@ -39,7 +39,7 @@ export class DishManagementService {
    * Create a new dish
    */
   async createDish(
-    restaurantId: number,
+    restaurantId: string,
     data: {
       name: string;
       description?: string;
@@ -73,7 +73,7 @@ export class DishManagementService {
    */
   async updateDish(
     dishId: number,
-    restaurantId: number,
+    restaurantId: string,
     data: {
       name?: string;
       description?: string;
@@ -112,7 +112,7 @@ export class DishManagementService {
   /**
    * Delete a dish
    */
-  async deleteDish(dishId: number, restaurantId: number) {
+  async deleteDish(dishId: number, restaurantId: string) {
     // Check if dish exists and belongs to restaurant
     const dish = await this.dishRepository.findById(dishId);
     if (!dish) {
@@ -139,7 +139,7 @@ export class DishManagementService {
   /**
    * Delete dish photo
    */
-  async deleteDishPhoto(dishId: number, restaurantId: number) {
+  async deleteDishPhoto(dishId: number, restaurantId: string) {
     // Check if dish exists and belongs to restaurant
     const dish = await this.dishRepository.findById(dishId);
     if (!dish) {
@@ -167,7 +167,7 @@ export class DishManagementService {
   /**
    * Reorder dishes
    */
-  async reorderDishes(restaurantId: number, dishIds: number[]) {
+  async reorderDishes(restaurantId: string, dishIds: number[]) {
     // Validation
     if (!Array.isArray(dishIds) || dishIds.length === 0) {
       throw {
@@ -208,7 +208,7 @@ export class DishManagementService {
   /**
    * Get full menu with categories and dishes
    */
-  async getFullMenu(restaurantId: number) {
+  async getFullMenu(restaurantId: string) {
     return this.dishRepository.getFullMenu(restaurantId);
   }
 
@@ -216,7 +216,7 @@ export class DishManagementService {
    * Validate dish data
    */
   private async validateDishData(
-    restaurantId: number,
+    restaurantId: string,
     data: {
       name?: string;
       description?: string;
@@ -305,6 +305,11 @@ export class DishManagementService {
         throw error;
       }
     }
+  }
+
+
+  async saveDishReview(dishReview: DishReview): Promise<void>{
+    this.dishRepository.createDishReview(dishReview);
   }
 }
 

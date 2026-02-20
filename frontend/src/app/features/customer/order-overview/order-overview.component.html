@@ -1,0 +1,142 @@
+<div class="order-overview-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-section">
+      <h1>Bestellübersicht</h1>
+      <p class="subtitle" *ngIf="!loading">
+        {{ displayedOrders.length }} {{ displayedOrders.length === 1 ? 'Bestellung' : 'Bestellungen' }}
+      </p>
+    </div>
+    
+    <div class="actions">
+      <!-- Refresh Button -->
+      <button 
+        mat-icon-button 
+        (click)="loadOrders()" 
+        [disabled]="loading"
+        matTooltip="Aktualisieren">
+        <mat-icon [class.rotating]="loading">refresh</mat-icon>
+      </button>
+
+      <!-- Toggle Completed Orders -->
+      <mat-slide-toggle 
+        [checked]="showCompleted" 
+        (change)="toggleCompleted()"
+        color="primary">
+        Abgeschlossene anzeigen ({{ completedCount }})
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="loading && orders.length === 0">
+    <mat-spinner></mat-spinner>
+    <p>Bestellungen werden geladen...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && displayedOrders.length === 0">
+    <mat-icon>restaurant_menu</mat-icon>
+    <h2>Keine Bestellungen vorhanden</h2>
+    <p *ngIf="completedCount > 0 && !showCompleted">
+      Es gibt {{ completedCount }} abgeschlossene {{ completedCount === 1 ? 'Bestellung' : 'Bestellungen' }}.
+      <button mat-button color="primary" (click)="toggleCompleted()">Anzeigen</button>
+    </p>
+  </div>
+
+  <!-- Orders List -->
+  <div class="orders-list" *ngIf="!loading && displayedOrders.length > 0">
+    <mat-card 
+      *ngFor="let order of displayedOrders; trackBy: trackByOrderId" 
+      class="order-card"
+      [class.expanded]="isExpanded(order)">
+      
+      <!-- Card Header -->
+      <mat-card-header>
+        <div class="order-header">
+          <div class="order-info">
+            <div class="order-number">
+              <mat-icon>receipt</mat-icon>
+              <span class="order-num-text">#{{ order.dailyOrderNumber | number:'3.0-0' }}</span>
+              <mat-chip [color]="getStatusColor(order.status)" highlighted>
+                {{ getStatusLabel(order.status) }}
+              </mat-chip>
+            </div>
+            <div class="order-meta">
+              <span class="time">
+                <mat-icon>schedule</mat-icon>
+                Created at: {{ formatDate(order.createdAt) }}
+              </span>
+              <span class="deliveryTime">
+                <mat-icon>schedule</mat-icon>
+                Estimated delivery time: {{ formatDate(order.estimatedDeliveryTime) }}
+              </span>
+              <span class="amount">
+                <span class="price-value">{{ order.totalAmount }}</span> €
+              </span>
+            </div>
+          </div>
+
+          <div class="order-actions">
+            <!-- Expand Button -->
+            <button 
+              mat-icon-button 
+              (click)="toggleExpand(order)"
+              matTooltip="Details">
+              <mat-icon>{{ isExpanded(order) ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+
+      <!-- Expanded Details -->
+      <mat-card-content *ngIf="isExpanded(order)" class="order-details">
+        <mat-divider></mat-divider>
+
+        <!-- Order Items -->
+        <div class="section">
+          <h3>Bestellte Gerichte</h3>
+          <table class="items-table">
+            <tbody>
+              <tr *ngFor="let item of order.items">
+                <td class="item-qty">{{ item.quantity }}</td>
+                <td class="item-name">{{ item.dishName }}</td>
+                <td class="item-price">{{ item.pricePerUnit.toFixed(2) }} €</td>
+                <td class="item-subtotal">{{ item.subtotal.toFixed(2) }} €</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="3"><strong>Gesamt</strong></td>
+                <td class="item-subtotal"><strong>{{ order.totalAmount.toFixed(2) }} €</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Voucher -->
+        <div class="section" *ngIf="order.voucher">
+          <h3>Gutschein</h3>
+          <div class="voucher-info">
+            <p><strong>Code:</strong> {{ order.voucher.code }}</p>
+            <p><strong>Rabatt:</strong> 
+              {{ order.voucher.discountType === 'percentage' 
+                ? (order.voucher.discountValue + '%') 
+                : (order.voucher.discountValue.toFixed(2) + ' €') }}
+            </p>
+            <p><strong>Ersparnis:</strong> {{ order.voucher.discountAmount.toFixed(2) }} €</p>
+          </div>
+        </div>
+
+        <!-- Customer Notes -->
+        <div class="section customer-notes" *ngIf="order.customerNotes">
+          <h3>
+            <mat-icon>notes</mat-icon>
+            Kundennotizen
+          </h3>
+          <p>{{ order.customerNotes }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

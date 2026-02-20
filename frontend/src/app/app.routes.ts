@@ -9,8 +9,12 @@ import { ForbiddenComponent } from './features/public/forbidden/forbidden';
 import { RestaurantDetailComponent } from './features/public/restaurant-detail/restaurant-detail.component';
 import { MenuManagementComponent } from './features/restaurant/menu-management/menu-management';
 import { ProfileComponent } from './features/restaurant/profile/profile';
+import { ProfileComponent as CustomerProfileComponent } from './features/customer/profile/profile';
 import { OrderOverviewComponent } from './features/restaurant/order-overview/order-overview.component';
+import { OrderOverviewComponent as CustomerOrderOverviewComponent } from './features/customer/order-overview/order-overview.component';
 import { AnalyticsComponent } from './features/restaurant/analytics/analytics';
+import { MenuViewComponent } from './features/customer/menu-overview/menu-view';
+import { CartcheckoutComponent } from './features/customer/cartcheckout/cartcheckout';
 
 export const routes: Routes = [
   // Public routes
@@ -31,6 +35,21 @@ export const routes: Routes = [
       { path: 'profile', component: ProfileComponent },
       { path: 'orders', component: OrderOverviewComponent },
       { path: 'analytics', component: AnalyticsComponent }
+    ]
+  },
+
+  // Customer routes (protected)
+  {
+    path: 'customer',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['customer'] },
+    children: [
+      { path: '', redirectTo: 'landing', pathMatch: 'full' },
+      { path: 'profile', component: CustomerProfileComponent },
+      { path: 'menu', component: MenuViewComponent },
+      { path: 'menu/:restaurantId', component: MenuViewComponent },
+      { path: 'cartcheckout', component: CartcheckoutComponent },
+      { path: 'orders', component: CustomerOrderOverviewComponent}
     ]
   },
 

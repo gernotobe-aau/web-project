@@ -30,6 +30,22 @@ export class OrderService {
   }
 
   /**
+   * Get all orders for a specific customer
+   * @param customerId The customer ID
+   * @returns Observable of Order array
+   */
+  getCustomerOrders(customerId: string): Observable<Order[]> {
+    return this.http.get<any>(`${this.apiUrl}/orders/my`)
+    .pipe(
+        map(response => {
+          // Backend kann entweder {value: [], Count: n} oder direkt Array zurückgeben
+          const orderArray = Array.isArray(response) ? response : (response.value || []);
+          return orderArray.map((order: any) => this.mapBackendOrderToFrontend(order));
+        })
+      );
+  }
+
+  /**
    * Accept a pending order
    * @param restaurantId The restaurant ID
    * @param orderId The order ID

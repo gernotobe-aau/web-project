@@ -1,0 +1,107 @@
+<div class="profile-container">
+  <h1>Benutzer-Profil</h1>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Profil wird geladen...</p>
+  </div>
+
+  <form *ngIf="!isLoading && profileForm" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+
+    <!-- Contact Information Card -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>Grundinformationen</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        
+        <!-- First name -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Vorname</mat-label>
+          <input matInput type="text" formControlName="firstName" />
+          <mat-error *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched">
+            {{ getErrorMessage('firstName') }}
+          </mat-error>
+        </mat-form-field>
+        
+        <!-- Last name -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nachname</mat-label>
+          <input matInput type="text" formControlName="lastName" />
+          <mat-error *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched">
+            {{ getErrorMessage('lastName') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>E-Mail</mat-label>
+          <input matInput type="email" formControlName="email" />
+          <mat-error *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+        </mat-form-field>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Address Information Card -->
+    <mat-card class="section-card">
+      <mat-card-header>
+        <mat-card-title>Adress-Informationen</mat-card-title>
+      </mat-card-header>
+      <mat-card-content formGroupName="address">
+        <!-- Address -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse</mat-label>
+          <input matInput formControlName="street" />
+        </mat-form-field>
+
+        <!-- House Number -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Hausnummer</mat-label>
+          <input matInput formControlName="houseNumber" />
+        </mat-form-field>
+
+        <!-- Staircase -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Treppe</mat-label>
+          <input matInput formControlName="staircase" />
+        </mat-form-field>
+
+        <!-- Door -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tür</mat-label>
+          <input matInput formControlName="door" />
+        </mat-form-field>
+
+        <!-- Postal Code -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Postleitzahl</mat-label>
+          <input matInput formControlName="postalCode" />
+        </mat-form-field>
+
+        <!-- City -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Stadt</mat-label>
+          <input matInput formControlName="city" />
+        </mat-form-field>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit"
+        [disabled]="isSaving || profileForm.invalid">
+        <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+        <span *ngIf="!isSaving">Änderungen speichern</span>
+        <span *ngIf="isSaving">Speichert...</span>
+      </button>
+    </div>
+
+  </form>
+</div>

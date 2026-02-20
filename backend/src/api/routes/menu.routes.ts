@@ -68,6 +68,8 @@ function getMenuController(): MenuController {
   return menuController;
 }
 
+router.post('/dish-review', withController(c => c.saveDishReview));
+
 // Wrapper function to ensure controller is initialized
 function withController(handler: (controller: MenuController) => (req: Request, res: Response, next: NextFunction) => Promise<any>) {
   return (req: Request, res: Response, next: NextFunction) => {

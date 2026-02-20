@@ -11,6 +11,15 @@ export interface Dish {
   photo_url: string | null;
   created_at: string;
   updated_at: string;
+  average_rating: number | null;
+}
+
+export interface DishReview {
+  dishId: string;
+  rating: number;
+  customerId: string;
+  comment: string;
+  orderId: number
 }
 
 export interface CreateDishData {
@@ -38,10 +47,12 @@ export class DishRepository {
   /**
    * Find all dishes for a restaurant
    */
-  async findByRestaurantId(restaurantId: number, categoryId?: number): Promise<Dish[]> {
+  async findByRestaurantId(restaurantId: string | number, categoryId?: number): Promise<Dish[]> {
     return new Promise((resolve, reject) => {
       let query = `
-        SELECT * FROM dishes 
+        SELECT *, 
+        (SELECT avg(rating) FROM dish_reviews r WHERE r.dish_id = d.id) AS average_rating
+        FROM dishes d
         WHERE restaurant_id = ?
       `;
       const params: any[] = [restaurantId];
@@ -247,7 +258,7 @@ export class DishRepository {
   /**
    * Get full menu with categories and dishes
    */
-  async getFullMenu(restaurantId: number): Promise<any> {
+  async getFullMenu(restaurantId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const categoryQuery = `
         SELECT * FROM categories 
@@ -279,5 +290,41 @@ export class DishRepository {
       });
     });
   }
+
+  async createDishReview(dishReview: DishReview): Promise<any>{
+    return new Promise((resolve, reject) => {
+      const query = `
+      INSERT INTO dish_reviews (
+            dish_id, customer_id, order_id, rating, comment
+          ) VALUES (?, ?, ?, ?, ?)
+           ON CONFLICT
+           DO UPDATE
+           SET rating = EXCLUDED.rating,
+            comment = EXCLUDED.comment,
+            updated_at = CURRENT_TIMESTAMP,
+           order_id = EXCLUDED.order_id`
+
+      this.db.run(
+        query,
+        [
+          dishReview.dishId,
+          dishReview.customerId,
+          dishReview.orderId,
+          dishReview.rating,
+          dishReview.comment
+
+        ],
+        (err) =>{
+          if(err){
+            reject(err);
+            return;
+          }
+          resolve(dishReview)
+        }
+      )
+    })
+  }
+
+
 }
 

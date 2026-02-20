@@ -1,0 +1,183 @@
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  color: #666;
+}
+
+.section-card {
+  margin-bottom: 24px;
+}
+
+mat-card-header {
+  margin-bottom: 16px;
+}
+
+mat-card-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.categories-section {
+  margin-top: 16px;
+}
+
+.section-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: #999;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+mat-chip-set {
+  margin-bottom: 8px;
+}
+
+.day-section {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 0;
+}
+
+.day-section:last-child {
+  border-bottom: none;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.day-label {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: #333;
+}
+
+.time-slots {
+  margin-left: 16px;
+  margin-top: 12px;
+}
+
+.time-slot {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.time-field {
+  flex: 1;
+  min-width: 120px;
+}
+
+.time-separator {
+  display: flex;
+  align-items: center;
+  padding-top: 8px;
+  color: #666;
+}
+
+.slot-error {
+  width: 100%;
+  color: #f44336;
+  font-size: 12px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+.add-slot-button {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.actions button {
+  min-width: 200px;
+}
+
+.actions button mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Snackbar styling */
+::ng-deep .success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .time-slot {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .time-field {
+    width: 100%;
+  }
+
+  .time-separator {
+    display: none;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}

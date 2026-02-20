@@ -218,6 +218,27 @@ export class CustomerRepository {
   }
 
   /**
+   * Update customer name
+   */
+  async updateName(id: string, firstName: string, lastName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const query = `
+        UPDATE customers
+        SET first_name = ?, last_name = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `;
+
+      this.db.run(query, [firstName, lastName, id], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  /**
    * Update customer email
    */
   async updateEmail(id: string, email: string): Promise<void> {
