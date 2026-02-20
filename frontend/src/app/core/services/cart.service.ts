@@ -33,23 +33,19 @@ export class CartService {
         // Load cart from localStorage
         console.log('From backend: ', c)
         let local = this.loadFromLocalStorage();
-        if(c && local && Date.parse(local.updatedAt) < Date.parse(c.updatedAt) || c && !local){
+        if(c && !local || c && local && Date.parse(local.updatedAt) < Date.parse(c.updatedAt)){
           
           console.log('Loading from backend:', c)
           if(!c.restaurants){
             c.restaurants = []
           }
           this.cart = c;
-          //this.saveToLocalStorage();
         }else if(local){
           console.log('Loading from local:', local)
           if(!this.cart.restaurants){
             this.cart.restaurants = []
           }
           this.cart = local!;
-          /*this.saveToBackEnd().subscribe({
-            next: (r) => {console.log('Cart saved:', r)},
-            error: (e) => {console.log('Error saving cart', e)}});*/
         }else{
           this.cart = {} as Cart
           this.cart.restaurants = []
@@ -101,6 +97,9 @@ export class CartService {
     let rest = this.cart.restaurants.find(r => r.restaurantId === restaurantId)
     if(rest){
       rest.items = rest.items.filter((item) => item.dishId !== dishId)
+      if(rest.items.length === 0){
+        this.cart.restaurants = this.cart.restaurants.filter(r => r.restaurantId !== restaurantId)
+      }
     }
     this.updateCart();
   }
