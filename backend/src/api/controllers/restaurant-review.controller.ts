@@ -16,4 +16,21 @@ export class RestaurantReviewController{
             next(error)
         }
     }
+
+    getReviewsByRId = async (req: Request, res: Response) => {
+        try{
+            const userRestaurantId = (req as any).user?.restaurantId;
+            const queryRestaurantId = req.query.restaurantId as string | undefined;
+
+            const restaurantId = queryRestaurantId || userRestaurantId;
+
+            if(!restaurantId){
+                return res.status(403).json({message: "RestaurantId erforderlich"})
+            }
+            const reviews = await this.restaurantReviewService.getRestaurantReviewsByRestaurantId(restaurantId)
+            res.status(200).json(reviews);
+        }catch(err){
+            console.log('Error when getting restaurant reviews:', err)
+        }
+    }
 }

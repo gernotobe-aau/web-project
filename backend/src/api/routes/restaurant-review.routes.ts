@@ -29,6 +29,13 @@ router.post('/restaurant-review', async(req, res, next) => {
     await controller.createReview(req, res, next);
 })
 
+// GET /api/restaurant-review
+router.get('/restaurant-review', async(req, res) => {
+    console.log('Received get request for review')
+    const controller = getRestaurantReviewController();
+    controller.getReviewsByRId(req, res);
+})
+
 
 
 export default router;

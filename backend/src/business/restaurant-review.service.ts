@@ -7,7 +7,7 @@ export class RestaurantReviewService {
     /**
      * create Restaurant Review
      */
-    async createRestaurantReview(customerId: string,restaurantReview: RestaurantReview): Promise<RestaurantReview>{
+    async createRestaurantReview(customerId: string, restaurantReview: RestaurantReview): Promise<RestaurantReview>{
         const errors: string[] = [];
         if(!restaurantReview){
             errors.push('review empty!');
@@ -16,5 +16,9 @@ export class RestaurantReviewService {
         restaurantReview.customerId = customerId
         const createdReview = this.restaurantRepo.createRestaurantReview(restaurantReview);
         return createdReview;
+    }
+
+    async getRestaurantReviewsByRestaurantId(restaurantId: string): Promise<RestaurantReview[]>{
+        return this.restaurantRepo.getRestaurantReviews(restaurantId);
     }
 }

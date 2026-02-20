@@ -11,6 +11,16 @@
     <mat-card-header>
       <mat-card-title>{{ restaurant.name }}</mat-card-title>
       <mat-card-subtitle>{{ restaurant.categories.join(', ') }}</mat-card-subtitle>
+      <mat-card-subtitle>
+        <!-- Rating -->
+        <div class="rating" *ngIf="restaurant.averageRating">
+          <span class="stars">
+            <mat-icon *ngFor="let star of getStars(restaurant.averageRating)" class="star filled">star</mat-icon>
+            <mat-icon *ngFor="let star of getEmptyStars(restaurant.averageRating)" class="star empty">star_border</mat-icon>
+          </span>
+          <span class="rating-value">({{ restaurant.averageRating.toFixed(1) }})</span>
+        </div>
+      </mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
@@ -39,13 +49,50 @@
     </mat-card-actions>
     <mat-card-content class="review">
       
+      <span class="stars">
+        <button *ngFor="let number of [1, 2, 3, 4, 5]" (click)="setRating(number)">
+          <mat-icon>{{ number <= reviewStars ? 'star' :  'star_border'}}</mat-icon>
+        </button>
+      </span>  
       <mat-form-field class="add-review">
         <mat-label>Rezension hinzufügen</mat-label>
         <textarea matInput *ngIf="currentUser?.role === 'customer'" maxlength="100" [(ngModel)]="reviewText"></textarea>
       </mat-form-field>
-      <button class="save-review" mat-raised-button *ngIf="currentUser?.role === 'customer'" color="primary" [disabled]="!reviewText.trim()" (click)="saveReview(reviewText, 5)">
+      <button class="save-review" mat-raised-button *ngIf="currentUser?.role === 'customer'" color="primary" [disabled]="!reviewText.trim() || reviewStars === 0" (click)="saveReview(reviewText, reviewStars)">
         Rezension speichern
       </button>
+    </mat-card-content>
+    
+    <mat-card-content class="reviews">
+      <div *ngIf="!loading && restaurantReviews.length > 0">
+      <mat-card *ngFor="let review of restaurantReviews">
+        <mat-card-header>
+          <!-- <mat-card-subtitle>{{review.customerName}}</mat-card-subtitle> -->
+          
+          <mat-card-subtitle>
+            <!-- Rating -->
+            
+            <div class="rating">
+              <b>{{review.customerName}},</b> {{review.date}}
+              <span class="stars" *ngIf="review.rating">
+                <mat-icon *ngFor="let star of getStars(review.rating)" class="star filled">star</mat-icon>
+                <mat-icon *ngFor="let star of getEmptyStars(review.rating)" class="star empty">star_border</mat-icon>
+              </span>
+            </div>
+            <mat-divider></mat-divider>
+          </mat-card-subtitle>
+          
+        </mat-card-header>
+        
+        <mat-card-content>
+          
+          {{review.comment}} 
+          
+        </mat-card-content>
+        
+      </mat-card>
+      
+    </div>
     </mat-card-content>
   </mat-card>
 </div>

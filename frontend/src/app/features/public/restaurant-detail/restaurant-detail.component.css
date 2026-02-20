@@ -94,6 +94,31 @@ mat-card-content textarea {
   gap: 8px;
 }
 
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+}
+
+.star {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.star.empty {
+  color: #ddd;
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
   .restaurant-detail-container {

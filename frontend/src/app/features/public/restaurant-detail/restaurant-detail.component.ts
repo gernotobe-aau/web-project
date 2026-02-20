@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField } from '@angular/material/form-field';
 import { MatLabel } from '@angular/material/form-field';
+import { MatDivider } from '@angular/material/divider';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Restaurant, RestaurantService, OpeningHour } from '../../../core/services/restaurant.service';
@@ -25,7 +26,8 @@ import { ReviewService, RestaurantReview } from '../../../core/services/review.s
     FormsModule,
     MatFormField,
     MatLabel,
-    MatInputModule
+    MatInputModule,
+    MatDivider
   ],
   templateUrl: './restaurant-detail.component.html',
   styleUrl: './restaurant-detail.component.css'
@@ -37,6 +39,8 @@ export class RestaurantDetailComponent implements OnInit {
   error: string | null = null;
   currentUser: User | null = null;
   reviewText: string = '';
+  restaurantReviews: RestaurantReview[] = [];
+  reviewStars: number = 0;
 
   dayNames: string[] = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
@@ -80,6 +84,7 @@ export class RestaurantDetailComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+    this.loadReviews();
   }
 
   formatOpeningHours(hours: OpeningHour): string {
@@ -96,12 +101,57 @@ export class RestaurantDetailComponent implements OnInit {
     restaurantReview.comment = review
     restaurantReview.rating = rating
     this.reviewService.createRestaurantReview(restaurantReview).subscribe({
-          next: (c) =>{
-            console.log('successfully seend review to backend:', c)
-          },
-          error: (e) =>{
-            console.log('error creating review:', e)
-          }
-        })
+      next: (c) =>{
+        console.log('successfully seend review to backend:', c)
+      },
+      error: (e) =>{
+        console.log('error creating review:', e)
+      }
+    })
+    this.reviewText = "";
+    this.reviewStars = 0;
+    this.loadReviews;
   }
+
+  setRating(stars: number){
+    if(this.reviewStars === stars){
+      this.reviewStars = 0
+    }else{
+      this.reviewStars = stars;
+    }
+  }
+
+  loadReviews(): void{
+    this.reviewService.getRestaurantReviews(this.restaurantId!).subscribe({
+      next: (r) =>{
+        this.restaurantReviews = r
+      },
+      error: (e) =>{
+        console.log('error loading reviews:', e)
+      }
+    })
+  }
+
+  /**
+   * Get star rating as array for template iteration
+   */
+  getStars(rating: number): number[] {
+    if (!rating) {
+      return [];
+    }
+    return Array(Math.round(rating)).fill(0);
+  }
+
+  /**
+   * Get empty stars for remaining rating
+   */
+  getEmptyStars(rating: number): number[] {
+    if (!rating) {
+      return [];
+    }
+    const filled = Math.round(rating);
+    return Array(5 - filled).fill(0);
+  }
+
+  
 }
