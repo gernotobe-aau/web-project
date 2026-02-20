@@ -104,11 +104,7 @@ web-project/
 │       ├── public/                  # Built frontend assets
 │       └── start-server.ps1         # Production startup script
 │
-├── requirements/                    # Feature specifications and documentation
-│   ├── feature-template.md
-│   └── ... feature documentation files
-│
-├── Dokumentation.md                 # Detailed project documentation
+├── Documentation.md                 # Detailed project documentation
 ├── database-schema.md               # Database schema reference
 └── README.md                        # This file
 ```
@@ -561,14 +557,6 @@ The [database-schema.md](./database-schema.md) file provides the complete databa
 - Entity-relationship diagram
 - Seed data specifications
 
-### Feature Requirements
-
-The `requirements/` directory contains detailed specifications for each implemented feature, including:
-- Feature overview and success criteria
-- User stories and acceptance tests
-- API endpoint documentation
-- UI/UX specifications
-
 ## Contributing and Development Practices
 
 When implementing new features or fixes:
@@ -598,4 +586,4 @@ This project is developed as part of the Web Technologies course 2025.
 
 ---
 
-For questions or issues, refer to the comprehensive documentation in [Dokumentation.md](./Dokumentation.md) or the specific feature documentation in the requirements/ folder.
+For questions or issues, refer to the comprehensive documentation in [Documentation.md](./Documentation.md).
