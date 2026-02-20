@@ -247,7 +247,7 @@ export class DishRepository {
   /**
    * Get full menu with categories and dishes
    */
-  async getFullMenu(restaurantId: number): Promise<any> {
+  async getFullMenu(restaurantId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const categoryQuery = `
         SELECT * FROM categories 

@@ -67,7 +67,7 @@ export class CategoryRepository {
   /**
    * Find category by restaurant and name
    */
-  async findByRestaurantAndName(restaurantId: number, name: string): Promise<Category | null> {
+  async findByRestaurantAndName(restaurantId: string, name: string): Promise<Category | null> {
     return new Promise((resolve, reject) => {
       const query = 'SELECT * FROM categories WHERE restaurant_id = ? AND name = ?';
       
@@ -81,7 +81,7 @@ export class CategoryRepository {
   /**
    * Get max display order for a restaurant
    */
-  async getMaxDisplayOrder(restaurantId: number): Promise<number> {
+  async getMaxDisplayOrder(restaurantId: string): Promise<number> {
     return new Promise((resolve, reject) => {
       const query = 'SELECT MAX(display_order) as max_order FROM categories WHERE restaurant_id = ?';
       

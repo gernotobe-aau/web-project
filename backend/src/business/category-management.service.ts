@@ -18,7 +18,7 @@ export class CategoryManagementService {
   /**
    * Create a new category
    */
-  async createCategory(restaurantId: number, name: string) {
+  async createCategory(restaurantId: string, name: string) {
     // Validation
     const errors = this.validateCategoryData({ name });
     if (errors.length > 0) {
@@ -50,7 +50,7 @@ export class CategoryManagementService {
   /**
    * Update a category
    */
-  async updateCategory(categoryId: number, restaurantId: number, name: string) {
+  async updateCategory(categoryId: number, restaurantId: string, name: string) {
     // Check if category exists and belongs to restaurant
     const category = await this.categoryRepository.findById(categoryId);
     if (!category) {
@@ -86,7 +86,7 @@ export class CategoryManagementService {
   /**
    * Delete a category
    */
-  async deleteCategory(categoryId: number, restaurantId: number) {
+  async deleteCategory(categoryId: number, restaurantId: string) {
     // Check if category exists and belongs to restaurant
     const category = await this.categoryRepository.findById(categoryId);
     if (!category) {
@@ -104,7 +104,7 @@ export class CategoryManagementService {
   /**
    * Reorder categories
    */
-  async reorderCategories(restaurantId: number, categoryIds: number[]) {
+  async reorderCategories(restaurantId: string, categoryIds: number[]) {
     // Validation
     if (!Array.isArray(categoryIds) || categoryIds.length === 0) {
       throw {
