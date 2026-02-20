@@ -1,4 +1,4 @@
-import { DishRepository, CreateDishData, UpdateDishData } from '../repositories/dish.repository';
+import { DishRepository, CreateDishData, UpdateDishData, DishReview } from '../repositories/dish.repository';
 import { CategoryRepository } from '../repositories/category.repository';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -305,6 +305,11 @@ export class DishManagementService {
         throw error;
       }
     }
+  }
+
+
+  async saveDishReview(dishReview: DishReview): Promise<void>{
+    this.dishRepository.createDishReview(dishReview);
   }
 }
 

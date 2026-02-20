@@ -70,6 +70,18 @@
                 </div>
 
                 <div class="dish-actions">
+                  <div class="rating" *ngIf="dish.average_rating">
+                    <span class="stars" (click)="openReviewDialog(dish)">
+                      <mat-icon *ngFor="let star of getStars(dish.average_rating)" class="star filled">star</mat-icon>
+                      <mat-icon *ngFor="let star of getEmptyStars(dish.average_rating)" class="star empty">star_border</mat-icon>
+                    </span>
+                    <span class="rating-value">({{ dish.average_rating.toFixed(1) }})</span>
+                  </div>
+                  <div class="rating" *ngIf="!dish.average_rating">
+                    <span class="stars">
+                      <button (click)="openReviewDialog(dish)"><b>Be the first to rate this dish</b></button>
+                    </span>
+                  </div>
                   <button
                     mat-icon-button
                     (click)="onAddToCart(dish)"

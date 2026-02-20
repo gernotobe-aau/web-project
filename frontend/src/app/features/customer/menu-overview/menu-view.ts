@@ -1,20 +1,20 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Restaurant, RestaurantService } from '../../../core/services/restaurant.service';
 import { CartService } from '../../../core/services/cart.service';
 import { MenuService, Category, Dish } from '../../../core/services/menu.service';
-import { CategoryDialogComponent } from './category-dialog/category-dialog';
-import { DishDialogComponent } from './dish-dialog/dish-dialog';
 import { environment } from '../../../../environments/environment';
+import {ChangeDetectionStrategy, inject} from '@angular/core';
+import { ReviewService, DishReview } from '../../../core/services/review.service';
 
 interface CategoryWithDishes extends Category {
   dishes?: Dish[];
@@ -45,15 +45,16 @@ export class MenuViewComponent implements OnInit {
   restaurantId: string | null = null;
   restaurantName: string | null = null;
   isOwnerView = false;
+  readonly dialog = inject(MatDialog);
 
   constructor(
     private menuService: MenuService,
-    private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private cartService: CartService,
-    private restaurantService: RestaurantService
+    private restaurantService: RestaurantService,
+    private reviewService: ReviewService
   ) {}
 
   ngOnInit(): void {
@@ -134,6 +135,31 @@ export class MenuViewComponent implements OnInit {
     });
   }
 
+  refreshDishes(categoryId: number){
+    this.menuService.getDishes(categoryId, this.restaurantId!).subscribe({
+      next: (dishes) => {
+        const cat = this.categories.find(c => c.id === categoryId);
+        if (cat) {
+          cat.dishes = dishes;
+          cat.loading = false;
+          this.categories = [...this.categories];
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        const cat = this.categories.find(c => c.id === categoryId);
+        if (cat) {
+          cat.loading = false;
+          this.categories = [...this.categories];
+          this.cdr.detectChanges();
+        }
+        this.snackBar.open('Fehler beim Laden der Gerichte', 'Schließen', {
+          duration: 3000,
+        });
+      },
+    });
+  }
+
   getDishPhotoUrl(dish: Dish): string | null {
     if (!dish.photo_url) return null;
     // Backend serves files at /uploads/* - construct full URL
@@ -162,4 +188,95 @@ export class MenuViewComponent implements OnInit {
   trackByDish(index: number, dish: Dish): number {
     return dish.id;
   }
+
+  /**
+   * Get star rating as array for template iteration
+   */
+  getStars(rating: number): number[] {
+    if (!rating) {
+      return [];
+    }
+    return Array(Math.round(rating)).fill(0);
+  }
+
+  /**
+   * Get empty stars for remaining rating
+   */
+  getEmptyStars(rating: number): number[] {
+    if (!rating) {
+      return [];
+    }
+    const filled = Math.round(rating);
+    return Array(5 - filled).fill(0);
+  }
+
+  
+
+  openReviewDialog(dish: Dish) {
+    const dialogRef = this.dialog.open(DishReviewDialog, {
+      data: {reviewStars: 0}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+      if(result){
+        const dishReview = {} as DishReview
+        dishReview.dishId = dish.id
+        dishReview.rating = result
+        this.reviewService.createDishReview(dishReview).subscribe({
+          next: (c) =>{ 
+            console.log('created dish review:', c)
+            this.refreshDishes(dish.category_id!)
+          },
+          error: (e) => { console.log('Error getting dish rating:', e)}
+        })
+      }
+    });
+  }
 }
+
+@Component({
+  selector: 'dish-review-dialog',
+  templateUrl: 'dish-review-dialog.html',
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DishReviewDialog {
+  readonly dialogRef = inject(MatDialogRef<DishReviewDialog>);
+  data = inject(MAT_DIALOG_DATA)
+  readonly reviewStars = model(this.data.reviewStars)
+
+  onCancelClick(): void{
+    this.dialogRef.close();
+  }
+
+
+  /**
+   * Get star rating as array for template iteration
+   */
+  getStars(rating: number): number[] {
+    if (!rating) {
+      return [];
+    }
+    return Array(Math.round(rating)).fill(0);
+  }
+
+  /**
+   * Get empty stars for remaining rating
+   */
+  getEmptyStars(rating: number): number[] {
+    if (!rating) {
+      return [];
+    }
+    const filled = Math.round(rating);
+    return Array(5 - filled).fill(0);
+  }
+}
+
+export interface DialogData {
+  rating: number
+
+
+
+}
+

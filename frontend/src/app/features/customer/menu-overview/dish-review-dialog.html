@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Rate this dish:</h2>
+<mat-dialog-content class="rateDish">
+    <h3>Rate this dish:</h3>
+    <span class="stars">
+        <button *ngFor="let number of [1, 2, 3, 4, 5]" (click)="this.reviewStars.set(number)">
+          <mat-icon>{{ number <= reviewStars() ? 'star' :  'star_border'}}</mat-icon>
+        </button>
+      </span>  
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button matButton (click)="onCancelClick()">Cancel</button>
+  <button matButton [mat-dialog-close]="reviewStars()" cdkFocusInitial>Confirm</button>
+</mat-dialog-actions>

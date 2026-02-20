@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { CategoryManagementService } from '../../business/category-management.service';
 import { DishManagementService } from '../../business/dish-management.service';
+import { DishReview } from '../../repositories/dish.repository';
 
 export class MenuController {
   constructor(
@@ -413,5 +414,18 @@ export class MenuController {
       next(error);
     }
   };
-}
 
+  saveDishReview = async (req: Request, res: Response, next: NextFunction) =>{
+    try{
+      const user = (req as any).user;
+      const customerId = user.sub;
+      const dishReview = req.body as DishReview
+      dishReview.customerId =customerId
+      console.log('received post request for dish review:', dishReview)
+      const result = await this.dishService.saveDishReview(dishReview);
+      res.json(result)
+    }catch(error){
+      next(error)
+    }
+  }
+}

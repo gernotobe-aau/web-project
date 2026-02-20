@@ -16,6 +16,14 @@ export interface RestaurantReview {
   date: string;
 }
 
+export interface DishReview {
+    dishId: number;
+    orderId: string;
+    comment: string;
+    rating: number;
+    cutomerId: string;
+}
+
 
 
 @Injectable({
@@ -45,5 +53,13 @@ export class ReviewService{
         params = params.set('restaurantId', restaurantId);
         }
         return this.http.get<RestaurantReview[]>(`${this.apiUrl}/restaurant-review`, {params})
+    }
+
+    /**
+     * create dish review (customer only)
+     */
+    createDishReview(dishReview: DishReview): Observable<DishReview>{
+        console.log('Received review to send:', dishReview)
+        return this.http.post<DishReview>(`${this.apiUrl}/menu/dish-review`, dishReview)
     }
 }

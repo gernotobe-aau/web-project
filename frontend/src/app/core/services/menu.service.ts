@@ -22,6 +22,7 @@ export interface Dish {
   price: number;
   display_order: number;
   photo_url: string | null;
+  average_rating: number | null;
   created_at: string;
   updated_at: string;
 }
