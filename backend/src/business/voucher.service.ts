@@ -55,15 +55,29 @@ export class VoucherService {
       discountAmount = this.voucherRepo.calculateDiscount(validation.voucher, orderAmount);
       discountAmount = Math.round(discountAmount * 100) / 100;
       finalPrice = Math.round((orderAmount - discountAmount) * 100) / 100;
-    }
-
-    return {
+      if(finalPrice <= 0){
+        return {
+          valid: false,
+          voucher,
+          message: "Final price is 0"
+        };
+      }
+      return {
       valid: true,
       voucher,
       message: 'Voucher is valid',
       discountAmount,
       finalPrice
     };
+    }
+
+    
+
+    return {
+        valid: false,
+        voucher,
+        message: 'Voucher is invalid'
+      };
   }
 
   /**

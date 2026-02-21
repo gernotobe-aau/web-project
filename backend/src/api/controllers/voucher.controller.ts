@@ -9,10 +9,14 @@ export class VoucherController {
    */
   validateVoucher = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { code, restaurantId, orderAmount } = req.body;
-
+      console.log('backend received voucher:', req.body)
+      const code = req.body.voucherCode
+      const orderAmount = req.body.orderAmount
+      const restaurantId = {} as string
+      console.log('backend checking voucher:', code, restaurantId, orderAmount)
       const result = await this.voucherService.validateVoucher(code, restaurantId, orderAmount);
 
+      console.log('voucher send back:', result)
       res.status(200).json(result);
     } catch (error) {
       next(error);

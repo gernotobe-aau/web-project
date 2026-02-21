@@ -77,7 +77,7 @@ export class CartRepository {
            ON CONFLICT
            DO UPDATE
            SET quantity = EXCLUDED.quantity
-        `;//TODO MERGE ITEMS
+        `;
 
         console.log('Saving cart', cart)
         db.run(

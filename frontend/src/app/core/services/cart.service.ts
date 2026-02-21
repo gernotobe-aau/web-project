@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, empty, Observable } from 'rxjs';
 import { Dish, MenuService } from './menu.service';
-import { Cart, CartItem, CartByRestaurant } from '../models/cart.model';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Cart, CartItem, CartByRestaurant, VoucherValidaton } from '../models/cart.model';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Restaurant, RestaurantService } from './restaurant.service';
 
@@ -289,7 +289,8 @@ export class CartService {
         this.http.post<void>(`${this.apiUrl}/orders`, {
           restaurantId: r.restaurantId,
           items: r.items,//{ dishId: number; quantity: number }[],
-          voucherCode: null, //ToDo: add voucher
+          voucherCode: this.cart.voucherCode,
+          voucherId: this.cart.voucherId,
           customerNotes: this.cart.customerNotes
         }).subscribe({
           next: (c) =>{
@@ -303,4 +304,11 @@ export class CartService {
     }
     this.clear()  
   }
+
+
+
+  validateVoucher(voucherCode: string, orderAmount: number): Observable<VoucherValidaton>{
+    return this.http.post<VoucherValidaton>(`${this.apiUrl}/vouchers/validate`, { voucherCode, orderAmount});
+  }
 }
+  

@@ -101,6 +101,8 @@ export class OrderService {
       estimatedDeliveryTime: new Date(new Date(backendOrder.createdAt).getTime() + backendOrder.estimatedDeliveryMinutes * 60000).toISOString(),
       customerNotes: backendOrder.customerNotes,
       items: items,
+      voucherCode: backendOrder.voucherCode,
+      discountAmount: backendOrder.discountAmount,
       createdAt: backendOrder.createdAt,
       updatedAt: backendOrder.updatedAt,
       customerName: `${backendOrder.customerFirstName} ${backendOrder.customerLastName}`,
