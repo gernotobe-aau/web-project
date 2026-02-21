@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, empty, Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Dish, MenuService } from './menu.service';
 import { Cart, CartItem, CartByRestaurant, VoucherValidaton } from '../models/cart.model';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Restaurant, RestaurantService } from './restaurant.service';
+import { RestaurantService } from './restaurant.service';
+import { formatDate } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,8 @@ export class CartService {
   private cartSubject
   public cart$
   private apiUrl = environment.apiBaseUrl;
+  private isOffline: boolean = false
+  public onConnectionLost: () => void = () => {}
 
   constructor(private http: HttpClient, private restaurantService: RestaurantService, private menuService: MenuService) {
     this.cart.restaurants = []
@@ -27,43 +30,55 @@ export class CartService {
    * load from backend and localstorage and compare by timestamp
    */
   loadCart(): void{
-    console.log('loadcart call')
-    this.loadFromBackEnd().subscribe({
-      next: (c) => {
-        // Load cart from localStorage
-        console.log('From backend: ', c)
-        let local = this.loadFromLocalStorage();
-        if(c && !local || c && local && Date.parse(local.updatedAt) < Date.parse(c.updatedAt)){
-          
-          console.log('Loading from backend:', c)
-          if(!c.restaurants){
-            c.restaurants = []
-          }
-          this.cart = c;
-        }else if(local){
-          console.log('Loading from local:', local)
-          if(!this.cart.restaurants){
+    if(!this.isOffline){
+      console.log('loadcart call')
+      this.loadFromBackEnd().subscribe({
+        next: (c) => {
+          // Load cart from localStorage
+          console.log('From backend: ', c)
+          let local = this.loadFromLocalStorage();
+          if(c && !local || c && local && Date.parse(local.updatedAt) < Date.parse(c.updatedAt)){
+            
+            console.log('Loading from backend:', c)
+            if(!c.restaurants){
+              c.restaurants = []
+            }
+            this.cart = c;
+            
+            this.mapFromDTO(this.cart)
+              .then(() => this.updateCart())
+              .catch(err => {console.log('Error when updating cart:', err)})
+          }else if(local){
+            console.log('Loading from local:', local)
+            if(!this.cart.restaurants){
+              this.cart.restaurants = []
+            }
+            this.cart = local!;
+          }else{
+            this.cart = {} as Cart
             this.cart.restaurants = []
+            console.log('No loading happened')
           }
-          this.cart = local!;
-        }else{
-          this.cart = {} as Cart
+          console.log('Loaded into this.cart:', this.cart)
+        },
+        error: (e) => {
+          console.log("Error while loading from server, using local storage", e);
+          let local = this.loadFromLocalStorage();
+          if(typeof(local) !== undefined){
+            this.cart = local!;
+          }
+        }
+      });
+    }else{
+      let local = this.loadFromLocalStorage();
+      if(local){
+        console.log('Loading from local:', local)
+        if(!this.cart.restaurants){
           this.cart.restaurants = []
-          console.log('No loading happened')
         }
-        console.log('Loaded into this.cart:', this.cart)
-        this.mapFromDTO(this.cart)
-        .then(() => this.updateCart())
-        .catch(err => {console.log('Error when updating cart:', err)})
-      },
-      error: (e) => {
-        console.log("Error while loading from server, using local storage", e);
-        let local = this.loadFromLocalStorage();
-        if(typeof(local) !== undefined){
-          this.cart = local!;
-        }
+        this.cart = local!;
       }
-    });
+    }
     
   }
 
@@ -194,10 +209,29 @@ export class CartService {
     }
     this.cartSubject.next(this.cart);
     this.saveToLocalStorage();
-    this.saveToBackEnd().subscribe();
+    this.checkConnection().subscribe({
+      next:(n) => {
+        if(n){
+          console.log('connection is:', n)
+          this.saveToBackEnd().subscribe()
+        }else{
+          console.log('???')
+        }
+      },
+      error:(e) => {
+        console.log('error with connection:', e)
+        this.onConnectionLost()
+      }
+    })
   }
 
   private saveToLocalStorage(): void {
+    this.cart.updatedAt = formatDate(
+      new Date(),
+      'yyyy-MM-dd HH:mm:ss',
+      'en-US'
+    )!
+    console.log('saving to local storage', this.cart)
     localStorage.setItem('cart', JSON.stringify(this.cart));
   }
 
@@ -264,6 +298,7 @@ export class CartService {
       //grouped.get(item.restaurantId).items.push(item);
     }
     cart.restaurants = [...grouped.values()]
+    cart.items = []
     console.log('mapped cart from DTO:', cart)
     return cart
   }
@@ -303,6 +338,11 @@ export class CartService {
       } 
     }
     this.clear()  
+  }
+
+  checkConnection(): Observable<boolean>{
+    console.log('called checkConnection')
+    return this.http.get<boolean>(`${this.apiUrl}/cart/check`)
   }
 
 

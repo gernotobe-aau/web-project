@@ -38,4 +38,16 @@ export class CartController {
       next(error);
     }
   };
+
+
+  checkConnection = async (req: Request, res: Response, next: NextFunction): Promise<void> =>{
+    try{
+      
+    res.status(200).json(true)
+      
+    }catch(e) {
+      console.log('No connection:', e)
+      next(e)
+    }
+  }
 }

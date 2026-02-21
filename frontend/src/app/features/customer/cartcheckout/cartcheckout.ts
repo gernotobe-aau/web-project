@@ -47,7 +47,8 @@ export class CartcheckoutComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -61,6 +62,9 @@ export class CartcheckoutComponent implements OnInit {
 
     // Initial load
     this.cart = this.cartService.getCart();
+    this.cartService.onConnectionLost = () => {
+      this.snackBar.open('No connection. You may edit the cart and go back to last viewed restaurant offline.')
+    }
     
   }
 
@@ -124,31 +128,38 @@ export class CartcheckoutComponent implements OnInit {
   }
 
   checkVoucher(voucherCode: string, orderAmount: number): void{
-    if(voucherCode !== ""){
-      this.cartService.validateVoucher(voucherCode, orderAmount).subscribe({
-        next: (c) => {
-          console.log('Voucher message:', c)
-          if(c.valid){
-            this.finalPrice = c.finalPrice!
-            this.validVoucher = true
-            this.voucherId = c.voucher!.id
-            this.cdr.detectChanges();
-          }else{
-            console.log('voucher invalid')
-            this.finalPrice = 0
-            this.validVoucher = false
-            this.cdr.detectChanges();
-          }
-        },
-        error: (e) => {
-          console.log('Error with voucher:', e)
-          this.finalPrice = 0;
-          this.validVoucher = false;
-          this.cdr.detectChanges()
+    this.cartService.checkConnection().subscribe({
+      next:(n) => {
+        if(voucherCode !== ""){
+          this.cartService.validateVoucher(voucherCode, orderAmount).subscribe({
+            next: (c) => {
+              console.log('Voucher message:', c)
+              if(c.valid){
+                this.finalPrice = c.finalPrice!
+                this.validVoucher = true
+                this.voucherId = c.voucher!.id
+                this.cdr.detectChanges();
+              }else{
+                console.log('voucher invalid')
+                this.finalPrice = 0
+                this.validVoucher = false
+                this.cdr.detectChanges();
+              }
+            },
+            error: (e) => {
+              console.log('Error with voucher:', e)
+              this.finalPrice = 0;
+              this.validVoucher = false;
+              this.cdr.detectChanges()
+            }
+          })
+        }else{
+          this.validVoucher = false
         }
-      })
-    }else{
-      this.validVoucher = false
-    }
+      },
+      error: (e) => {
+        this.validVoucher = false
+      }
+    })
   }
 }
