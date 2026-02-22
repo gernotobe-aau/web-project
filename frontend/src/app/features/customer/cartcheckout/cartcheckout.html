@@ -78,12 +78,28 @@
       </div>
     </div>
 
+    
+
     <!-- Cart Total and Checkout -->
     <div class="checkout-section">
       <div class="cart-total">
         <h3>Gesamtsumme:</h3>
         <span class="total-price">
           {{ getGrandTotal() | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+        </span>
+      </div>
+      <input matInput type="text" [(ngModel)]="voucher" placeholder="Voucher hier einfügen" (change)="checkVoucher(voucher, getGrandTotal())">
+      @if (voucher !== '' && validVoucher == true){
+        <mat-icon matSuffix>check_circle</mat-icon>
+      }
+      <mat-error *ngIf="voucher !== '' && validVoucher == false">
+        <span class="voucher-error">Invalid Voucher</span>
+      </mat-error>
+          
+      <div class="cart-total">
+        <h3>Zu bezahlen:</h3>
+        <span class="total-price">
+          {{ getFinalPrice() | currency : 'EUR' : 'symbol' : '1.2-2' : 'de' }}
         </span>
       </div>
       <button

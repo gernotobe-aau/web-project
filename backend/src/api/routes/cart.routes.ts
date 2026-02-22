@@ -45,4 +45,8 @@ router.get('/cart', requireAuth, requireRole('customer'), (req, res, next) =>{
   getController().getCart(req, res, next)
 })
 
+router.get('/check', (req, res, next) => {
+  getController().checkConnection(req, res, next)
+})
+
 export default router

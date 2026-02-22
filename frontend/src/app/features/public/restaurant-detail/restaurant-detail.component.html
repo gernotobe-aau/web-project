@@ -47,7 +47,7 @@
         Menü ansehen
       </button>
     </mat-card-actions>
-    <mat-card-content class="review">
+    <mat-card-content class="review" *ngIf="currentUser?.role === 'customer'">
       
       <span class="stars">
         <button *ngFor="let number of [1, 2, 3, 4, 5]" (click)="setRating(number)">

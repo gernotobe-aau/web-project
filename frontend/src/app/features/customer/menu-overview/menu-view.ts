@@ -89,9 +89,14 @@ export class MenuViewComponent implements OnInit {
         this.categories = categories.map((cat) => ({ ...cat, dishes: undefined }));
         this.loading = false;
         this.cdr.detectChanges();
+        localStorage.setItem(`categories_${restaurantIdParam}`, JSON.stringify(categories))
       },
       error: (err) => {
         this.error = 'Fehler beim Laden der Kategorien';
+        let jsonLoad = localStorage.getItem(`categories_${restaurantIdParam}`)
+        if(jsonLoad){
+            this.categories = JSON.parse(jsonLoad)
+          }
         this.loading = false;
         this.cdr.detectChanges();
         this.snackBar.open('Fehler beim Laden der Kategorien', 'Schließen', {
@@ -119,11 +124,16 @@ export class MenuViewComponent implements OnInit {
           cat.loading = false;
           this.categories = [...this.categories];
           this.cdr.detectChanges();
+          localStorage.setItem(`category_${restaurantIdParam}_${cat.id}`, JSON.stringify(cat))
         }
       },
       error: (err) => {
         const cat = this.categories.find(c => c.id === category.id);
         if (cat) {
+          let jsonLoad = localStorage.getItem(`category_${restaurantIdParam}_${category.id}`)
+          if(jsonLoad){
+            cat.dishes = JSON.parse(jsonLoad).dishes
+          }
           cat.loading = false;
           this.categories = [...this.categories];
           this.cdr.detectChanges();

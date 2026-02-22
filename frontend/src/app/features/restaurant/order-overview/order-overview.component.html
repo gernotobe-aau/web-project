@@ -145,16 +145,16 @@
         </div>
 
         <!-- Voucher -->
-        <div class="section" *ngIf="order.voucher">
+        <div class="section" *ngIf="order.voucherCode && order.discountAmount">
           <h3>Gutschein</h3>
           <div class="voucher-info">
-            <p><strong>Code:</strong> {{ order.voucher.code }}</p>
-            <p><strong>Rabatt:</strong> 
+            <p><strong>Code:</strong> {{ order.voucherCode }}</p>
+            <!--<p><strong>Rabatt:</strong> 
               {{ order.voucher.discountType === 'percentage' 
                 ? (order.voucher.discountValue + '%') 
                 : (order.voucher.discountValue.toFixed(2) + ' €') }}
-            </p>
-            <p><strong>Ersparnis:</strong> {{ order.voucher.discountAmount.toFixed(2) }} €</p>
+            </p>-->
+            <p><strong>Ersparnis:</strong> {{ order.discountAmount.toFixed(2) }} €</p>
           </div>
         </div>
 

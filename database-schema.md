@@ -223,12 +223,12 @@ erDiagram
 
 ## Detaillierte Tabellen-Erklärungen
 
-### 🔐 Authentifizierung und Benutzerverwaltung
+### Authentifizierung und Benutzerverwaltung
 
 #### `customers` - Kundentabelle
 **Zweck**: Speichert alle registrierten Kunden der Plattform.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id` (UUID): Eindeutiger Identifier, UUID verhindert Kollisionen und ist nicht erraten-bar
 - `first_name`, `last_name`: Pflichtfelder für Identifikation und Anrede
 - `birth_date`: Mindestalter 16 Jahre muss validiert werden (Geschäftsregel)
@@ -240,7 +240,7 @@ erDiagram
 #### `restaurant_owners` - Restaurantbesitzer-Tabelle
 **Zweck**: Speichert alle registrierten Restaurantbesitzer.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id` (UUID): Eindeutiger Identifier
 - `first_name`, `last_name`: Name des Inhabers (nicht des Restaurants!)
 - `birth_date`: Mindestalter 18 Jahre (höher als bei Kunden, da geschäftlich)
@@ -252,7 +252,7 @@ erDiagram
 #### `restaurants` - Restaurant-Tabelle
 **Zweck**: Speichert alle Restaurants auf der Plattform.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id` (UUID): Eindeutiger Identifier
 - `owner_id`: Verknüpfung zum Besitzer (1 Besitzer kann mehrere Restaurants haben)
 - `name`: Restaurantname, muss pro Stadt eindeutig sein (kann aber in verschiedenen Städten gleich heißen)
@@ -276,7 +276,7 @@ Es kann "Pizza Mario" in Wien UND Berlin geben, aber nicht zweimal in Wien.
 #### `opening_hours` - Öffnungszeiten
 **Zweck**: Flexibles Speichern der Öffnungszeiten pro Wochentag.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `restaurant_id`: Zu welchem Restaurant gehört dieser Eintrag
 - `day_of_week`: 0=Sonntag, 1=Montag ... 6=Samstag (Standard in vielen Systemen)
 - `open_time`, `close_time`: HH:MM Format (24h), z.B. "11:00", "22:00"
@@ -288,12 +288,12 @@ Separate Zeilen ermöglichen einfache Queries "Welche Restaurants haben jetzt of
 
 ---
 
-### 🍽️ Menü-Management
+### Menü-Management
 
 #### `categories` - Menü-Kategorien
 **Zweck**: Strukturiert das Menü eines Restaurants in Abschnitte.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id`: Auto-increment ID (keine UUID, da intern)
 - `restaurant_id`: Jedes Restaurant hat seine eigenen Kategorien
 - `name`: z.B. "Vorspeisen", "Suppen", "Hauptgerichte", "Desserts"
@@ -307,7 +307,7 @@ Kategorien können hinzugefügt/gelöscht werden. Wenn Kategorie gelöscht wird,
 #### `dishes` - Gerichte
 **Zweck**: Die eigentlichen Speisen, die Kunden bestellen können.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id`: Auto-increment ID
 - `restaurant_id`: Zu welchem Restaurant gehört das Gericht
 - `category_id`: Optional! Gerichte können auch ohne Kategorie existieren (z.B. Tagesgerichte)
@@ -325,12 +325,12 @@ Kategorien können hinzugefügt/gelöscht werden. Wenn Kategorie gelöscht wird,
 
 ---
 
-### 📦 Bestellsystem
+### Bestellsystem
 
 #### `orders` - Bestellungen
 **Zweck**: Zentrale Tabelle für alle Kundenbestellungen.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id` (UUID): Eindeutige Bestellnummer
 - `customer_id`: Wer hat bestellt?
 - `restaurant_id`: Bei welchem Restaurant?
@@ -357,7 +357,7 @@ Wenn Kunde nach Bestellung seine Adresse ändert, darf die alte Bestellung nicht
 #### `order_items` - Bestellpositionen
 **Zweck**: Was wurde konkret bestellt? (M:N zwischen orders und dishes)
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id`: Auto-increment ID
 - `order_id`: Zu welcher Bestellung gehört dieser Artikel?
 - `dish_id`: Welches Gericht wurde bestellt? (NULL erlaubt falls Gericht später gelöscht wird)
@@ -385,12 +385,12 @@ Wenn Restaurant den Preis von "Pizza Margherita" von 8€ auf 10€ erhöht, mü
 
 ---
 
-### 🎟️ Voucher-System
+### Voucher-System
 
 #### `vouchers` - Gutscheine/Promocodes
 **Zweck**: Rabattcodes für Marketing und Kundenbindung.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id`: Auto-increment ID
 - `code`: Der eigentliche Code (z.B. "WELCOME10"), UNIQUE und case-insensitive
 - `discount_type`: Entweder "percentage" (10%) oder "fixed_amount" (5€)
@@ -408,12 +408,12 @@ Wenn Restaurant den Preis von "Pizza Margherita" von 8€ auf 10€ erhöht, mü
 
 ---
 
-### ⭐ Bewertungssystem
+### Bewertungssystem
 
 #### `restaurant_reviews` - Restaurant-Bewertungen
 **Zweck**: Kunden können Restaurants bewerten.
 
-**Warum diese Felder?**
+**Datenbank-Felder**
 - `id`: Auto-increment ID
 - `restaurant_id`: Welches Restaurant wird bewertet?
 - `customer_id`: Wer bewertet?
@@ -440,7 +440,7 @@ Ein Kunde kann pro Bestellung nur EINE Restaurant-Bewertung abgeben. Verhindert 
 
 ---
 
-### 🔧 System-Tabellen
+### System-Tabellen
 
 #### `_migrations` - Migrations-Tracking
 **Zweck**: Welche Migrations wurden bereits ausgeführt?
@@ -586,12 +586,12 @@ Entwickler müssen nicht daran denken `updated_at` manuell zu setzen. Datenbank 
 Beispiel OHNE Snapshot:
 1. Kunde bestellt Pizza für 8€
 2. Restaurant ändert Preis auf 10€
-3. Alte Rechnung zeigt plötzlich 10€! ❌ FALSCH
+3. Alte Rechnung zeigt plötzlich 10€! FALSCH
 
 Beispiel MIT Snapshot:
 1. Kunde bestellt Pizza für 8€ → wird in order_items kopiert
 2. Restaurant ändert Preis auf 10€
-3. Alte Rechnung zeigt weiterhin 8€ ✅ KORREKT
+3. Alte Rechnung zeigt weiterhin 8€ KORREKT
 ```
 
 ### Soft References
@@ -748,7 +748,7 @@ ORDER BY date;
 
 ## Anforderungsabdeckung
 
-### ✅ Authentifizierung & Registrierung
+### Authentifizierung & Registrierung
 - [x] Kunden-Registrierung mit allen erforderlichen Feldern
 - [x] Restaurantbesitzer-Registrierung mit allen erforderlichen Feldern
 - [x] Passwort-Hashing (password_hash)
@@ -757,14 +757,14 @@ ORDER BY date;
 - [x] Namensvalidierung (1-30 Zeichen, nur Bindestrich/Punkt)
 - [x] Adressfelder (Straße, Nummer, Stiege, Tür, PLZ, Ort)
 
-### ✅ Restaurant-Verwaltung
+### Restaurant-Verwaltung
 - [x] Restaurant-Kategorien/Küchenarten (aus Config)
 - [x] Eindeutiger Name pro Stadt
 - [x] Öffnungszeiten pro Wochentag
 - [x] Kontaktinformationen
 - [x] Restaurant-Profil editierbar
 
-### ✅ Menü-Management
+### Menü-Management
 - [x] Kategorien mit Reihenfolge (display_order)
 - [x] Gerichte mit Name, Beschreibung, Preis
 - [x] Optionales Foto (photo_url)
@@ -772,7 +772,7 @@ ORDER BY date;
 - [x] Display Order/Priorität pro Gericht
 - [x] Kochzeit pro Gericht (für Lieferzeitberechnung)
 
-### ✅ Bestellungen
+### Bestellungen
 - [x] Kunde kann bestellen
 - [x] Nur ein Restaurant pro Warenkorb (Frontend-Validierung)
 - [x] Mengenauswahl (1-X)
@@ -783,13 +783,13 @@ ORDER BY date;
 - [x] Bestellung annehmen/ablehnen (Restaurant)
 - [x] Status-Updates (preparing, ready, delivering, delivered)
 
-### ✅ Bewertungen
+### Bewertungen
 - [x] Restaurant-Bewertungen (Sterne + Text)
 - [x] Gericht-Bewertungen (Sterne + Text)
 - [x] Verknüpfung mit Bestellung (optional)
 - [x] Ein Review pro Kunde pro Bestellung
 
-### ✅ Analytics
+### Analytics
 - [x] Bestellungen nach Zeitraum (created_at Index)
 - [x] Meistbestellte Gerichte (order_items.dish_id)
 - [x] Restaurant-spezifische Analysen (idx_orders_restaurant_created)
@@ -803,6 +803,9 @@ Das Schema wird über folgende SQL-Migrations-Dateien aufgebaut:
 3. **003_menu_tables.sql** - Menü-Kategorien und Gerichte
 4. **004_rename_dish_priority_to_display_order.sql** - Umbenennung für Konsistenz
 5. **005_orders_and_reviews_system.sql** - Bestellungen, Vouchers, Bewertungen
+6. **006_add_daily_order_number.sql** - Inkrementierende Nummer pro Order die täglich tickt
+7. **007_cart_tables.sql** - Cart und Cart_Items
+8. **008_forum.sql** - Foren (= Diskussion) und Comments
 
 Alle Migrations werden über den Migration Runner im Backend automatisch ausgeführt.
 

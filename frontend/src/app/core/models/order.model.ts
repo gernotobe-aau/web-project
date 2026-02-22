@@ -13,6 +13,8 @@ export interface Order {
     discountValue: number;
     discountAmount: number;
   };
+  discountAmount: number;
+  voucherCode: string;
   estimatedDeliveryTime: string; // ISO timestamp
   customerNotes?: string;
   customerName?: string; // Full name from backend

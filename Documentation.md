@@ -21,25 +21,34 @@ frontend/
 │   │   ├── core/                    # Central services, guards, interceptors
 │   │   │   ├── services/            # API calls (auth, restaurant, customer)
 │   │   │   ├── guards/              # Route protection (AuthGuard, RoleGuard)
+│   │   │   ├── models/              # Interfaces
 │   │   │   └── interceptors/        # HTTP interceptor for JWT
 │   │   ├── shared/                  # Reusable components
-│   │   │   ├── components/          # Navigation, error dialogs
-│   │   │   └── pipes/               # Custom pipes
+│   │   │   └── components/          # Navigation, error dialogs
+│   │   │   │   ├── restaurant-card
+│   │   │   │   ├── restaurant-filter
+│   │   │   │   └── restauarant-list
 │   │   ├── features/                # Feature modules per role
 │   │   │   ├── public/              # Login, register, landing page
+│   │   │   │   ├── community-board/ # Forum in every restaurant 
+│   │   │   │   ├── forbidden/
+│   │   │   │   ├── landing/         # Main page
+│   │   │   │   ├── login/
+│   │   │   │   ├── register/
+│   │   │   │   └── restaurant-detail/ #Restaurant page
 │   │   │   ├── customer/            # Customer features
-│   │   │   │   ├── restaurant-browsing/
-│   │   │   │   ├── menu-view/
-│   │   │   │   ├── cart-checkout/
+│   │   │   │   ├── cartcheckout     # Customer Cart
+│   │   │   │   ├── menu-overview/
 │   │   │   │   ├── order-tracking/
 │   │   │   │   ├── profile/
-│   │   │   │   └── restaurant-reviews/
+│   │   │   │   └── dashboard/
 │   │   │   └── restaurant/          # Restaurant owner features
+│   │   │       ├── dashboard/
 │   │   │       ├── menu-management/
 │   │   │       ├── order-overview/
 │   │   │       ├── profile-management/
 │   │   │       └── analytics/
-│   │   └── layout/                  # Main layout components
+│   │   └── layout/header            # Main layout components
 │   └── environments/                # Environment variables
 └── angular.json
 ```
@@ -52,24 +61,19 @@ The backend follows the Repository Pattern with clear separation of concerns:
 backend/src/
 ├── api/
 │   ├── routes/                      # Express route definitions
+│   │   ├── index.ts                 # main routes file that has first parts of all routes
+│   │   └── ... many routes          # other routes
 │   └── controllers/                 # Request handlers with validation
+│   │   └── ... many controllers
 ├── business/                        # Business logic layer
-│   ├── auth.service.ts
-│   ├── restaurant-profile.service.ts
-│   ├── menu-management.service.ts
-│   ├── order.service.ts
-│   ├── analytics.service.ts
-│   ├── customer-registration.service.ts
-│   ├── restaurant-browsing.service.ts
-│   └── ... additional services
+│   └── ... many services
 ├── repositories/                    # Database access layer
-│   ├── restaurant.repository.ts
-│   ├── order.repository.ts
-│   ├── dish.repository.ts
-│   └── ... additional repositories
+│   └── ... many repositories
 ├── db/
 │   ├── migrations/                  # Versioned SQL migrations
 │   ├── init.ts                      # Database initialization
+│   ├── seed-test-data.ts
+│   ├── seed-test-data.backup.ts
 │   └── migration-runner.ts
 ├── middleware/                      # Express middleware
 │   ├── auth.middleware.ts           # JWT verification
@@ -94,6 +98,10 @@ The database implements the following main tables:
 - **order_items**: Line items within an order (one-to-many relationship)
 - **reviews**: Customer reviews for restaurants and dishes
 - **vouchers**: Promotional codes with discount percentages
+- **carts**: Customer cart
+- **cart_items**: Cart items in a cart
+- **discussions**: Forum discussions. every discussion starts with a question
+- **comments**: comments in a discussion
 
 All database migration scripts are versioned in `backend/src/db/migrations/` and are automatically executed on startup.
 
@@ -103,7 +111,7 @@ All database migration scripts are versioned in `backend/src/db/migrations/` and
 
 - **Shared Infrastructure**: Both developers
 - **Restaurant Owner Module**: **Gernot Oberrauner**
-- **Customer (User) Module**: **Viktor**
+- **Customer (User) Module**: **Viktor Ismailov**
 
 ### 3.1 Phase 1: Shared Infrastructure (Joint Development)
 
@@ -187,8 +195,8 @@ After establishing the shared infrastructure, the complete Restaurant Owner modu
 
 ### 3.3 Phase 3: Customer (User) Module
 
-**Developer**: Viktor
-**Timeline**: January 2026
+**Developer**: Viktor Ismailov
+**Timeline**: January 2026 - February 2026
 
 The Customer module was developed by Viktor, enabling end users to discover restaurants, place orders, and provide feedback.
 
@@ -197,13 +205,12 @@ The Customer module was developed by Viktor, enabling end users to discover rest
 1. **Customer Profile Management**
    - View and edit customer profile
    - Update personal data (name, address)
-   - Change password and manage security
    - Save and manage delivery addresses
 
 2. **Restaurant Browsing & Discovery**
    - Restaurant overview page with category filtering
    - Restaurant details with opening hours and contact information
-   - Dynamic loading of restaurant data
+   - Loading of restaurant data
    - User-friendly navigation through available restaurants
 
 3. **Menu View & Categorization**
@@ -211,6 +218,7 @@ The Customer module was developed by Viktor, enabling end users to discover rest
    - Group dishes by categories (Pasta, Pizza, etc.)
    - Present dishes with descriptions, prices, and images
    - Intuitive menu navigation
+   - last viewed restaurants and expanded categories get saved
 
 4. **Shopping Cart & Checkout Process**
    - Add and manage dishes in shopping cart
@@ -218,6 +226,7 @@ The Customer module was developed by Viktor, enabling end users to discover rest
    - Place orders with full validation
    - Apply vouchers and discount codes
    - Final order review before confirmation
+   - Made cart save on localstorage as well, offline browsing is partially supported
 
 5. **Order Placement & Confirmation**
    - Secure REST API for order creation
@@ -230,6 +239,11 @@ The Customer module was developed by Viktor, enabling end users to discover rest
    - Leave textual reviews and comments
    - Store ratings and make visible to other customers
    - Feedback system for continuous improvement
+
+
+7. **Community Board**
+   - Ask question about restaurants in community forums
+   - restaurant owners can moderate, users can edit or delete their messages
 
 ### 3.4 Stabilization and Bug Fixes
 
@@ -268,10 +282,11 @@ Throughout the project, various stability improvements were made:
 ### Customer (User) Module (Viktor)
 - **Restaurant Browsing & Discovery** - Overview, filtering, details
 - **Menu View with Categorization** - Display of menu items organized by category
-- **Shopping Cart & Checkout** - Cart management, order placement
+- **Shopping Cart & Checkout** - Cart management, order placement, offline cart persistence
 - **Order Tracking** - Order overview and status
 - **Customer Profile Management** - Profile editing, addresses
 - **Reviews & Feedback System** - Restaurant and dish ratings
+- **Forum/Community Board** - Community forums for every restaurant
 - All backend endpoints and business logic for customer features
 - All Angular components and UI for customer area
 
@@ -319,15 +334,26 @@ According to the requirements, one of the following methods should have been use
 - Order status management (accept → reject → preparing → ready → dispatched)
 - Daily/weekly analytics dashboard
 - Track best-selling dishes
+- Moderate Forum
 
 ### Customer Features
 - Browse and filter restaurants
 - Detailed restaurant and menu overview
-- Shopping cart with modification options
+- Shopping cart with modification options (and limited offline support)
 - Place orders with voucher application
 - Order tracking
 - Rating system for restaurants and dishes
 - Profile management
+- Interact with restaurant forums
+
+
+## 5.1 Additional functionalities:
+By Viktor:
+1. Offline Cart Persistence
+2. Forum/Community Board
+
+By Gernot:
+1. Drag&Drop/File upload
 
 ## 6. Technical Highlights and Design Decisions
 
@@ -536,6 +562,13 @@ The application is then accessible at:
 2. **Validation Strategy**: Backend validation MUST be independent of frontend
 3. **Error Handling**: Consistent error handling across all layers is critical
 4. **Migration System**: Versioned DB migrations make teamwork significantly easier
+
+
+### Insights from Viktor:
+1. SQL Migration is scary since it's permanent
+2. localstorage and backend cart sync was painful
+3. time was the biggest enemy here
+
 
 ### Technical Challenges
 - JWT token expiration and refresh handling required multiple iterations
