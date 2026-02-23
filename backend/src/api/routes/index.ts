@@ -8,6 +8,7 @@ import orderRoutes from './order.routes';
 import voucherRoutes from './voucher.routes';
 import analyticsRoutes from './analytics.routes';
 import cartRoutes from './cart.routes'
+import forumRoutes from './forum.routes'
 import restaurantReviewRouter from './restaurant-review.routes'
 
 const router = Router();
@@ -36,5 +37,7 @@ router.use('/', analyticsRoutes);
 
 // Restaurant Reviews
 router.use('/', restaurantReviewRouter);
+
+router.use('/forum', forumRoutes);
 
 export default router;
