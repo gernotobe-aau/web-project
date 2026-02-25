@@ -95,11 +95,9 @@ export class AuthService {
    * Logout and navigate to home
    */
   logout(): void {
-    //localStorage.removeItem(this.TOKEN_KEY);
-    //localStorage.removeItem(this.USER_KEY);
     localStorage.clear() //nuke all for security and stability
     this.currentUserSubject.next(null);
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 
   /**
