@@ -3,9 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 export interface Cart {
   customerId: string;
-  
-  //subtotal: number;
-  //finalPrice: number;
   voucherId?: number;
   voucherCode?: string;
   customerNotes?: string;
@@ -32,15 +29,8 @@ export class CartRepository {
    */
   async save(cart: Cart): Promise<Cart> {
     return new Promise((resolve, reject) => {
-      //const id = uuidv4();
-      //const now = new Date().toISOString();
-      //const orderDate = now.split('T')[0]; // YYYY-MM-DD format
 
       const db = this.db; // Capture database reference
-      //db.run(`
-      //  DELETE FROM _migrations where id > 6`)
-
-
 
       if(cart.items && cart.items.length > 0){
         const placeholder = cart.items.map(() => "(?, ?)").join(", ");

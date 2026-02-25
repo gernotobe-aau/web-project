@@ -13,6 +13,7 @@ interface Restaurant {
   imageUrl: string;
 }
 
+//Note: Landing is used instead of Dashboard now
 @Component({
   selector: 'app-dashboard',
   standalone: true,

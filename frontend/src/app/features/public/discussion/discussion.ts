@@ -4,12 +4,11 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormField } from '@angular/material/form-field';
-import { MatLabel } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatDivider } from '@angular/material/divider';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { Restaurant, RestaurantService, OpeningHour } from '../../../core/services/restaurant.service';
+import { Restaurant } from '../../../core/services/restaurant.service';
 import { User } from '../../../core/models/auth.models';
 import { AuthService } from '../../../core/services/auth.service';
 import { Comment, CommentStatus, Discussion, ForumService } from '../../../core/services/forum.service';
@@ -49,7 +48,6 @@ export class DiscussionComponent implements OnInit {
       this.currentUser = user;
     });
     this.route.paramMap.subscribe(params => {
-      //this.restaurantId = params.get('id');
       this.discussionId = params.get('id')
       console.log('Discussion id:', this.discussionId);
 
@@ -57,7 +55,6 @@ export class DiscussionComponent implements OnInit {
         this.commentService.getDiscussionById(this.discussionId).subscribe({
           next: (discussion) => {
             this.discussion = discussion
-            //this.restaurant
             this.commentService.getComments(discussion.id).subscribe({
               next: (comments) => {
                 console.log('Fetched discussion data:', comments);
@@ -67,7 +64,6 @@ export class DiscussionComponent implements OnInit {
                   this.error = null;
                 } else {
                   this.error = 'Diskussion ist leer.';
-                  //this.restaurant = null;
                 }
                 this.loading = false;
                 this.cdr.markForCheck();

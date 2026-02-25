@@ -70,11 +70,8 @@
       <div *ngIf="!loading && restaurantReviews.length > 0">
       <mat-card *ngFor="let review of restaurantReviews">
         <mat-card-header>
-          <!-- <mat-card-subtitle>{{review.customerName}}</mat-card-subtitle> -->
-          
           <mat-card-subtitle>
             <!-- Rating -->
-            
             <div class="rating">
               <b>{{review.customerName}},</b> {{review.date}}
               <span class="stars" *ngIf="review.rating">

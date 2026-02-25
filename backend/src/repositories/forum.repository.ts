@@ -246,35 +246,7 @@ export class ForumRepository{
             );
         })
     }
-/**
-    async editComment(id: string, text: string): Promise<Comment>{
-        return new Promise((resolve, reject) => {
-            const query = `
-                UPDATE forum_comments 
-                SET 
-                comment_text = ?
-                edited = true
-                WHERE id = ?
-                `;
-            this.db.run(
-                query,
-                [
-                    text,
-                    id
-                ],
-                (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        this.findComment(id)
-                        .then(comment => resolve(comment!))
-                        .catch(reject);
-                    }
-                }
-            );
-        });   
-    }
-*/
+
     async deleteComment(commentId: string, deletedByRestaurant: boolean): Promise<Comment>{
         return new Promise((resolve, reject) => {
             const query = `

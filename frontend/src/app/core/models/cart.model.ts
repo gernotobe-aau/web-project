@@ -1,5 +1,4 @@
 export interface Cart {
-  //id: string;
   customerId: string;
   voucherId?: number;
   voucherCode?: string;

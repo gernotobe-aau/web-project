@@ -71,13 +71,6 @@ export class ForumService{
         return this.forumRepository.createComment(customerId, discussionId, text, isModerator)
     }
 
-    /**async editComment(commentId: string, text: string, userId: string): Promise<Comment>{
-        const comment = await this.forumRepository.findComment(commentId)
-        if(comment.userId !== userId) throw new AuthorizationError
-
-        return this.forumRepository.editComment(commentId, text)
-    }*/
-
     async deleteComment(commentId: string, userId: string): Promise<Comment>{
         let deletedByRestaurant = false
         const comment = await this.forumRepository.findComment(commentId)
@@ -85,13 +78,8 @@ export class ForumService{
         if(comment.userId !== userId){
             const discussion = await this.forumRepository.findDiscussion(comment.discussionId)
             await this.checkOwnerAuthorization(discussion.restaurantId, userId)
-            //todo complete implementation
             deletedByRestaurant = true;
         }
-        
-
-        
-        
         return this.forumRepository.deleteComment(commentId, deletedByRestaurant)
     }
 

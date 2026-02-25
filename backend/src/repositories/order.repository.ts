@@ -226,10 +226,6 @@ export class OrderRepository {
         params.push(filters.offset);
       }
 
-      /*this.db.all(sql, params, (err, rows: any[]) => {
-        if (err) return reject(err);
-        resolve(rows.map(mapRowToOrderWithRestaurant));
-      });*/
       const db = this.db;
       this.db.all(sql, params, (err, rows: any[]) => {
         if (err) return reject(err);

@@ -144,10 +144,6 @@ export class ForumController{
                         console.log('received delete request for comment:', commentId, req.body)
                         const message = await this.forumService.deleteComment(commentId, user.sub)
                         res.status(204).json(message)
-                    /**}else if(status === "EDITED" || status === "edited"){
-                        const text: string = req.body.text as string
-                        const message = await this.forumService.editComment(commentId, text, user.sub)
-                        res.status(200).json(message)*/
                     }else{
                         return res.status(400).json({message: 'No viable status found:', status})
                     }

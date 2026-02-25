@@ -9,19 +9,17 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from '../../../core/services/auth.service';
-import { Restaurant, RestaurantService } from '../../../core/services/restaurant.service';
-import { Discussion, Comment, ForumService, DiscussionStatus, CommentStatus } from '../../../core/services/forum.service';
+import { RestaurantService } from '../../../core/services/restaurant.service';
+import { Discussion, ForumService, DiscussionStatus, CommentStatus } from '../../../core/services/forum.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormField, MatLabel, MatFormFieldModule } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatInputModule } from '@angular/material/input';
-import { User } from '../../../core/models/auth.models';
 
 
 @Component({
@@ -102,19 +100,6 @@ export class CommunityBoardComponent implements OnInit, OnDestroy {
     } else {
       this.snackBar.open('ID nicht gefunden', 'OK', { duration: 5000 });
     }
-    //populate restaurants
-    //const restaurants = this.
-    /*this.restaurantService.getRestaurants().subscribe({
-      next: (restaurant) =>{
-        this.allRestaurants = restaurant || []
-        console.log('Loaded restaurants:', restaurant)
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.log('Error loading restaurant:', err)
-        this.cdr.detectChanges()
-      }
-    })*/
   }
 
   ngOnDestroy(): void {
@@ -130,60 +115,32 @@ export class CommunityBoardComponent implements OnInit, OnDestroy {
       this.loading = true;
       this.cdr.markForCheck();
     }
-
-    //this.allRestaurants.forEach(restaurant => {
-      //let rId = restaurant.id
-      this.forumService.getDiscussions(this.restaurantId).subscribe({
-        next: (discussions) => {
-          console.log('Loaded Discussions:', discussions)
-          this.discussions = discussions;
-          console.log('Discussions now:', this.discussions)
-          this.closedCount = discussions.filter(o => 
-            [discussions, DiscussionStatus.CLOSED].includes(o.status)
-          ).length;
-          this.displayedDiscussions = this.sortDiscussions(this.discussions);
-          console.log('Displayed discussion:', this.discussions)
-
-          // Auto-expand pending and preparing orders on initial load
-          /*if (!silent) {
-            this.expandedOrderIds.clear();
-            discussions.forEach(order => {
-              if ([OrderStatus.PENDING, OrderStatus.ACCEPTED, OrderStatus.PREPARING].includes(order.status)) {
-                this.expandedOrderIds.add(order.id);
-              }
-            });
-          }*/
-          this.loading = false;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.log('Error when loading discussions:', err)
-          this.loading = false;
-          this.cdr.markForCheck();
-          if (!silent) {
-            this.snackBar.open('Fehler beim Laden des Forums', 'Wiederholen', { 
-              duration: 5000 
-            }).onAction().subscribe(() => {
-              this.loadDiscussions();
-            });
-          }
-        }
-      });
-    //});
-  }
-
-  addDiscussion(): void{
-    
-    
-    /**this.forumService.createDiscussion(this.restaurantId, '', '').subscribe({
-      next: d => {
-        this.loadDiscussions()
+    this.forumService.getDiscussions(this.restaurantId).subscribe({
+      next: (discussions) => {
+        console.log('Loaded Discussions:', discussions)
+        this.discussions = discussions;
+        console.log('Discussions now:', this.discussions)
+        this.closedCount = discussions.filter(o => 
+          [discussions, DiscussionStatus.CLOSED].includes(o.status)
+        ).length;
+        this.displayedDiscussions = this.sortDiscussions(this.discussions);
+        console.log('Displayed discussion:', this.discussions)
+        this.loading = false;
+        this.cdr.markForCheck();
       },
-      error: e => {
-        console.log('Error creating comment:', e)
+      error: (err) => {
+        console.log('Error when loading discussions:', err)
+        this.loading = false;
+        this.cdr.markForCheck();
+        if (!silent) {
+          this.snackBar.open('Fehler beim Laden des Forums', 'Wiederholen', { 
+            duration: 5000 
+          }).onAction().subscribe(() => {
+            this.loadDiscussions();
+          });
+        }
       }
-    })*/
-
+    });
   }
 
   closeDiscussion(discussionId: string): void{
@@ -238,11 +195,6 @@ export class CommunityBoardComponent implements OnInit, OnDestroy {
     this.forumService.changeDiscussion(discussion.id, newStatus).subscribe({
       next: () => {
         discussion.status = newStatus;
-        //discussion.updatedAt = new Date().toISOString();
-        // Remove from expanded if now completed
-        //if ([DiscussionStatus.CLOSED, DiscussionStatus.DELETED].includes(newStatus)) {
-          //this.expandedOrderIds.delete(discussion.id);
-        //}
         this.displayedDiscussions = [...this.sortDiscussions(this.discussions)];
         this.cdr.markForCheck();
       },
@@ -326,14 +278,6 @@ export class CommunityBoardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if discussion is the first open discussion (should be highlighted)
-   */
-  //private isFirstPending(discussion: Discussion): boolean {
-    //const pendingDiscussion = this.displayedDiscussions.filter(d => d.status === DiscussionStatus.OPEN);
-    //return pendingDiscussion.length > 0 && pendingDiscussion[0].id === discussion.id;
-  //}
-
-  /**
    * Format date to local string
    */
   formatDate(date: string): string {
@@ -404,11 +348,6 @@ export class AddDiscussionDialog {
   discussionTitle: string = ''
   discussionDesc: string = ''
   currentUser = ''
-
-  addDiscussion(): void{
-    //this.dialogRef.
-  }
-
 
   onCancelClick(): void{
     this.dialogRef.close();

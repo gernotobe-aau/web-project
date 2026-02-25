@@ -119,11 +119,6 @@
           <h3>Gutschein</h3>
           <div class="voucher-info">
             <p><strong>Code:</strong> {{ order.voucherCode }}</p>
-            <!--<p><strong>Rabatt:</strong> 
-              {{ order.voucher.discountType === 'percentage' 
-                ? (order.voucher.discountValue + '%') 
-                : (order.voucher.discountValue.toFixed(2) + ' €') }}
-            </p>-->
             <p><strong>Ersparnis:</strong> {{ order.discountAmount.toFixed(2) }} €</p>
           </div>
         </div>
