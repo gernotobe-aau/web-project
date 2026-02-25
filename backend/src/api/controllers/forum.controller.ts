@@ -10,8 +10,10 @@ export class ForumController{
      */
     getForum = async (req: Request, res: Response, next: NextFunction) => {
         try{
-            const userRestaurantId = (req as any).user?.restaurantId;
+            const user = (req as any).user
+            const userRestaurantId = user.restaurantId;
             const queryRestaurantId = req.query.restaurantId as string | undefined;
+            const userId = user.sub
 
             // Determine which restaurant's menu to fetch
             const restaurantId = userRestaurantId || queryRestaurantId;
@@ -19,9 +21,24 @@ export class ForumController{
             if (!restaurantId) {
                 return res.status(403).json({ message: 'Restaurantid erforderlich' });
             }
-            const discussions = await this.forumService.getDiscussions(restaurantId)
+            const discussions = await this.forumService.getDiscussions(restaurantId, userId )
             res.json(discussions);
 
+        }catch(e){
+            next(e)
+        }
+    }
+
+    getDiscussionById = async (req: Request, res: Response, next: NextFunction) => {
+        try{
+            const discussionId = req.query.discussionId as string
+            if(!discussionId){
+                return res.status(403).json({message: 'DiscussionId erforderlich'})
+            }
+            console.log('received command to get discussion by id')
+            const discussion = await this.forumService.getDiscussionById(discussionId)
+
+            res.status(200).json(discussion)
         }catch(e){
             next(e)
         }
@@ -30,7 +47,8 @@ export class ForumController{
 
     getMessages = async (req: Request, res: Response, next: NextFunction) => {
         try{
-            const queryDiscussionId = req.params.discussionId as string;
+            const queryDiscussionId = req.query.discussionId as string
+            console.log('received get comments for discussion;', queryDiscussionId, req.query)
             if(!queryDiscussionId){
                 return res.status(403).json({message: 'Fehler beim abschicken der Nachricht'})
             }
@@ -43,11 +61,13 @@ export class ForumController{
 
     createDiscussion = async (req: Request, res: Response, next: NextFunction) => {
         try{
+            console.log('received post for discussion:', req.body)
             const user = (req as any).user;
             const customerId = user.sub;
-            const restaurantId = req.params.restaurantId as string;
-            const name = req.params.name
-            const description = req.params.description
+            console.log(' discussion post user:', customerId)
+            const restaurantId = req.body.restaurantId as string;
+            const name = req.body.name
+            const description = req.body.description
             if(!customerId || !restaurantId){
                 return  res.status(400).json({message: 'Kein Customer oder Restaurant Id beim Erstellen einer Diskussion:', customerId, restaurantId})
             }
@@ -62,8 +82,8 @@ export class ForumController{
         try{
             const user = (req as any).user;
             const customerId = user.sub;
-            const discussionId = req.params.discussionId as string
-            const text = req.params.text
+            const discussionId = req.body.discussionId as string
+            const text = req.body.text as string
             const message = await this.forumService.createComment(customerId, discussionId, text)
             res.status(201).json(message)
         }catch(e){
@@ -79,14 +99,16 @@ export class ForumController{
      */
     changeDiscussion = async (req: Request, res: Response, next: NextFunction) => {
         try{
-            const status = req.params.status
-            const discussionId = req.params.discussionId
+            
+            const status = req.body.status
+            const discussionId = req.body.id as string
             const user = (req as any).user
+            console.log('Received command to change discussion:', discussionId, status )
             if(discussionId && status){
-                if(status === "DELETE" || status === "delete"){
+                if(status === "DELETED" || status === "deleted"){
                     const message = await this.forumService.deleteDiscussion(discussionId, user.sub)
                     res.status(201).json(message)
-                }else if (status === "CLOSE" || status === "close"){
+                }else if (status === "CLOSED" || status === "closed"){
                     const message = await this.forumService.closeDiscussion(discussionId, user.sub)
                     res.status(201).json(message)
                 }else{
@@ -109,8 +131,8 @@ export class ForumController{
      */
     changeComment = async (req: Request, res: Response, next: NextFunction) => {
         try{
-            const status = req.params.status
-            const commentId = req.params.commentId
+            const status = req.body.status as string
+            const commentId = req.body.id as string
             
             const user = (req as any).user;
             const userId = user.sub;
@@ -119,12 +141,13 @@ export class ForumController{
             if(userId){
                 if(commentId && status){
                     if(status === "DELETED" || status === "deleted"){
+                        console.log('received delete request for comment:', commentId, req.body)
                         const message = await this.forumService.deleteComment(commentId, user.sub)
-                        res.status(201).json(message)
-                    }else if(status === "EDITED" || status === "edited"){
-                        const text: string = req.params.text
+                        res.status(204).json(message)
+                    /**}else if(status === "EDITED" || status === "edited"){
+                        const text: string = req.body.text as string
                         const message = await this.forumService.editComment(commentId, text, user.sub)
-                        res.status(201).json(message)
+                        res.status(200).json(message)*/
                     }else{
                         return res.status(400).json({message: 'No viable status found:', status})
                     }
@@ -132,7 +155,7 @@ export class ForumController{
             }else{
                 return res.status(403).json({message: 'Not authorized to change Comment'})
             }
-            return res.status(403).json({message: 'No commentId or status found', commentId, status})
+            return res.status(422).json({message: 'No commentId or status found', commentId, status})
         }catch(e){
             next(e)
         }

@@ -285,8 +285,5 @@ export class DishReviewDialog {
 
 export interface DialogData {
   rating: number
-
-
-
 }
 

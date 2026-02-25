@@ -42,17 +42,37 @@ export enum CommentStatus{
 export class ForumRepository{
     constructor(private db: Database){}
 
-    async findByRestaurantId(restaurantId: string | number): Promise<Discussion[]> {
-        return new Promise((resolve, reject) =>{
+    async findByRestaurantIdForOwner(restaurantId: string | number, isModerator: boolean): Promise<Discussion[]> {
+        if(isModerator){ //Mods should see deleted discussions
+            return new Promise((resolve, reject) =>{
             const query = `
             SELECT 
-            d.*
+            d.*, u.first_name, u.last_name
             FROM forum_discussions d
+            LEFT JOIN customers u ON d.user_id = u.id
             WHERE d.restaurant_id = ?
             ORDER BY d.last_active DESC
             `
 
             this.db.all(query, [restaurantId], (err, rows: any[]) => {
+                if (err) reject(err);
+                else{
+                    resolve(rows.map(mapRowToDiscussion));
+                }
+            });
+        })
+        }
+        return new Promise((resolve, reject) =>{
+            const query = `
+            SELECT 
+            d.*, u.first_name, u.last_name
+            FROM forum_discussions d
+            LEFT JOIN customers u ON d.user_id = u.id
+            WHERE d.restaurant_id = ? AND NOT d.discussion_status = ?
+            ORDER BY d.last_active DESC
+            `
+
+            this.db.all(query, [restaurantId, DiscussionStatus.DELETED], (err, rows: any[]) => {
                 if (err) reject(err);
                 else{
                     resolve(rows.map(mapRowToDiscussion));
@@ -65,8 +85,9 @@ export class ForumRepository{
         return new Promise((resolve, reject) =>{
             const query = `
             SELECT 
-            d.*
+            d.*, u.first_name, u.last_name
             FROM forum_discussions d
+            LEFT JOIN customers u ON d.user_id = u.id
             WHERE d.id = ?
             `
 
@@ -79,13 +100,13 @@ export class ForumRepository{
         })
     }
 
-    async createDiscussion(customerId: string, restaurantId: string, name: string, description: string): Promise<Discussion>{
+    async createDiscussion(customerId: string, restaurantId: string, name: string, description: string, isModerator: boolean): Promise<Discussion>{
         return new Promise((resolve, reject) => {
             const id = uuidv4();
             const query = `
                 INSERT INTO forum_discussions (
-                id, restaurant_id, customer_id, discussion_name, discussion_description
-                ) VALUES (?, ?, ?, ?, ?)
+                id, restaurant_id, user_id, discussion_name, discussion_description, discussion_status, is_from_moderator
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
 
             this.db.run(
@@ -95,7 +116,9 @@ export class ForumRepository{
                 restaurantId,
                 customerId,
                 name,
-                description
+                description,
+                DiscussionStatus.OPEN,
+                isModerator
                 ],
                 (err) => {
                     if (err) {
@@ -176,11 +199,11 @@ export class ForumRepository{
             c.*, u.first_name, u.last_name 
             FROM forum_comments c
             LEFT JOIN customers u ON c.user_id = u.id
-            WHERE c.discussion_id = ?
+            WHERE c.discussion_id = ? AND comment_status = ?
             ORDER BY c.created_at DESC
             `
 
-            this.db.all(query, [discussionId], (err, rows: any[]) => {
+            this.db.all(query, [discussionId, CommentStatus.PUBLISHED], (err, rows: any[]) => {
                 if (err) reject(err);
                 else{
                     resolve(rows.map(mapRowToComment));
@@ -189,13 +212,13 @@ export class ForumRepository{
         })
     }
 
-    async createComment(customerId: string, discussionId: string, text: string): Promise<Comment>{
+    async createComment(customerId: string, discussionId: string, text: string, isModerator: boolean): Promise<Comment>{
         return new Promise((resolve, reject) => {
             const id = uuidv4();
             const query = `
                 INSERT INTO forum_comments (
-                id, discussion_id, customer_id, comment_text
-                ) VALUES (?, ?, ?, ?)
+                id, discussion_id, user_id, comment_text, comment_status, is_from_moderator
+                ) VALUES (?, ?, ?, ?, ?, ?)
             `;
 
             this.db.run(
@@ -204,7 +227,9 @@ export class ForumRepository{
                 id,
                 discussionId,
                 customerId,
-                text
+                text,
+                CommentStatus.PUBLISHED,
+                isModerator
                 ],
                 (err) => {
                     if (err) {
@@ -221,7 +246,7 @@ export class ForumRepository{
             );
         })
     }
-
+/**
     async editComment(id: string, text: string): Promise<Comment>{
         return new Promise((resolve, reject) => {
             const query = `
@@ -249,13 +274,13 @@ export class ForumRepository{
             );
         });   
     }
-
+*/
     async deleteComment(commentId: string, deletedByRestaurant: boolean): Promise<Comment>{
         return new Promise((resolve, reject) => {
             const query = `
             UPDATE forum_comments
             SET 
-            comment_status = ?,
+            comment_status = ?
             WHERE id = ?
             `;
             const deleted = deletedByRestaurant ? CommentStatus.DELETEDBYRESTAURANT : CommentStatus.DELETEDBYUSER
@@ -300,10 +325,10 @@ export class ForumRepository{
 
 function mapRowToDiscussion(row: any): Discussion{
     return {
-        id: row.discussion_id,
+        id: row.id,
         restaurantId: row.restaurant_id,
-        userId: row.customer_id,
-        userName: row.first_name ? row.first_name + " " + row.last_name.substring(0,1) + "." : "", //either mod or deleted user
+        userId: row.user_id,
+        userName: row.first_name ? row.first_name + " " + row.last_name?.substring(0,1) + "." : "", //either mod or deleted user
         isFromModerator: row.is_from_moderator,
         name: row.discussion_name,
         description: row.discussion_description,
@@ -315,10 +340,10 @@ function mapRowToDiscussion(row: any): Discussion{
 
 function mapRowToComment(row: any): Comment{
     return {
-        id: row.discussion_id,
+        id: row.id,
         discussionId: row.discussion_id,
-        userId: row.customer_id,
-        userName: row.first_name + " " + row.last_name.substring(0,1) + ".",
+        userId: row.user_id,
+        userName: row.first_name ? row.first_name + " " + row.last_name?.substring(0,1) + "." : "", //either mod or deleted user
         isFromModerator: row.is_from_moderator,
         createdAt: row.created_at,
         text: row.comment_text,

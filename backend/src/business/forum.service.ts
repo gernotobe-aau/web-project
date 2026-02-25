@@ -12,9 +12,16 @@ export class ForumService{
         this.restaurantRepo = new RestaurantRepository(db)
     }
 
-//todo: refactor: move checks/validations form controller to here
-    async getDiscussions(restaurant_id: string | number): Promise<Discussion[]>{
-        return this.forumRepository.findByRestaurantId(restaurant_id);
+
+    async getDiscussions(restaurantId: string, customerId: string): Promise<Discussion[]>{
+        const restaurant = await this.restaurantRepo.findById(restaurantId);
+        if(!restaurant) throw new NotFoundError(`Restaurant not found:, ${restaurantId}`)
+        const isModerator = restaurant.ownerId === customerId
+        return this.forumRepository.findByRestaurantIdForOwner(restaurantId, isModerator);
+    }
+
+    async getDiscussionById(discussionId: string): Promise<Discussion>{
+        return this.forumRepository.findDiscussion(discussionId);
     }
 
     async getMessages(discussionId: string): Promise<Comment[]>{
@@ -22,7 +29,12 @@ export class ForumService{
     }
 
     async createDiscussion(customerId: string, restaurantId: string, name: string, description: string): Promise<Discussion>{
-        return this.forumRepository.createDiscussion(customerId, restaurantId, name, description)
+        const restaurant = await this.restaurantRepo.findById(restaurantId);
+        if(!restaurant) throw new NotFoundError(`Restaurant not found:, ${restaurantId}`)
+        const isModerator = restaurant.ownerId === customerId
+
+        
+        return this.forumRepository.createDiscussion(customerId, restaurantId, name, description, isModerator)
     }
 
     async closeDiscussion(discussionId: string, ownerId: string): Promise<Discussion>{
@@ -51,22 +63,29 @@ export class ForumService{
         if(!text){
             throw new ValidationError('Kein Text beim Erstellen eines Kommentars')
         }
-        return this.forumRepository.createComment(customerId, discussionId, text)
+        const discussion = await this.forumRepository.findDiscussion(discussionId)
+        const restaurant = await this.restaurantRepo.findById(discussion.restaurantId);
+        if(!restaurant) throw new NotFoundError(`Restaurant not found:, ${discussion.restaurantId}`)
+        const isModerator = restaurant.ownerId === customerId
+
+        return this.forumRepository.createComment(customerId, discussionId, text, isModerator)
     }
 
-    async editComment(commentId: string, text: string, userId: string): Promise<Comment>{
+    /**async editComment(commentId: string, text: string, userId: string): Promise<Comment>{
         const comment = await this.forumRepository.findComment(commentId)
         if(comment.userId !== userId) throw new AuthorizationError
 
         return this.forumRepository.editComment(commentId, text)
-    }
+    }*/
 
     async deleteComment(commentId: string, userId: string): Promise<Comment>{
         let deletedByRestaurant = false
         const comment = await this.forumRepository.findComment(commentId)
+        if(!comment) throw new NotFoundError('Comment not found')
         if(comment.userId !== userId){
             const discussion = await this.forumRepository.findDiscussion(comment.discussionId)
-            const restaurantOwner = await this.checkOwnerAuthorization(discussion.restaurantId, userId)
+            await this.checkOwnerAuthorization(discussion.restaurantId, userId)
+            //todo complete implementation
             deletedByRestaurant = true;
         }
         
@@ -79,7 +98,7 @@ export class ForumService{
     /**
        * Check if owner is authorized for the restaurant
        */
-      private async checkOwnerAuthorization(restaurantId: string, ownerId: string): Promise<void> {
+      private async checkOwnerAuthorization(restaurantId: string, ownerId: string) {
         const restaurant = await this.restaurantRepo.findById(restaurantId);
         if (!restaurant) {
           throw new NotFoundError('Restaurant not found');
