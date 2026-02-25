@@ -1,0 +1,53 @@
+<div class="restaurant-detail-container">
+  <div *ngIf="loading" style="padding: 20px; text-align: center;">
+    Loading...
+  </div>
+
+  <mat-card class="restaurant-card" *ngIf="discussion">
+    <mat-card-actions align="start">
+      <button mat-raised-button color="primary" [routerLink]="['/restaurants-forum', discussion.restaurantId]">
+        Zurück
+      </button>
+    </mat-card-actions>
+    <mat-card-header>
+      <mat-card-title>{{ discussion.name }}</mat-card-title>
+      <mat-card-subtitle>{{ discussion.description }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content class="comment">
+      <mat-form-field class="add-comment">
+        <mat-label>Kommentar hinzufügen</mat-label>
+        <textarea matInput maxlength="500" [(ngModel)]="text"></textarea>
+      </mat-form-field>
+      <button class="save-comment" mat-raised-button color="primary" [disabled]="!text.trim()" (click)="saveComment(text)">
+        Abschicken
+      </button>
+    </mat-card-content>
+    
+    <mat-card-content class="comments">
+      <div *ngIf="!loading && discussion.comments && discussion.comments.length > 0">
+      <mat-card *ngFor="let comment of discussion.comments">
+        <mat-card-header>
+          <mat-card-subtitle>
+            <div class="rating">
+              <b>{{displayCommentName(comment)}},</b> {{comment.createdAt}}
+            </div>
+            <mat-divider></mat-divider>
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          {{comment.text}}
+        </mat-card-content>
+        <mat-card-actions *ngIf="comment.userId === currentUser!.id! || currentUser!.role! === 'restaurantOwner' && currentUser!.restaurantId! === discussion.restaurantId">
+          <button 
+            mat-icon-button 
+            (click)="deleteComment(comment.id)"
+            matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    </mat-card-content>
+  </mat-card>
+</div>

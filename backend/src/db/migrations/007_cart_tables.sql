@@ -1,4 +1,4 @@
--- Migration 005: Orders and Reviews System
+-- Migration 007: Cart System
 
 DROP TABLE IF EXISTS carts;
 CREATE TABLE IF NOT EXISTS carts (

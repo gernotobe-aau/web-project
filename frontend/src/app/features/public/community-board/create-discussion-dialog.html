@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>Create new discussion:</h2>
+<mat-dialog-content class="createDiscussion">
+    <div class="discussion">
+      <mat-form-field class="discussion-title">
+        <mat-label>Titel:</mat-label>
+        <textarea matInput [(ngModel)]="discussion().title" maxlength="100" ></textarea>
+      </mat-form-field>
+    </div>
+    <div class="discussion">
+      <mat-form-field class="discussion-title">
+        <mat-label>Frage:</mat-label>
+        <textarea matInput [(ngModel)]="discussion().desc" maxlength="500" ></textarea>
+      </mat-form-field>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button matButton (click)="onCancelClick()">Cancel</button>
+  <button matButton [mat-dialog-close]="discussion()" cdkFocusInitial>Confirm</button>
+</mat-dialog-actions>

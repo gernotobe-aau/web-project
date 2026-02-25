@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, model } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, model, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -8,12 +8,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Restaurant, RestaurantService } from '../../../core/services/restaurant.service';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { RestaurantService } from '../../../core/services/restaurant.service';
 import { CartService } from '../../../core/services/cart.service';
 import { MenuService, Category, Dish } from '../../../core/services/menu.service';
 import { environment } from '../../../../environments/environment';
-import {ChangeDetectionStrategy, inject} from '@angular/core';
 import { ReviewService, DishReview } from '../../../core/services/review.service';
 
 interface CategoryWithDishes extends Category {
@@ -285,8 +284,5 @@ export class DishReviewDialog {
 
 export interface DialogData {
   rating: number
-
-
-
 }
 

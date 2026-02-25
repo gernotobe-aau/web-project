@@ -65,7 +65,7 @@ export function errorHandler(
 
   // Handle ValidationError
   if (err instanceof ValidationError) {
-    return res.status(422).json({
+    res.status(422).json({
       error: err.message,
       errors: err.errors
     });

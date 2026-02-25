@@ -46,6 +46,9 @@
       <button mat-raised-button *ngIf="currentUser?.role === 'customer'" color="primary" [routerLink]="['/customer/menu', restaurantId]">
         Menü ansehen
       </button>
+      <button mat-raised-button *ngIf="currentUser?.role === 'customer' || currentUser?.restaurantId === restaurantId" color="secondary" [routerLink]="['/restaurants-forum', restaurant.id]">
+        Forum ansehen
+      </button>
     </mat-card-actions>
     <mat-card-content class="review" *ngIf="currentUser?.role === 'customer'">
       
@@ -67,11 +70,8 @@
       <div *ngIf="!loading && restaurantReviews.length > 0">
       <mat-card *ngFor="let review of restaurantReviews">
         <mat-card-header>
-          <!-- <mat-card-subtitle>{{review.customerName}}</mat-card-subtitle> -->
-          
           <mat-card-subtitle>
             <!-- Rating -->
-            
             <div class="rating">
               <b>{{review.customerName}},</b> {{review.date}}
               <span class="stars" *ngIf="review.rating">

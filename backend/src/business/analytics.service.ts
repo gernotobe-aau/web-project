@@ -1,5 +1,5 @@
 import { Database } from 'sqlite3';
-import { AnalyticsRepository, DailyOrderCount, WeeklyOrderCount, TopDish } from '../repositories/analytics.repository';
+import { AnalyticsRepository, TopDish } from '../repositories/analytics.repository';
 import { RestaurantRepository } from '../repositories/restaurant.repository';
 import { AuthorizationError, NotFoundError } from '../middleware/error.middleware';
 

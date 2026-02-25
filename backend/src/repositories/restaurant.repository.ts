@@ -350,8 +350,6 @@ export class RestaurantRepository {
    */
   async getAverageRating(restaurantId: string): Promise<number | null> {
     return new Promise((resolve, reject) => {
-      // Note: restaurant_reviews table will be created in a later feature
-      // For now, return null as no reviews exist yet
       const query = `
         SELECT AVG(rating) as averageRating
         FROM restaurant_reviews

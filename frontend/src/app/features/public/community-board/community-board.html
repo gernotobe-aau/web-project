@@ -1,0 +1,101 @@
+<div class="forum-overview-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-section">
+      <h1>Übersicht</h1>
+      <p class="subtitle" *ngIf="!loading">
+        {{ displayedDiscussions.length }} {{ displayedDiscussions.length === 1 ? 'Thema' : 'Themen' }}
+      </p>
+    </div>
+    
+    <div class="actions">
+      <!-- Add Button-->
+      <button 
+        mat-icon-button 
+        (click)="openCreateDiscussionDialog()" 
+        [disabled]="loading"
+        matTooltip="Thema hinzufügen">
+        <mat-icon>add</mat-icon>
+      </button>
+
+      <!-- Refresh Button -->
+      <button 
+        mat-icon-button 
+        (click)="loadDiscussions()" 
+        [disabled]="loading"
+        matTooltip="Aktualisieren">
+        <mat-icon [class.rotating]="loading">refresh</mat-icon>
+      </button>
+
+      <!-- Toggle Completed Discussions -->
+      <mat-slide-toggle 
+        [checked]="showClosed" 
+        (change)="toggleClosed()"
+        color="primary">
+        Abgeschlossene Themen anzeigen
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="loading && discussions.length === 0">
+    <mat-spinner></mat-spinner>
+    <p>Forum wird geladen...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && displayedDiscussions.length === 0">
+    <mat-icon>restaurant_menu</mat-icon>
+    <h2>Keine Themen vorhanden</h2>
+    <p *ngIf="closedCount > 0 && !showClosed">
+      Es gibt {{ closedCount }} geschlossene{{ closedCount === 1 ? 's Thema' : ' Themen' }}.
+      <button mat-button color="primary" (click)="toggleClosed()">Anzeigen</button>
+    </p>
+  </div>
+
+  <!-- Discussions List -->
+  <div class="discussions-list" *ngIf="!loading && displayedDiscussions.length > 0">
+    <mat-card 
+      *ngFor="let discussion of displayedDiscussions; trackBy: trackByDiscussionId" 
+      class="discussion-card" [routerLink]="['/forum-discussion', discussion.id]"> 
+      
+      <!-- Card Header -->
+      <mat-card-header>
+        <div class="discussion-header">
+          <div class="discussion-info">
+            <div class="discussion-title">
+              <span class="discussion-text">{{ discussion.name }} - {{ displayDiscussionName(discussion) }}</span>
+              <mat-chip [color]="getStatusColor(discussion.status)" highlighted>
+                {{ getStatusLabel(discussion.status) }}
+              </mat-chip>
+            </div>
+            <div class="discussion-meta">
+              <span class="description">
+                <b>{{discussion.description}}</b>
+              </span>
+              <span class="time">
+                Created at: {{ fmtDate(discussion.createdAt) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="discussion-actions" *ngIf="isModerator">
+            <!-- View Discussion Button -->
+            <button 
+              mat-icon-button 
+              (click)="closeDiscussion(discussion.id)"
+              matTooltip="Schließe Diskussion">
+              <mat-icon>close</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              (click)="deleteDiscussion(discussion.id)"
+              matTooltip="Lösche Diskussion">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+    </mat-card>
+  </div>
+</div>

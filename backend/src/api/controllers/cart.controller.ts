@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { CartService } from '../../business/cart.service';
-//import { CartStatus } from '../../repositories/order.repository';
 
 export class CartController {
   constructor(private cartService: CartService) {}

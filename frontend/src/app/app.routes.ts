@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
-
 import { LandingComponent } from './features/public/landing/landing';
 import { LoginComponent } from './features/public/login/login';
 import { RegisterComponent } from './features/public/register/register';
@@ -15,6 +14,8 @@ import { OrderOverviewComponent as CustomerOrderOverviewComponent } from './feat
 import { AnalyticsComponent } from './features/restaurant/analytics/analytics';
 import { MenuViewComponent } from './features/customer/menu-overview/menu-view';
 import { CartcheckoutComponent } from './features/customer/cartcheckout/cartcheckout';
+import { CommunityBoardComponent } from './features/public/community-board/community-board';
+import { DiscussionComponent } from './features/public/discussion/discussion';
 
 export const routes: Routes = [
   // Public routes
@@ -23,6 +24,8 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'forbidden', component: ForbiddenComponent },
   { path: 'restaurants/:id', component: RestaurantDetailComponent },
+  { path: 'restaurants-forum/:id', component: CommunityBoardComponent},
+  { path: 'forum-discussion/:id', component: DiscussionComponent},
 
   // Restaurant routes (protected)
   {

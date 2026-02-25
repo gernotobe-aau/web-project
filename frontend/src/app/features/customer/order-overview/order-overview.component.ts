@@ -82,19 +82,6 @@ export class OrderOverviewComponent implements OnInit, OnDestroy {
     } else {
       this.snackBar.open('ID nicht gefunden', 'OK', { duration: 5000 });
     }
-    //populate restaurants
-    //const restaurants = this.
-    /*this.restaurantService.getRestaurants().subscribe({
-      next: (restaurant) =>{
-        this.allRestaurants = restaurant || []
-        console.log('Loaded restaurants:', restaurant)
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.log('Error loading restaurant:', err)
-        this.cdr.detectChanges()
-      }
-    })*/
   }
 
   ngOnDestroy(): void {
@@ -110,46 +97,42 @@ export class OrderOverviewComponent implements OnInit, OnDestroy {
       this.loading = true;
       this.cdr.markForCheck();
     }
+    this.orderService.getCustomerOrders(this.customerId).subscribe({
+      next: (orders) => {
+        console.log('Loaded order:', orders)
+        this.orders = orders;
+        console.log('Orders now:', this.orders)
+        this.completedCount = orders.filter(o => 
+          [OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.REJECTED].includes(o.status)
+        ).length;
+        this.displayedOrders = this.sortOrders(this.orders);
+        console.log('Displayed order:', this.displayedOrders)
+        console.log('Order items of first batch:', this.displayedOrders[0].items)
 
-    //this.allRestaurants.forEach(restaurant => {
-      //let rId = restaurant.id
-      this.orderService.getCustomerOrders(this.customerId).subscribe({
-        next: (orders) => {
-          console.log('Loaded order:', orders)
-          this.orders = orders;
-          console.log('Orders now:', this.orders)
-          this.completedCount = orders.filter(o => 
-            [OrderStatus.DELIVERED, OrderStatus.CANCELLED, OrderStatus.REJECTED].includes(o.status)
-          ).length;
-          this.displayedOrders = this.sortOrders(this.orders);
-          console.log('Displayed order:', this.displayedOrders)
-          console.log('Order items of first batch:', this.displayedOrders[0].items)
-
-          // Auto-expand pending and preparing orders on initial load
-          if (!silent) {
-            this.expandedOrderIds.clear();
-            orders.forEach(order => {
-              if ([OrderStatus.PENDING, OrderStatus.ACCEPTED, OrderStatus.PREPARING].includes(order.status)) {
-                this.expandedOrderIds.add(order.id);
-              }
-            });
-          }
-          this.loading = false;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          this.loading = false;
-          this.cdr.markForCheck();
-          if (!silent) {
-            this.snackBar.open('Fehler beim Laden der Bestellungen', 'Wiederholen', { 
-              duration: 5000 
-            }).onAction().subscribe(() => {
-              this.loadOrders();
-            });
-          }
+        // Auto-expand pending and preparing orders on initial load
+        if (!silent) {
+          this.expandedOrderIds.clear();
+          orders.forEach(order => {
+            if ([OrderStatus.PENDING, OrderStatus.ACCEPTED, OrderStatus.PREPARING].includes(order.status)) {
+              this.expandedOrderIds.add(order.id);
+            }
+          });
         }
-      });
-    //});
+        this.loading = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.cdr.markForCheck();
+        if (!silent) {
+          this.snackBar.open('Fehler beim Laden der Bestellungen', 'Wiederholen', { 
+            duration: 5000 
+          }).onAction().subscribe(() => {
+            this.loadOrders();
+          });
+        }
+      }
+    });
   }
 
   /**
